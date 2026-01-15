@@ -1,0 +1,33 @@
+{
+  "originHash" : "6554e4acb7c31da14797c4a0247172d83f776a1107f66c9bcb7ccf094b5ccdab",
+  "pins" : [
+    {
+      "identity" : "defaults",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sindresorhus/Defaults",
+      "state" : {
+        "revision" : "8192b0986611e105355a9433e99bf5c79469fbbd",
+        "version" : "9.0.6"
+      }
+    },
+    {
+      "identity" : "smckit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/srimanachanta/SMCKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "53fc7a6e35a897b1658a7ef0f98ed1710fe46723"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax",
+      "state" : {
+        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
+        "version" : "602.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

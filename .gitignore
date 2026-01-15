@@ -1,0 +1,9 @@
+xcuserdata/
+
+*.hmap
+
+timeline.xctimeline
+playground.xcworkspace
+
+build/
+.claude/
