@@ -8,7 +8,7 @@ struct PowerReading {
     let systemPower: Double
 }
 
-class SMCService {
+final class SMCService: Sendable {
     // SMC keys for power sensors
     private static let batteryPowerKey = FourCharCode(fromStaticString: "SBAP")  // Battery discharge/charge power
     private static let externalPowerKey = FourCharCode(fromStaticString: "PDTR")  // AC adapter delivery power
