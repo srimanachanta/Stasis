@@ -5,7 +5,7 @@ enum Constants {
     static let helperSubsystem = "com.srimanachanta.stasis.helper"
 }
 
-class Helper: NSObject, HelperProtocol {
+final class Helper: NSObject, HelperProtocol, Sendable {
     private let smcService = SMCService()
     private let logger = Logger(
         subsystem: Constants.helperSubsystem,
@@ -17,7 +17,7 @@ class Helper: NSObject, HelperProtocol {
         logger.info("Helper XPC service initialized")
     }
 
-    func readSMCPower(reply: @escaping (Double, Double, Double) -> Void) {
+    func readSMCPower(reply: @escaping @Sendable (Double, Double, Double) -> Void) {
         Task {
             do {
                 let reading = try await smcService.readPower()

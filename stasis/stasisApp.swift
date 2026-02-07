@@ -1,17 +1,12 @@
-//
-//  stasisApp.swift
-//  stasis
-//
-//  Created by Sriman Achanta on 1/15/26.
-//
-
 import SwiftUI
 
 @main
-struct stasisApp: App {
+struct StasisApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
     }
 }
