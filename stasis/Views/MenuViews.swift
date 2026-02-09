@@ -17,23 +17,13 @@ struct BatteryMainInfo: View {
     }
 }
 
-struct BatteryAdditionalInfo<Label: View>: View {
-    let label: () -> Label
+struct BatteryAdditionalInfo: View {
+    let label: String
     let value: String
-
-    init(label: @escaping () -> Label, value: String) {
-        self.label = label
-        self.value = value
-    }
-
-    init(label: String, value: String) where Label == Text {
-        self.label = { Text(label) }
-        self.value = value
-    }
 
     var body: some View {
         HStack(alignment: .top) {
-            label()
+            Text(label)
             Spacer(minLength: 20)
             Text(value)
                 .multilineTextAlignment(.trailing)

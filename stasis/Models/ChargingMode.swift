@@ -1,6 +1,5 @@
-public enum ChargingMode {
+enum ChargingMode {
     case charging
     case discharging
     case pluggedIn
-    case sailing
 }

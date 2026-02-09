@@ -2,8 +2,8 @@ import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
     case general = "General"
-    case statusIcon = "Status Icon"
     case dashboard = "Dashboard"
+    case charging = "Charging"
     case advanced = "Advanced"
 
     var id: String { rawValue }
@@ -12,10 +12,10 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general:
             return "gearshape"
-        case .statusIcon:
-            return "menubar.rectangle"
         case .dashboard:
             return "chart.xyaxis.line"
+        case .charging:
+            return "battery.100.bolt"
         case .advanced:
             return "slider.horizontal.3"
         }
@@ -42,10 +42,10 @@ struct SettingsView: View {
                 switch selectedTab {
                 case .general:
                     GeneralSettingsView()
-                case .statusIcon:
-                    StatusIconSettingsView()
                 case .dashboard:
                     DashboardSettingsView()
+                case .charging:
+                    ChargingSettingsView()
                 case .advanced:
                     AdvancedSettingsView()
                 }

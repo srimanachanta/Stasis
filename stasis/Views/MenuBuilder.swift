@@ -17,6 +17,12 @@ class MenuBuilder {
 
     func buildMenu() -> NSMenu {
         let menu = NSMenu(title: "Stasis")
+        populateMenu(menu)
+        return menu
+    }
+
+    func populateMenu(_ menu: NSMenu) {
+        menu.removeAllItems()
 
         let mainInfoItem = createMenuItem(
             view: BatteryMainInfoView(viewModel: viewModel)
@@ -35,6 +41,11 @@ class MenuBuilder {
             for item in section {
                 menu.addItem(item)
             }
+        }
+
+        if viewModel.manageChargingEnabled && viewModel.adapterConnected {
+            menu.addItem(NSMenuItem.separator())
+            menu.addItem(createMenuItem(view: ChargeLimitOverrideToggleView(viewModel: viewModel)))
         }
 
         menu.addItem(NSMenuItem.separator())
@@ -56,8 +67,6 @@ class MenuBuilder {
         )
         quitItem.target = self
         menu.addItem(quitItem)
-
-        return menu
     }
 
     private func buildInfoSection() -> [NSMenuItem] {
@@ -108,7 +117,7 @@ class MenuBuilder {
         if Defaults[.showInternalPower] {
             items.append(
                 createInfoItem(
-                    label: "Internal Input",
+                    label: "Battery",
                     keyPath: \.internalInputText
                 )
             )
@@ -116,7 +125,7 @@ class MenuBuilder {
         if Defaults[.showExternalPower] {
             items.append(
                 createInfoItem(
-                    label: "External Input",
+                    label: "Adapter",
                     keyPath: \.externalInputText
                 )
             )
@@ -231,5 +240,30 @@ struct PowerSankeyViewWrapper: View {
             adapterPower: viewModel.adapterPower,
             systemPower: viewModel.systemPower
         )
+    }
+}
+
+struct ChargeLimitOverrideToggleView: View {
+    let viewModel: MenuViewModel
+
+    var body: some View {
+        HStack {
+            Text("Charge Limit Override")
+            Spacer(minLength: 20)
+            Toggle(
+                "Charge Limit Override",
+                isOn: Binding(
+                    get: { viewModel.chargeLimitOverrideActive },
+                    set: { _ in viewModel.toggleChargeLimitOverride() }
+                )
+            )
+            .labelsHidden()
+            .toggleStyle(.switch)
+            .controlSize(.mini)
+        }
+        .foregroundColor(.secondary)
+        .font(.callout)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 4)
     }
 }

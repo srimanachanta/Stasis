@@ -1,23 +1,7 @@
 import Foundation
-import Observation
-import os.log
 
-@MainActor
-@Observable
-class SystemService {
-    var bootTimestamp: Date?
-
-    private let logger = Logger(
-        subsystem: "com.srimanachanta.stasis",
-        category: "SystemService"
-    )
-
-    init() {
-        logger.info("SystemService initialized")
-        bootTimestamp = getBootTime()
-    }
-
-    private func getBootTime() -> Date? {
+enum SystemService {
+    static func bootTimestamp() -> Date? {
         var mib: [Int32] = [CTL_KERN, KERN_BOOTTIME]
         var bootTime = timeval()
         var bootTimeSize = MemoryLayout<timeval>.size
@@ -31,10 +15,7 @@ class SystemService {
             0
         )
 
-        if result != 0 {
-            logger.error("Failed to get boot time from sysctl")
-            return nil
-        }
+        guard result == 0 else { return nil }
 
         let timeInterval =
             TimeInterval(bootTime.tv_sec) + TimeInterval(bootTime.tv_usec)

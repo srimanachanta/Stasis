@@ -17,18 +17,24 @@ final class Helper: NSObject, HelperProtocol, Sendable {
         logger.info("Helper XPC service initialized")
     }
 
-    func readSMCPower(reply: @escaping @Sendable (Double, Double, Double) -> Void) {
+    func readBatteryMetrics(
+        reply: @escaping @Sendable (Double, Double, Double, Double, Double, Double, Double) -> Void
+    ) {
         Task {
             do {
-                let reading = try await smcService.readPower()
+                let reading = try await smcService.readBatteryMetrics()
                 reply(
+                    reading.batteryVoltage,
+                    reading.batteryCurrent,
                     reading.batteryPower,
+                    reading.externalVoltage,
+                    reading.externalCurrent,
                     reading.externalPower,
                     reading.systemPower
                 )
             } catch {
                 logger.error("SMC read failed: \(error.localizedDescription)")
-                reply(0, 0, 0)
+                reply(0, 0, 0, 0, 0, 0, 0)
             }
         }
     }

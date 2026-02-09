@@ -9,7 +9,9 @@
 /* Begin PBXBuildFile section */
 		A6638F812F1C0FD60047FA8E /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A6638F802F1C0FD60047FA8E /* Defaults */; };
 		A68B3E292F19ABCB00F115E4 /* helper.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = A68B3E1E2F19ABCB00F115E4 /* helper.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		A68B3E312F19B07C00F115E4 /* SMCKit in Frameworks */ = {isa = PBXBuildFile; productRef = A68B3E302F19B07C00F115E4 /* SMCKit */; };
+		A6E6D7322F3A00000069CF9F /* charging-helper in Copy Helper Tools */ = {isa = PBXBuildFile; fileRef = A6E6D71E2F39DD350069CF9F /* charging-helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		A6ECE4EE2F39E247007F3EDF /* SMCKit in Frameworks */ = {isa = PBXBuildFile; productRef = A6ECE4ED2F39E247007F3EDF /* SMCKit */; };
+		A6ECE4F02F39E24D007F3EDF /* SMCKit in Frameworks */ = {isa = PBXBuildFile; productRef = A6ECE4EF2F39E24D007F3EDF /* SMCKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -19,6 +21,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = A68B3E1D2F19ABCB00F115E4;
 			remoteInfo = helper;
+		};
+		A6E6D7302F3A00000069CF9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A6E6D71D2F39DD350069CF9F;
+			remoteInfo = "charging-helper";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -44,11 +53,23 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A6E6D7332F3A00000069CF9F /* Copy Helper Tools */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Library/HelperTools";
+			dstSubfolderSpec = 16;
+			files = (
+				A6E6D7322F3A00000069CF9F /* charging-helper in Copy Helper Tools */,
+			);
+			name = "Copy Helper Tools";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A68B3E0C2F19AB4B00F115E4 /* stasis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = stasis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A68B3E1E2F19ABCB00F115E4 /* helper.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = helper.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6E6D71E2F39DD350069CF9F /* charging-helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "charging-helper"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -66,11 +87,36 @@
 			);
 			target = A68B3E0B2F19AB4B00F115E4 /* stasis */;
 		};
+		A6E6D72D2F39DE3A0069CF9F /* Exceptions for "stasis" folder in "charging-helper" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/MagSafeLEDState.swift,
+			);
+			target = A6E6D71D2F39DD350069CF9F /* charging-helper */;
+		};
+		A6E6D7352F3A00000069CF9F /* Exceptions for "charging-helper" folder in "stasis" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ChargingHelperProtocol.swift,
+			);
+			target = A68B3E0B2F19AB4B00F115E4 /* stasis */;
+		};
+		A6ECE4F62F3A7879007F3EDF /* Exceptions for "stasis" folder in "helper" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/SMCPowerReading.swift,
+			);
+			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A68B3E0E2F19AB4B00F115E4 /* stasis */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A6ECE4F62F3A7879007F3EDF /* Exceptions for "stasis" folder in "helper" target */,
+				A6E6D72D2F39DE3A0069CF9F /* Exceptions for "stasis" folder in "charging-helper" target */,
+			);
 			path = stasis;
 			sourceTree = "<group>";
 		};
@@ -81,6 +127,14 @@
 				A68B3E2A2F19ABCB00F115E4 /* Exceptions for "helper" folder in "helper" target */,
 			);
 			path = helper;
+			sourceTree = "<group>";
+		};
+		A6E6D71F2F39DD350069CF9F /* charging-helper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A6E6D7352F3A00000069CF9F /* Exceptions for "charging-helper" folder in "stasis" target */,
+			);
+			path = "charging-helper";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -98,7 +152,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A68B3E312F19B07C00F115E4 /* SMCKit in Frameworks */,
+				A6ECE4EE2F39E247007F3EDF /* SMCKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6E6D71B2F39DD350069CF9F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A6ECE4F02F39E24D007F3EDF /* SMCKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +172,7 @@
 			children = (
 				A68B3E0E2F19AB4B00F115E4 /* stasis */,
 				A68B3E1F2F19ABCB00F115E4 /* helper */,
+				A6E6D71F2F39DD350069CF9F /* charging-helper */,
 				A68B3E532F1A942600F115E4 /* Frameworks */,
 				A68B3E0D2F19AB4B00F115E4 /* Products */,
 			);
@@ -120,6 +183,7 @@
 			children = (
 				A68B3E0C2F19AB4B00F115E4 /* stasis.app */,
 				A68B3E1E2F19ABCB00F115E4 /* helper.xpc */,
+				A6E6D71E2F39DD350069CF9F /* charging-helper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,11 +207,14 @@
 				A68B3E0A2F19AB4B00F115E4 /* Resources */,
 				A68B3E2E2F19ABCB00F115E4 /* Embed XPC Services */,
 				A68B3E712F1A95DB00F115E4 /* Embed Frameworks */,
+				A6E6D7332F3A00000069CF9F /* Copy Helper Tools */,
+				A6E6D7342F3A00000069CF9F /* Copy LaunchDaemon Plist */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				A68B3E282F19ABCB00F115E4 /* PBXTargetDependency */,
+				A6E6D7312F3A00000069CF9F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A68B3E0E2F19AB4B00F115E4 /* stasis */,
@@ -177,11 +244,33 @@
 			);
 			name = helper;
 			packageProductDependencies = (
-				A68B3E302F19B07C00F115E4 /* SMCKit */,
+				A6ECE4ED2F39E247007F3EDF /* SMCKit */,
 			);
 			productName = helper;
 			productReference = A68B3E1E2F19ABCB00F115E4 /* helper.xpc */;
 			productType = "com.apple.product-type.xpc-service";
+		};
+		A6E6D71D2F39DD350069CF9F /* charging-helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6E6D7222F39DD350069CF9F /* Build configuration list for PBXNativeTarget "charging-helper" */;
+			buildPhases = (
+				A6E6D71A2F39DD350069CF9F /* Sources */,
+				A6E6D71B2F39DD350069CF9F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A6E6D71F2F39DD350069CF9F /* charging-helper */,
+			);
+			name = "charging-helper";
+			packageProductDependencies = (
+				A6ECE4EF2F39E24D007F3EDF /* SMCKit */,
+			);
+			productName = "charging-helper";
+			productReference = A6E6D71E2F39DD350069CF9F /* charging-helper */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -199,6 +288,9 @@
 					A68B3E1D2F19ABCB00F115E4 = {
 						CreatedOnToolsVersion = 26.2;
 					};
+					A6E6D71D2F39DD350069CF9F = {
+						CreatedOnToolsVersion = 26.2;
+					};
 				};
 			};
 			buildConfigurationList = A68B3E072F19AB4B00F115E4 /* Build configuration list for PBXProject "stasis" */;
@@ -211,8 +303,8 @@
 			mainGroup = A68B3E032F19AB4B00F115E4;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A68B3E2F2F19B07C00F115E4 /* XCRemoteSwiftPackageReference "SMCKit" */,
 				A6638F7F2F1C0FD60047FA8E /* XCRemoteSwiftPackageReference "Defaults" */,
+				A6ECE4EC2F39E247007F3EDF /* XCRemoteSwiftPackageReference "SMCKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A68B3E0D2F19AB4B00F115E4 /* Products */;
@@ -221,6 +313,7 @@
 			targets = (
 				A68B3E0B2F19AB4B00F115E4 /* stasis */,
 				A68B3E1D2F19ABCB00F115E4 /* helper */,
+				A6E6D71D2F39DD350069CF9F /* charging-helper */,
 			);
 		};
 /* End PBXProject section */
@@ -242,6 +335,25 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		A6E6D7342F3A00000069CF9F /* Copy LaunchDaemon Plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/charging-helper/com.srimanachanta.stasis.charging-helper.plist",
+			);
+			name = "Copy LaunchDaemon Plist";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons/com.srimanachanta.stasis.charging-helper.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mkdir -p \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons\"\ncp \"${SRCROOT}/charging-helper/com.srimanachanta.stasis.charging-helper.plist\" \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A68B3E082F19AB4B00F115E4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -257,6 +369,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A6E6D71A2F39DD350069CF9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +384,11 @@
 			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
 			targetProxy = A68B3E272F19ABCB00F115E4 /* PBXContainerItemProxy */;
 		};
+		A6E6D7312F3A00000069CF9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A6E6D71D2F39DD350069CF9F /* charging-helper */;
+			targetProxy = A6E6D7302F3A00000069CF9F /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -272,6 +396,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -307,6 +432,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				EXCLUDED_ARCHS = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -337,6 +463,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -372,6 +499,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				EXCLUDED_ARCHS = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -399,19 +527,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 447GJ83BJ5;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stasis;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -443,19 +561,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 447GJ83BJ5;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stasis;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -556,6 +664,42 @@
 			};
 			name = Release;
 		};
+		A6E6D7232F39DD350069CF9F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.charging-helper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A6E6D7242F39DD350069CF9F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.charging-helper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -586,6 +730,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A6E6D7222F39DD350069CF9F /* Build configuration list for PBXNativeTarget "charging-helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6E6D7232F39DD350069CF9F /* Debug */,
+				A6E6D7242F39DD350069CF9F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -597,7 +750,7 @@
 				minimumVersion = 9.0.6;
 			};
 		};
-		A68B3E2F2F19B07C00F115E4 /* XCRemoteSwiftPackageReference "SMCKit" */ = {
+		A6ECE4EC2F39E247007F3EDF /* XCRemoteSwiftPackageReference "SMCKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/srimanachanta/SMCKit";
 			requirement = {
@@ -613,9 +766,14 @@
 			package = A6638F7F2F1C0FD60047FA8E /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
 		};
-		A68B3E302F19B07C00F115E4 /* SMCKit */ = {
+		A6ECE4ED2F39E247007F3EDF /* SMCKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A68B3E2F2F19B07C00F115E4 /* XCRemoteSwiftPackageReference "SMCKit" */;
+			package = A6ECE4EC2F39E247007F3EDF /* XCRemoteSwiftPackageReference "SMCKit" */;
+			productName = SMCKit;
+		};
+		A6ECE4EF2F39E24D007F3EDF /* SMCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A6ECE4EC2F39E247007F3EDF /* XCRemoteSwiftPackageReference "SMCKit" */;
 			productName = SMCKit;
 		};
 /* End XCSwiftPackageProductDependency section */

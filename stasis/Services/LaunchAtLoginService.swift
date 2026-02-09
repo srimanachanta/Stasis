@@ -1,8 +1,14 @@
 import Foundation
 import ServiceManagement
+import os.log
 
 class LaunchAtLoginService {
     static let shared = LaunchAtLoginService()
+
+    private let logger = Logger(
+        subsystem: "com.srimanachanta.stasis",
+        category: "LaunchAtLoginService"
+    )
 
     private init() {}
 
@@ -14,7 +20,7 @@ class LaunchAtLoginService {
                 try SMAppService.mainApp.unregister()
             }
         } catch {
-            print(
+            logger.error(
                 "Failed to \(enabled ? "enable" : "disable") launch at login: \(error)"
             )
         }

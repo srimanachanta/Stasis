@@ -2,57 +2,55 @@ import Foundation
 import SMCKit
 import os.log
 
-struct PowerReading {
-    let batteryPower: Double
-    let externalPower: Double
-    let systemPower: Double
-}
-
 final class SMCService: Sendable {
-    // SMC keys for power sensors
-    private static let batteryPowerKey = FourCharCode(fromStaticString: "SBAP")  // Battery discharge/charge power
-    private static let externalPowerKey = FourCharCode(fromStaticString: "PDTR")  // AC adapter delivery power
-
-    // Values below this threshold (in watts) are treated as zero to filter sensor noise
-    private static let noiseFloor: Double = 0.01
+    private static let batteryVoltageKey = FourCharCode(fromStaticString: "B0AV")
+    private static let batteryCurrentKey = FourCharCode(fromStaticString: "B0AC")
+    private static let externalVoltageKey = FourCharCode(fromStaticString: "VD0R")
+    private static let externalCurrentKey = FourCharCode(fromStaticString: "ID0R")
 
     private let logger = Logger(
         subsystem: Constants.helperSubsystem,
         category: "SMCService"
     )
 
-    func readPower() async throws -> PowerReading {
-        let batteryPowerRaw: Float = try await SMCKit.shared.read(
-            Self.batteryPowerKey
-        )
-        let externalPowerRaw: Float = try await SMCKit.shared.read(
-            Self.externalPowerKey
-        )
+    func readBatteryMetrics() async throws -> SMCPowerReading {
+        let batteryVoltageRaw: UInt16 = try await SMCKit.shared.read(Self.batteryVoltageKey)
+        let batteryCurrentRaw: Int16 = try await SMCKit.shared.read(Self.batteryCurrentKey)
 
-        // SMC reports these values with inverted sign (negative = delivering power),
-        // so we negate to get conventional positive-means-delivering semantics.
-        var batteryPower = Double(-batteryPowerRaw)
-        var externalPower = Double(-externalPowerRaw)
+        let batteryVoltage = Double(batteryVoltageRaw) / 1000.0
+        let batteryCurrent = Double(batteryCurrentRaw) / 1000.0
 
-        if abs(batteryPower) < Self.noiseFloor {
-            batteryPower = 0
+        let externalVoltageRaw: Float = try await SMCKit.shared.read(Self.externalVoltageKey)
+        let externalCurrentRaw: Float = try await SMCKit.shared.read(Self.externalCurrentKey)
+
+        var externalVoltage = Double(externalVoltageRaw)
+        var externalCurrent = Double(externalCurrentRaw)
+
+        if abs(externalVoltage) < 0.1 {
+            externalVoltage = 0
         }
 
-        if abs(externalPower) < Self.noiseFloor {
-            externalPower = 0
+        if abs(externalCurrent) < 0.1 {
+            externalCurrent = 0
         }
 
-        // System power is the total drawn from all sources
-        let systemPower = -(externalPower + batteryPower)
+        let batteryPower = batteryVoltage * batteryCurrent
+        let externalPower = externalVoltage * externalCurrent
+        let systemPower = externalPower - batteryPower
 
         logger.debug(
-            "SMC read successful: battery=\(batteryPower)W, external=\(externalPower)W, system=\(systemPower)W"
+            "SMC power read successful: battery=\(batteryPower)W, external=\(externalPower)W, system=\(systemPower)W"
         )
 
-        return PowerReading(
+        return SMCPowerReading(
+            batteryVoltage: batteryVoltage,
+            batteryCurrent: batteryCurrent,
             batteryPower: batteryPower,
+            externalVoltage: externalVoltage,
+            externalCurrent: externalCurrent,
             externalPower: externalPower,
             systemPower: systemPower
         )
     }
+
 }
