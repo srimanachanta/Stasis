@@ -83,6 +83,11 @@ class ChargeManager {
             return
         }
 
+        // When manage charging transitions from off to on, clear cached state so
+        // that the set* guards don't skip applying the new desired state. Without
+        // this, resetToDefaults() (called by the metrics observer while management
+        // was off) populates the last* cache with reset values, and a subsequent
+        // evaluate from the settings observer would see matching values and no-op.
         if lastManageChargingEnabled != true {
             lastManageChargingEnabled = true
             clearCachedState()
