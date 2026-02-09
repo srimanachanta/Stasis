@@ -11,7 +11,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var chargeManager: ChargeManager!
     private var settingsWindowController: SettingsWindowController!
     private var menu: NSMenu!
-    private var settingsObservations: [Defaults.Observation] = []
+    private var settingsObservation: Task<Void, Never>?
     private var adapterObservation: Task<Void, Never>?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -43,25 +43,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func observeMenuSettingsChanges() {
-        let handler: @Sendable () -> Void = { [weak self] in
-            Task { @MainActor [weak self] in
+        settingsObservation = Task { [weak self] in
+            for await _ in Defaults.updates(
+                [
+                    .showPowerSource, .showTimeTillDischarge, .showBatteryCycleCount,
+                    .showBatteryHealth, .showBatteryTemperature, .showUptime,
+                    .showBatteryMode, .showInternalPower, .showExternalPower,
+                    .showPowerDistribution, .manageCharging,
+                ],
+                initial: false
+            ) {
                 self?.rebuildMenu()
             }
         }
-
-        settingsObservations = [
-            Defaults.observe(.showPowerSource) { _ in handler() },
-            Defaults.observe(.showTimeTillDischarge) { _ in handler() },
-            Defaults.observe(.showBatteryCycleCount) { _ in handler() },
-            Defaults.observe(.showBatteryHealth) { _ in handler() },
-            Defaults.observe(.showBatteryTemperature) { _ in handler() },
-            Defaults.observe(.showUptime) { _ in handler() },
-            Defaults.observe(.showBatteryMode) { _ in handler() },
-            Defaults.observe(.showInternalPower) { _ in handler() },
-            Defaults.observe(.showExternalPower) { _ in handler() },
-            Defaults.observe(.showPowerDistribution) { _ in handler() },
-            Defaults.observe(.manageCharging) { _ in handler() },
-        ]
 
         adapterObservation = Task { [weak self] in
             while !Task.isCancelled {

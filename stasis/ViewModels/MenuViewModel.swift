@@ -34,7 +34,7 @@ class MenuViewModel {
     var adapterConnected: Bool = false
 
     private var metricsObservation: Task<Void, Never>?
-    private var settingsObservation: Defaults.Observation?
+    private var settingsObservation: Task<Void, Never>?
     private var uptimeTask: Task<Void, Never>?
 
     init(batteryService: BatteryService, chargeManager: ChargeManager) {
@@ -65,9 +65,8 @@ class MenuViewModel {
     }
 
     private func startObservingSettings() {
-        settingsObservation = Defaults.observe(.useHardwarePercentage) {
-            [weak self] _ in
-            Task { @MainActor [weak self] in
+        settingsObservation = Task { [weak self] in
+            for await _ in Defaults.updates([.useHardwarePercentage], initial: false) {
                 guard let self else { return }
                 self.updateFormattedValues(from: self.batteryService.metrics)
             }
@@ -194,7 +193,7 @@ class MenuViewModel {
     deinit {
         MainActor.assumeIsolated {
             metricsObservation?.cancel()
-            settingsObservation?.invalidate()
+            settingsObservation?.cancel()
             uptimeTask?.cancel()
         }
     }

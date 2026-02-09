@@ -10,7 +10,7 @@ class ChargeManager {
     private let batteryService: BatteryService
 
     private var metricsObservation: Task<Void, Never>?
-    private var settingsObservations: [Defaults.Observation] = []
+    private var settingsObservation: Task<Void, Never>?
 
     private var lastChargingEnabled: Bool?
     private var lastAdapterEnabled: Bool?
@@ -52,25 +52,20 @@ class ChargeManager {
     }
 
     private func startObservingSettings() {
-        let handler: @Sendable () -> Void = { [weak self] in
-            Task { @MainActor [weak self] in
+        settingsObservation = Task { [weak self] in
+            for await _ in Defaults.updates(
+                [
+                    .manageCharging, .sailingMode, .automaticDischarge,
+                    .enableHeatProtectionMode, .manageMagSafeLED, .useHardwarePercentage,
+                    .chargeLimit, .sailingModeLimit, .heatProtectionLimit,
+                    .heatProtectionMagSafeLEDState,
+                ],
+                initial: false
+            ) {
                 guard let self else { return }
                 self.evaluate(metrics: self.batteryService.metrics)
             }
         }
-
-        settingsObservations = [
-            Defaults.observe(.manageCharging) { _ in handler() },
-            Defaults.observe(.sailingMode) { _ in handler() },
-            Defaults.observe(.automaticDischarge) { _ in handler() },
-            Defaults.observe(.enableHeatProtectionMode) { _ in handler() },
-            Defaults.observe(.manageMagSafeLED) { _ in handler() },
-            Defaults.observe(.useHardwarePercentage) { _ in handler() },
-            Defaults.observe(.chargeLimit) { _ in handler() },
-            Defaults.observe(.sailingModeLimit) { _ in handler() },
-            Defaults.observe(.heatProtectionLimit) { _ in handler() },
-            Defaults.observe(.heatProtectionMagSafeLEDState) { _ in handler() },
-        ]
     }
 
     private func evaluate(metrics: BatteryMetrics) {
@@ -261,7 +256,7 @@ class ChargeManager {
     func stop() {
         metricsObservation?.cancel()
         metricsObservation = nil
-        settingsObservations.forEach { $0.invalidate() }
-        settingsObservations.removeAll()
+        settingsObservation?.cancel()
+        settingsObservation = nil
     }
 }
