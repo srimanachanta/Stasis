@@ -56,7 +56,7 @@ class ChargingHelperManager {
         )
 
         newConnection.invalidationHandler = { [weak self] in
-            MainActor.assumeIsolated {
+            Task { @MainActor in
                 guard let self else { return }
                 self.logger.warning("Charging helper XPC connection invalidated")
                 self.connection = nil
@@ -64,7 +64,7 @@ class ChargingHelperManager {
         }
 
         newConnection.interruptionHandler = { [weak self] in
-            MainActor.assumeIsolated {
+            Task { @MainActor in
                 guard let self else { return }
                 self.logger.warning("Charging helper XPC connection interrupted")
                 self.connection = nil

@@ -165,57 +165,60 @@ class BatteryService {
     }
 
     func manageBatteryCharging(enabled: Bool) async throws {
-        let helper = try getChargingHelper()
-
-        let (success, errorMessage) = await withCheckedContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
+            let helper = self.getChargingHelper(continuation: continuation)
+            guard let helper else { return }
             helper.manageBatteryCharging(enabled: enabled) { success, errorMessage in
-                continuation.resume(returning: (success, errorMessage))
+                if success {
+                    continuation.resume()
+                } else {
+                    continuation.resume(
+                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
+                }
             }
-        }
-
-        if !success {
-            throw XPCError.commandFailed(errorMessage ?? "Unknown error")
         }
     }
 
     func manageExternalPower(enabled: Bool) async throws {
-        let helper = try getChargingHelper()
-
-        let (success, errorMessage) = await withCheckedContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
+            let helper = self.getChargingHelper(continuation: continuation)
+            guard let helper else { return }
             helper.manageExternalPower(enabled: enabled) { success, errorMessage in
-                continuation.resume(returning: (success, errorMessage))
+                if success {
+                    continuation.resume()
+                } else {
+                    continuation.resume(
+                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
+                }
             }
-        }
-
-        if !success {
-            throw XPCError.commandFailed(errorMessage ?? "Unknown error")
         }
     }
 
     func manageMagsafeLED(target: MagSafeLEDState) async throws {
-        let helper = try getChargingHelper()
-
-        let (success, errorMessage) = await withCheckedContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
+            let helper = self.getChargingHelper(continuation: continuation)
+            guard let helper else { return }
             helper.manageMagsafeLED(target: target.rawValue) { success, errorMessage in
-                continuation.resume(returning: (success, errorMessage))
+                if success {
+                    continuation.resume()
+                } else {
+                    continuation.resume(
+                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
+                }
             }
-        }
-
-        if !success {
-            throw XPCError.commandFailed(errorMessage ?? "Unknown error")
         }
     }
 
-    private func getChargingHelper() throws -> ChargingHelperProtocol {
-        let logger = self.logger
+    private func getChargingHelper(
+        continuation: CheckedContinuation<Void, any Error>
+    ) -> ChargingHelperProtocol? {
         guard
             let helper = ChargingHelperManager.shared.getHelper(errorHandler: { error in
-                logger.error(
-                    "XPC error during charging operation: \(error.localizedDescription)"
-                )
+                continuation.resume(throwing: error)
             })
         else {
-            throw XPCError.helperUnavailable
+            continuation.resume(throwing: XPCError.helperUnavailable)
+            return nil
         }
         return helper
     }
