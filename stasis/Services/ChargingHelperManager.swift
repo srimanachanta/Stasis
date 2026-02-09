@@ -26,7 +26,19 @@ class ChargingHelperManager {
 
     func install() throws {
         logger.info("Registering charging helper daemon")
-        try service.register()
+        do {
+            try service.register()
+        } catch {
+            // SMAppService.register() can throw "Operation not permitted" on the
+            // first call while the system shows the "Background Items Added"
+            // prompt, even though registration actually succeeded. Re-check the
+            // actual status before propagating the error.
+            if isInstalled {
+                logger.info("Charging helper daemon registered despite thrown error")
+                return
+            }
+            throw error
+        }
         logger.info("Charging helper daemon registered successfully")
     }
 

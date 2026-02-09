@@ -187,10 +187,12 @@ struct ChargingSettingsView: View {
     }
 
     private func toggleManageCharging(_ enabled: Bool) {
+        let installed = ChargingHelperManager.shared.isInstalled
+
         do {
-            if enabled {
+            if enabled && !installed {
                 try ChargingHelperManager.shared.install()
-            } else {
+            } else if !enabled && installed {
                 try ChargingHelperManager.shared.uninstall()
             }
             manageCharging = enabled
