@@ -2,12 +2,12 @@ import Foundation
 import os.log
 
 @MainActor
-class XPCConnectionManager {
+class SMCReaderConnection {
     private var connection: NSXPCConnection?
     private let serviceName: String
     private let logger = Logger(
         subsystem: "com.srimanachanta.stasis",
-        category: "XPCConnectionManager"
+        category: "SMCReaderConnection"
     )
 
     private var reconnectAttempts = 0

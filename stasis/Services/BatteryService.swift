@@ -21,7 +21,7 @@ enum XPCError: LocalizedError {
 class BatteryService {
     var metrics = BatteryMetrics()
 
-    private let xpcManager = XPCConnectionManager(
+    private let xpcManager = SMCReaderConnection(
         serviceName: "com.srimanachanta.stasis.helper"
     )
     private let ioKitService = IOKitService()
