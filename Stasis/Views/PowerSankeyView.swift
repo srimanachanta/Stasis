@@ -444,47 +444,25 @@ struct NodeView: View {
 }
 
 #Preview {
-    VStack(spacing: 30) {
-        PowerSankeyView(
-            powerSource: .both,
-            isCharging: false,
-            batteryPower: -20.16,
-            adapterPower: 36.0,
-            systemPower: 56.16
-        ).frame(height: 125)
-
-        PowerSankeyView(
-            powerSource: .acAdapter,
-            isCharging: true,
-            batteryPower: 20.0,
-            adapterPower: 30.0,
-            systemPower: 10.0
-        ).frame(height: 125)
-
-        PowerSankeyView(
-            powerSource: .battery,
-            isCharging: false,
-            batteryPower: -18.63,
-            adapterPower: 0.0,
-            systemPower: 18.63
-        ).frame(height: 125)
-
-        PowerSankeyView(
-            powerSource: .acAdapter,
-            isCharging: false,
-            batteryPower: 0.0,
-            adapterPower: 25.0,
-            systemPower: 25.0
-        ).frame(height: 125)
-
-        PowerSankeyView(
-            powerSource: .acAdapter,
-            isCharging: false,
-            batteryPower: 23,
-            adapterPower: 39,
-            systemPower: 16
-        ).frame(height: 125)
+    let items: [(PowerSource, Bool, Double, Double, Double)] = [
+        (.both, false, -20.16, 36.0, 56.16),
+        (.acAdapter, true, 20.0, 30.0, 10.0),
+        (.battery, false, -18.63, 0.0, 18.63),
+        (.acAdapter, false, 0.0, 25.0, 25.0),
+        (.acAdapter, false, 23, 39, 16),
+    ]
+    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+        ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+            PowerSankeyView(
+                powerSource: item.0,
+                isCharging: item.1,
+                batteryPower: item.2,
+                adapterPower: item.3,
+                systemPower: item.4
+            )
+            .frame(height: 125)
+        }
     }
-    .padding(.vertical, 12)
-    .frame(width: 300)
+    .padding(12)
+    .frame(width: 900)
 }
