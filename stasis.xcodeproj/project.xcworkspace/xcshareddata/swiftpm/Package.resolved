@@ -1,5 +1,5 @@
 {
-  "originHash" : "6554e4acb7c31da14797c4a0247172d83f776a1107f66c9bcb7ccf094b5ccdab",
+  "originHash" : "44b0ebc1562c126b786f3626cb995274f60018ff013515ec2ab2912ecdd60b0f",
   "pins" : [
     {
       "identity" : "defaults",
@@ -16,7 +16,7 @@
       "location" : "https://github.com/srimanachanta/SMCKit",
       "state" : {
         "branch" : "main",
-        "revision" : "53fc7a6e35a897b1658a7ef0f98ed1710fe46723"
+        "revision" : "8286f3b11ad9801405e0be062a07e557fb654019"
       }
     },
     {

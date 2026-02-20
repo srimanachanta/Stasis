@@ -13,8 +13,7 @@
 * SMC Restriction: ALL commands dealing with the System Management Controller (SMC) must be executed within the Privileged Helper. The Main App must strictly use IPC (XPC) to request these actions.
 * Library Usage: Use the `SMCKit` dependency for all SMC operations within the Helper.
     * Use `SMCKit.shared` for access.
-    * Use string literal syntax for keys (e.g., `try await SMCKit.shared.read("B0TE")`).
-    * Leverage `async/await` for all SMC calls; do not use legacy completion handlers.
+    * Use string literal syntax for keys (e.g., `try SMCKit.shared.read("B0TE")`).
 
 ## Swift & SwiftUI
 

@@ -8,17 +8,50 @@
 
 /* Begin PBXBuildFile section */
 		A6638F812F1C0FD60047FA8E /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = A6638F802F1C0FD60047FA8E /* Defaults */; };
+		A66D62D92F44069300B996E7 /* smc_power.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; };
+		A66D62DD2F44069900B996E7 /* smc_power.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; };
+		A66D62E22F44076F00B996E7 /* SMCKit in Frameworks */ = {isa = PBXBuildFile; productRef = A66D62E12F44076F00B996E7 /* SMCKit */; };
 		A68B3E292F19ABCB00F115E4 /* helper.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = A68B3E1E2F19ABCB00F115E4 /* helper.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		A68B3E312F19B07C00F115E4 /* SMCKit in Frameworks */ = {isa = PBXBuildFile; productRef = A68B3E302F19B07C00F115E4 /* SMCKit */; };
+		A6AE19892F480D41003B09FA /* smc_power.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; };
+		A6AE198A2F480D41003B09FA /* smc_power.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A6E6D7322F3A00000069CF9F /* charging-helper in Copy Helper Tools */ = {isa = PBXBuildFile; fileRef = A6E6D71E2F39DD350069CF9F /* charging-helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A66D62DB2F44069300B996E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A66D62CD2F44067C00B996E7;
+			remoteInfo = "smc-profiles";
+		};
+		A66D62DF2F44069900B996E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A66D62CD2F44067C00B996E7;
+			remoteInfo = "smc-profiles";
+		};
 		A68B3E272F19ABCB00F115E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A68B3E1D2F19ABCB00F115E4;
 			remoteInfo = helper;
+		};
+		A6AE198B2F480D41003B09FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A66D62CD2F44067C00B996E7;
+			remoteInfo = "smc-power";
+		};
+		A6E6D7302F3A00000069CF9F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A6E6D71D2F39DD350069CF9F;
+			remoteInfo = "charging-helper";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -34,62 +67,105 @@
 			name = "Embed XPC Services";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A68B3E712F1A95DB00F115E4 /* Embed Frameworks */ = {
+		A6AE198D2F480D41003B09FA /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				A6AE198A2F480D41003B09FA /* smc_power.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6E6D7332F3A00000069CF9F /* Copy Helper Tools */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons";
+			dstSubfolderSpec = 16;
+			files = (
+				A6E6D7322F3A00000069CF9F /* charging-helper in Copy Helper Tools */,
+			);
+			name = "Copy Helper Tools";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A66D62CE2F44067C00B996E7 /* smc_power.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = smc_power.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A68B3E0C2F19AB4B00F115E4 /* stasis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = stasis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A68B3E1E2F19ABCB00F115E4 /* helper.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = helper.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6E6D71E2F39DD350069CF9F /* charging-helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "charging-helper"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A68B3E2A2F19ABCB00F115E4 /* Exceptions for "helper" folder in "helper" target */ = {
+		A66D63982F442CC900B996E7 /* Exceptions for "Helper" folder in "stasis" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HelperProtocol.swift,
+			);
+			target = A68B3E0B2F19AB4B00F115E4 /* stasis */;
+		};
+		A68B3E2A2F19ABCB00F115E4 /* Exceptions for "Helper" folder in "helper" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
 		};
-		A68B3E822F1AB0CF00F115E4 /* Exceptions for "helper" folder in "stasis" target */ = {
+		A6E6D7352F3A00000069CF9F /* Exceptions for "ChargingHelper" folder in "stasis" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				helperProtocol.swift,
+				ChargingHelperProtocol.swift,
 			);
 			target = A68B3E0B2F19AB4B00F115E4 /* stasis */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A68B3E0E2F19AB4B00F115E4 /* stasis */ = {
+		A66D62CF2F44067C00B996E7 /* SMCPower */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = stasis;
+			path = SMCPower;
 			sourceTree = "<group>";
 		};
-		A68B3E1F2F19ABCB00F115E4 /* helper */ = {
+		A68B3E0E2F19AB4B00F115E4 /* Stasis */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Stasis;
+			sourceTree = "<group>";
+		};
+		A68B3E1F2F19ABCB00F115E4 /* Helper */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A68B3E822F1AB0CF00F115E4 /* Exceptions for "helper" folder in "stasis" target */,
-				A68B3E2A2F19ABCB00F115E4 /* Exceptions for "helper" folder in "helper" target */,
+				A66D63982F442CC900B996E7 /* Exceptions for "Helper" folder in "stasis" target */,
+				A68B3E2A2F19ABCB00F115E4 /* Exceptions for "Helper" folder in "helper" target */,
 			);
-			path = helper;
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		A6E6D71F2F39DD350069CF9F /* ChargingHelper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A6E6D7352F3A00000069CF9F /* Exceptions for "ChargingHelper" folder in "stasis" target */,
+			);
+			path = ChargingHelper;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A66D62CB2F44067C00B996E7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A66D62E22F44076F00B996E7 /* SMCKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A68B3E092F19AB4B00F115E4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6AE19892F480D41003B09FA /* smc_power.framework in Frameworks */,
 				A6638F812F1C0FD60047FA8E /* Defaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,7 +174,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A68B3E312F19B07C00F115E4 /* SMCKit in Frameworks */,
+				A66D62DD2F44069900B996E7 /* smc_power.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6E6D71B2F39DD350069CF9F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A66D62D92F44069300B996E7 /* smc_power.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,8 +192,10 @@
 		A68B3E032F19AB4B00F115E4 = {
 			isa = PBXGroup;
 			children = (
-				A68B3E0E2F19AB4B00F115E4 /* stasis */,
-				A68B3E1F2F19ABCB00F115E4 /* helper */,
+				A68B3E0E2F19AB4B00F115E4 /* Stasis */,
+				A68B3E1F2F19ABCB00F115E4 /* Helper */,
+				A6E6D71F2F39DD350069CF9F /* ChargingHelper */,
+				A66D62CF2F44067C00B996E7 /* SMCPower */,
 				A68B3E532F1A942600F115E4 /* Frameworks */,
 				A68B3E0D2F19AB4B00F115E4 /* Products */,
 			);
@@ -120,6 +206,8 @@
 			children = (
 				A68B3E0C2F19AB4B00F115E4 /* stasis.app */,
 				A68B3E1E2F19ABCB00F115E4 /* helper.xpc */,
+				A6E6D71E2F39DD350069CF9F /* charging-helper */,
+				A66D62CE2F44067C00B996E7 /* smc_power.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,7 +221,41 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		A66D62C92F44067C00B996E7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		A66D62CD2F44067C00B996E7 /* smc-power */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A66D62D62F44067C00B996E7 /* Build configuration list for PBXNativeTarget "smc-power" */;
+			buildPhases = (
+				A66D62C92F44067C00B996E7 /* Headers */,
+				A66D62CA2F44067C00B996E7 /* Sources */,
+				A66D62CB2F44067C00B996E7 /* Frameworks */,
+				A66D62CC2F44067C00B996E7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A66D62CF2F44067C00B996E7 /* SMCPower */,
+			);
+			name = "smc-power";
+			packageProductDependencies = (
+				A66D62E12F44076F00B996E7 /* SMCKit */,
+			);
+			productName = "smc-profiles";
+			productReference = A66D62CE2F44067C00B996E7 /* smc_power.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		A68B3E0B2F19AB4B00F115E4 /* stasis */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A68B3E172F19AB4C00F115E4 /* Build configuration list for PBXNativeTarget "stasis" */;
@@ -142,15 +264,19 @@
 				A68B3E092F19AB4B00F115E4 /* Frameworks */,
 				A68B3E0A2F19AB4B00F115E4 /* Resources */,
 				A68B3E2E2F19ABCB00F115E4 /* Embed XPC Services */,
-				A68B3E712F1A95DB00F115E4 /* Embed Frameworks */,
+				A6E6D7332F3A00000069CF9F /* Copy Helper Tools */,
+				A6E6D7342F3A00000069CF9F /* Copy LaunchDaemon Plist */,
+				A6AE198D2F480D41003B09FA /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				A68B3E282F19ABCB00F115E4 /* PBXTargetDependency */,
+				A6E6D7312F3A00000069CF9F /* PBXTargetDependency */,
+				A6AE198C2F480D41003B09FA /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				A68B3E0E2F19AB4B00F115E4 /* stasis */,
+				A68B3E0E2F19AB4B00F115E4 /* Stasis */,
 			);
 			name = stasis;
 			packageProductDependencies = (
@@ -171,17 +297,39 @@
 			buildRules = (
 			);
 			dependencies = (
+				A66D62E02F44069900B996E7 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				A68B3E1F2F19ABCB00F115E4 /* helper */,
+				A68B3E1F2F19ABCB00F115E4 /* Helper */,
 			);
 			name = helper;
 			packageProductDependencies = (
-				A68B3E302F19B07C00F115E4 /* SMCKit */,
 			);
 			productName = helper;
 			productReference = A68B3E1E2F19ABCB00F115E4 /* helper.xpc */;
 			productType = "com.apple.product-type.xpc-service";
+		};
+		A6E6D71D2F39DD350069CF9F /* charging-helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6E6D7222F39DD350069CF9F /* Build configuration list for PBXNativeTarget "charging-helper" */;
+			buildPhases = (
+				A6E6D71A2F39DD350069CF9F /* Sources */,
+				A6E6D71B2F39DD350069CF9F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A66D62DC2F44069300B996E7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				A6E6D71F2F39DD350069CF9F /* ChargingHelper */,
+			);
+			name = "charging-helper";
+			packageProductDependencies = (
+			);
+			productName = "charging-helper";
+			productReference = A6E6D71E2F39DD350069CF9F /* charging-helper */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -193,10 +341,16 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					A66D62CD2F44067C00B996E7 = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					A68B3E0B2F19AB4B00F115E4 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 					A68B3E1D2F19ABCB00F115E4 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					A6E6D71D2F39DD350069CF9F = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
@@ -211,8 +365,8 @@
 			mainGroup = A68B3E032F19AB4B00F115E4;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A68B3E2F2F19B07C00F115E4 /* XCRemoteSwiftPackageReference "SMCKit" */,
 				A6638F7F2F1C0FD60047FA8E /* XCRemoteSwiftPackageReference "Defaults" */,
+				A6ECE4EC2F39E247007F3EDF /* XCRemoteSwiftPackageReference "SMCKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A68B3E0D2F19AB4B00F115E4 /* Products */;
@@ -221,11 +375,20 @@
 			targets = (
 				A68B3E0B2F19AB4B00F115E4 /* stasis */,
 				A68B3E1D2F19ABCB00F115E4 /* helper */,
+				A6E6D71D2F39DD350069CF9F /* charging-helper */,
+				A66D62CD2F44067C00B996E7 /* smc-power */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A66D62CC2F44067C00B996E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A68B3E0A2F19AB4B00F115E4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -242,7 +405,33 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		A6E6D7342F3A00000069CF9F /* Copy LaunchDaemon Plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/ChargingHelper/com.srimanachanta.stasis.charging-helper.plist",
+			);
+			name = "Copy LaunchDaemon Plist";
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons/com.srimanachanta.stasis.charging-helper.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "mkdir -p \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons\"\ncp \"${SRCROOT}/ChargingHelper/com.srimanachanta.stasis.charging-helper.plist\" \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		A66D62CA2F44067C00B996E7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A68B3E082F19AB4B00F115E4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -257,21 +446,129 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A6E6D71A2F39DD350069CF9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A66D62DC2F44069300B996E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A66D62CD2F44067C00B996E7 /* smc-power */;
+			targetProxy = A66D62DB2F44069300B996E7 /* PBXContainerItemProxy */;
+		};
+		A66D62E02F44069900B996E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A66D62CD2F44067C00B996E7 /* smc-power */;
+			targetProxy = A66D62DF2F44069900B996E7 /* PBXContainerItemProxy */;
+		};
 		A68B3E282F19ABCB00F115E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
 			targetProxy = A68B3E272F19ABCB00F115E4 /* PBXContainerItemProxy */;
 		};
+		A6AE198C2F480D41003B09FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A66D62CD2F44067C00B996E7 /* smc-power */;
+			targetProxy = A6AE198B2F480D41003B09FA /* PBXContainerItemProxy */;
+		};
+		A6E6D7312F3A00000069CF9F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A6E6D71D2F39DD350069CF9F /* charging-helper */;
+			targetProxy = A6E6D7302F3A00000069CF9F /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A66D62D72F44067C00B996E7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-profiles";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		A66D62D82F44067C00B996E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-profiles";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		A68B3E152F19AB4C00F115E4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -306,7 +603,8 @@
 				DEVELOPMENT_TEAM = 447GJ83BJ5;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				EXCLUDED_ARCHS = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -337,6 +635,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -371,7 +670,8 @@
 				DEVELOPMENT_TEAM = 447GJ83BJ5;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				EXCLUDED_ARCHS = x86_64;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -399,19 +699,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 447GJ83BJ5;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stasis;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -421,6 +711,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -443,19 +734,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 447GJ83BJ5;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stasis;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -465,6 +746,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -498,6 +780,8 @@
 				INFOPLIST_FILE = helper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = helper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -507,7 +791,6 @@
 				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
 				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
 				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
-				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -537,6 +820,8 @@
 				INFOPLIST_FILE = helper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = helper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -546,7 +831,6 @@
 				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
 				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
 				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
-				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -556,9 +840,58 @@
 			};
 			name = Release;
 		};
+		A6E6D7232F39DD350069CF9F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.charging-helper";
+				PRODUCT_NAME = "charging-helper";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A6E6D7242F39DD350069CF9F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.8;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.charging-helper";
+				PRODUCT_NAME = "charging-helper";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A66D62D62F44067C00B996E7 /* Build configuration list for PBXNativeTarget "smc-power" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A66D62D72F44067C00B996E7 /* Debug */,
+				A66D62D82F44067C00B996E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A68B3E072F19AB4B00F115E4 /* Build configuration list for PBXProject "stasis" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -586,6 +919,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A6E6D7222F39DD350069CF9F /* Build configuration list for PBXNativeTarget "charging-helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6E6D7232F39DD350069CF9F /* Debug */,
+				A6E6D7242F39DD350069CF9F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -597,7 +939,7 @@
 				minimumVersion = 9.0.6;
 			};
 		};
-		A68B3E2F2F19B07C00F115E4 /* XCRemoteSwiftPackageReference "SMCKit" */ = {
+		A6ECE4EC2F39E247007F3EDF /* XCRemoteSwiftPackageReference "SMCKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/srimanachanta/SMCKit";
 			requirement = {
@@ -613,9 +955,9 @@
 			package = A6638F7F2F1C0FD60047FA8E /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
 		};
-		A68B3E302F19B07C00F115E4 /* SMCKit */ = {
+		A66D62E12F44076F00B996E7 /* SMCKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A68B3E2F2F19B07C00F115E4 /* XCRemoteSwiftPackageReference "SMCKit" */;
+			package = A6ECE4EC2F39E247007F3EDF /* XCRemoteSwiftPackageReference "SMCKit" */;
 			productName = SMCKit;
 		};
 /* End XCSwiftPackageProductDependency section */

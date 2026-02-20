@@ -1,7 +1,7 @@
 import Foundation
 
 class ServiceDelegate: NSObject, NSXPCListenerDelegate {
-    private let helper = Helper()
+    let helper = Helper()
 
     func listener(
         _ listener: NSXPCListener,
@@ -20,5 +20,3 @@ let delegate = ServiceDelegate()
 let listener = NSXPCListener.service()
 listener.delegate = delegate
 listener.resume()
-
-dispatchMain()
