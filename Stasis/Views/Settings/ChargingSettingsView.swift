@@ -13,6 +13,7 @@ struct ChargingSettingsView: View {
     @Default(.heatProtectionLimit) var heatProtectionLimit
     @Default(.manageMagSafeLED) var manageMagSafeLED
     @Default(.heatProtectionMagSafeLEDState) var heatProtectionMagSafeLEDState
+    @State private var helperManager = ChargingHelperManager.shared
     @State private var installError: String?
 
     private let capabilities: DeviceCapabilities
@@ -58,7 +59,19 @@ struct ChargingSettingsView: View {
                         }
                     )
                 )
-                .disabled(!hasAnyControl)
+                .disabled(!hasAnyControl || helperManager.helperStatus == .requiresApproval)
+
+                if helperManager.helperStatus == .requiresApproval {
+                    LabeledContent {
+                        Button("Check Again") {
+                            checkApprovalStatus()
+                        }
+                    } label: {
+                        Text("Approve Stasis in System Settings \u{2192} Login Items to continue.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
 
                 if manageCharging {
                     LabeledContent {
@@ -223,6 +236,7 @@ struct ChargingSettingsView: View {
         .animation(.default, value: sailingMode)
         .animation(.default, value: enableHeatProtectionMode)
         .animation(.default, value: manageMagSafeLED)
+        .animation(.default, value: helperManager.helperStatus)
         .alert(
             "Failed to install charging helper",
             isPresented: Binding(
@@ -239,18 +253,26 @@ struct ChargingSettingsView: View {
     }
 
     private func toggleManageCharging(_ enabled: Bool) {
-        let installed = ChargingHelperManager.shared.isInstalled
-
         do {
-            if enabled && !installed {
-                try ChargingHelperManager.shared.install()
-            } else if !enabled && installed {
-                try ChargingHelperManager.shared.uninstall()
+            if enabled {
+                try helperManager.install()
+                if helperManager.helperStatus == .installed {
+                    manageCharging = true
+                }
+            } else {
+                try helperManager.uninstall()
+                manageCharging = false
             }
-            manageCharging = enabled
         } catch {
             logger.error("Failed to \(enabled ? "install" : "uninstall") charging helper: \(error)")
             installError = error.localizedDescription
+        }
+    }
+
+    private func checkApprovalStatus() {
+        helperManager.refreshStatus()
+        if helperManager.helperStatus == .installed {
+            manageCharging = true
         }
     }
 }

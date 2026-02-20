@@ -2,7 +2,14 @@ import Foundation
 import ServiceManagement
 import os.log
 
+enum ChargingHelperStatus {
+    case notInstalled
+    case requiresApproval
+    case installed
+}
+
 @MainActor
+@Observable
 class ChargingHelperManager {
     static let shared = ChargingHelperManager()
 
@@ -16,37 +23,51 @@ class ChargingHelperManager {
         category: "ChargingHelperManager"
     )
 
+    private(set) var helperStatus: ChargingHelperStatus
+
     var isInstalled: Bool {
         service.status == .enabled
     }
 
     private init() {
         service = SMAppService.daemon(plistName: Self.plistName)
+        switch service.status {
+        case .enabled: helperStatus = .installed
+        case .requiresApproval: helperStatus = .requiresApproval
+        default: helperStatus = .notInstalled
+        }
     }
 
     func install() throws {
         logger.info("Registering charging helper daemon")
+
         do {
             try service.register()
         } catch {
-            // SMAppService.register() can throw "Operation not permitted" on the
-            // first call while the system shows the "Background Items Added"
-            // prompt, even though registration actually succeeded. Re-check the
-            // actual status before propagating the error.
-            if isInstalled {
-                logger.info("Charging helper daemon registered despite thrown error")
-                return
+            // register() commonly throws "Operation not permitted" while macOS
+            // processes the background item notification, even though the
+            // registration advanced to requiresApproval or enabled.
+            if service.status != .enabled && service.status != .requiresApproval {
+                throw error
             }
-            throw error
         }
-        logger.info("Charging helper daemon registered successfully")
+
+        refreshStatus()
     }
 
     func uninstall() throws {
         logger.info("Unregistering charging helper daemon")
         disconnect()
         try service.unregister()
-        logger.info("Charging helper daemon unregistered successfully")
+        helperStatus = .notInstalled
+    }
+
+    func refreshStatus() {
+        switch service.status {
+        case .enabled: helperStatus = .installed
+        case .requiresApproval: helperStatus = .requiresApproval
+        default: helperStatus = .notInstalled
+        }
     }
 
     func getHelper(errorHandler: @escaping @Sendable (Error) -> Void) -> ChargingHelperProtocol? {
