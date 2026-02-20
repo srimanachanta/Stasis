@@ -244,7 +244,7 @@ struct ChargingSettingsView: View {
                 set: { if !$0 { installError = nil } }
             )
         ) {
-            Button("OK") { installError = nil }
+            Button("Ok") { installError = nil }
         } message: {
             if let installError {
                 Text(installError)

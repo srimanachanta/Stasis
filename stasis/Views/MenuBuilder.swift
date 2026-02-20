@@ -51,7 +51,7 @@ class MenuBuilder {
         menu.addItem(NSMenuItem.separator())
 
         let settingsItem = NSMenuItem(
-            title: "Settings",
+            title: String(localized:  "Settings"),
             action: #selector(handleSettings),
             keyEquivalent: ","
         )
@@ -61,7 +61,7 @@ class MenuBuilder {
         menu.addItem(NSMenuItem.separator())
 
         let quitItem = NSMenuItem(
-            title: "Quit",
+            title: String(localized: "Quit"),
             action: #selector(handleQuit),
             keyEquivalent: "q"
         )
@@ -75,7 +75,7 @@ class MenuBuilder {
         if Defaults[.showPowerSource] {
             items.append(
                 createInfoItem(
-                    label: "Power Source",
+                    label: String(localized: "Power Source"),
                     keyPath: \.powerSourceText
                 )
             )
@@ -83,18 +83,18 @@ class MenuBuilder {
         if Defaults[.showTimeTillDischarge] {
             items.append(
                 createInfoItem(
-                    label: "Time Remaining",
+                    label: String(localized: "Time Remaining"),
                     keyPath: \.timeRemainingText
                 )
             )
         }
         if Defaults[.showUptime] {
-            items.append(createInfoItem(label: "Uptime", keyPath: \.uptimeText))
+            items.append(createInfoItem(label: String(localized: "Uptime"), keyPath: \.uptimeText))
         }
         if Defaults[.showBatteryMode] {
             items.append(
                 createInfoItem(
-                    label: "Battery Mode",
+                    label: String(localized: "Battery Mode"),
                     keyPath: \.batteryModeText
                 )
             )
@@ -102,7 +102,7 @@ class MenuBuilder {
         if Defaults[.showBatteryTemperature] {
             items.append(
                 createInfoItem(
-                    label: "Battery Temperature",
+                    label: String(localized: "Battery Temperature"),
                     keyPath: \.batteryTemperatureText
                 )
             )
@@ -117,7 +117,7 @@ class MenuBuilder {
         if Defaults[.showInternalPower] {
             items.append(
                 createInfoItem(
-                    label: "Battery",
+                    label: String(localized: "Battery"),
                     keyPath: \.internalInputText
                 )
             )
@@ -125,7 +125,7 @@ class MenuBuilder {
         if Defaults[.showExternalPower] {
             items.append(
                 createInfoItem(
-                    label: "Adapter",
+                    label: String(localized: "Adapter"),
                     keyPath: \.externalInputText
                 )
             )
@@ -153,13 +153,13 @@ class MenuBuilder {
 
         if Defaults[.showBatteryCycleCount] {
             items.append(
-                createInfoItem(label: "Cycle Count", keyPath: \.cycleCountText)
+                createInfoItem(label: String(localized: "Cycle Count"), keyPath: \.cycleCountText)
             )
         }
         if Defaults[.showBatteryHealth] {
             items.append(
                 createInfoItem(
-                    label: "Battery Health",
+                    label: String(localized: "Battery Health"),
                     keyPath: \.batteryHealthText
                 )
             )
@@ -213,7 +213,7 @@ struct BatteryMainInfoView: View {
 
     var body: some View {
         BatteryMainInfo(
-            label: "Battery",
+            label: String(localized: "Battery"),
             value: viewModel.batteryPercentageText
         )
     }

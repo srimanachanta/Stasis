@@ -22,7 +22,7 @@ class SettingsWindowController {
         let hostingController = NSHostingController(rootView: settingsView)
 
         let newWindow = NSWindow(contentViewController: hostingController)
-        newWindow.title = "Stasis Settings"
+        newWindow.title = String(localized: "Stasis Settings")
         newWindow.styleMask = [.titled, .closable, .miniaturizable, .resizable]
         newWindow.center()
         newWindow.setFrameAutosaveName("SettingsWindow")

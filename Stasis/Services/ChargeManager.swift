@@ -244,7 +244,7 @@ class ChargeManager {
         else { return }
 
         let content = UNMutableNotificationContent()
-        content.title = charging ? "Charging Resumed" : "Charging Paused"
+        content.title = charging ? String(localized: "Charging Resumed") : String(localized: "Charging Paused")
         if let reason {
             content.body = reason
         }

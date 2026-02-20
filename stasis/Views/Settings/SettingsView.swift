@@ -8,6 +8,15 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     case advanced = "Advanced"
 
     var id: String { rawValue }
+    
+    var title: LocalizedStringKey {
+            switch self {
+            case .general: return "General"
+            case .dashboard: return "Dashboard"
+            case .charging: return "Charging"
+            case .advanced: return "Advanced"
+            }
+    }
 
     var icon: String {
         switch self {
@@ -36,7 +45,7 @@ struct SettingsView: View {
         NavigationSplitView {
             List(SettingsTab.allCases, selection: $selectedTab) { tab in
                 Label {
-                    Text(tab.rawValue)
+                    Text(tab.title)
                 } icon: {
                     Image(systemName: tab.icon)
                 }
@@ -57,7 +66,7 @@ struct SettingsView: View {
                     AdvancedSettingsView()
                 }
             }
-            .navigationTitle(selectedTab.rawValue)
+            .navigationTitle(selectedTab.title)
         }
         .frame(minWidth: 700, minHeight: 450)
     }

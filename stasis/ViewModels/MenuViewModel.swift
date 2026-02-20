@@ -110,22 +110,17 @@ class MenuViewModel {
             batteryModeText = "Discharging"
         }
 
-        batteryTemperatureText = String(
-            format: "%.1f°C",
-            metrics.batteryTemperature
-        )
+        batteryTemperatureText =
+            "\(metrics.batteryTemperature.formatted(.number.precision(.fractionLength(1))))°C"
 
-        externalInputText = String(
-            format: "%.2fV @ %.2fA",
-            metrics.adapterVoltage,
-            metrics.adapterCurrent
-        )
+        let voltageFormat = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(2))
+        let currentFormat = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(2))
 
-        internalInputText = String(
-            format: "%.2fV @ %.2fA",
-            metrics.batteryVoltage,
-            metrics.batteryCurrent
-        )
+        externalInputText =
+            "\(metrics.adapterVoltage.formatted(voltageFormat))V @ \(metrics.adapterCurrent.formatted(currentFormat))A"
+
+        internalInputText =
+            "\(metrics.batteryVoltage.formatted(voltageFormat))V @ \(metrics.batteryCurrent.formatted(currentFormat))A"
 
         batteryPower = metrics.batteryPower
         adapterPower = metrics.adapterPower
