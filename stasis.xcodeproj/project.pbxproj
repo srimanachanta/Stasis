@@ -99,14 +99,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A68B3E2A2F19ABCB00F115E4 /* Exceptions for "Helper" folder in "helper" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
-		};
-		A6AE198F2F481C1D003B09FA /* Exceptions for "Helper" folder in "stasis" target */ = {
+		A6AE1A372F484C94003B09FA /* Exceptions for "Helper" folder in "stasis" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				HelperProtocol.swift,
@@ -136,8 +129,7 @@
 		A68B3E1F2F19ABCB00F115E4 /* Helper */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A6AE198F2F481C1D003B09FA /* Exceptions for "Helper" folder in "stasis" target */,
-				A68B3E2A2F19ABCB00F115E4 /* Exceptions for "Helper" folder in "helper" target */,
+				A6AE1A372F484C94003B09FA /* Exceptions for "Helper" folder in "stasis" target */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
