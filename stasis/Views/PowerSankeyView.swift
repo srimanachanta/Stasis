@@ -22,7 +22,7 @@ struct PowerSankeyView: View {
         GeometryReader { geometry in
             ZStack {
                 switch powerSource {
-                case .ACAdapter:
+                case .acAdapter:
                     if batteryPower > 0 {
                         Canvas { context, size in
                             drawSplitSankeyFlow(context: context, size: size)
@@ -71,7 +71,7 @@ struct PowerSankeyView: View {
                             .foregroundStyle(.secondary)
                     }
 
-                case .Both:
+                case .both:
                     Canvas { context, size in
                         drawMergeSankeyFlow(context: context, size: size)
                     }
@@ -94,7 +94,7 @@ struct PowerSankeyView: View {
                             .foregroundStyle(.secondary)
                     }
 
-                case .Battery:
+                case .battery:
                     Canvas { context, size in
                         drawSimpleFlow(
                             context: context,
@@ -122,7 +122,7 @@ struct PowerSankeyView: View {
                 HStack {
                     VStack {
                         switch powerSource {
-                        case .ACAdapter:
+                        case .acAdapter:
                             if batteryPower > 0 {
                                 NodeView(
                                     icon: "bolt.fill",
@@ -138,7 +138,7 @@ struct PowerSankeyView: View {
                                 )
                             }
 
-                        case .Both:
+                        case .both:
                             NodeView(
                                 icon: "battery.100",
                                 value: nil,
@@ -151,7 +151,7 @@ struct PowerSankeyView: View {
                                 isLeftSide: true
                             )
 
-                        case .Battery:
+                        case .battery:
                             NodeView(
                                 icon: "battery.100",
                                 value: nil,
@@ -164,7 +164,7 @@ struct PowerSankeyView: View {
 
                     VStack {
                         switch powerSource {
-                        case .ACAdapter:
+                        case .acAdapter:
                             if batteryPower > 0 {
                                 if isCharging {
                                     NodeView(
@@ -193,7 +193,7 @@ struct PowerSankeyView: View {
                                 )
                             }
 
-                        case .Both:
+                        case .both:
                             NodeView(
                                 icon: "laptopcomputer",
                                 value: systemPower,
@@ -201,7 +201,7 @@ struct PowerSankeyView: View {
                             )
                             .frame(height: Layout.largeNodeHeight)
 
-                        case .Battery:
+                        case .battery:
                             NodeView(
                                 icon: "laptopcomputer",
                                 value: nil,
@@ -446,23 +446,23 @@ struct NodeView: View {
 #Preview {
     VStack(spacing: 30) {
         PowerSankeyView(
-            powerSource: .Both,
+            powerSource: .both,
             isCharging: false,
             batteryPower: -20.16,
-            adapterPower: -36.0,
+            adapterPower: 36.0,
             systemPower: 56.16
         ).frame(height: 125)
 
         PowerSankeyView(
-            powerSource: .ACAdapter,
+            powerSource: .acAdapter,
             isCharging: true,
             batteryPower: 20.0,
-            adapterPower: -30.0,
+            adapterPower: 30.0,
             systemPower: 10.0
         ).frame(height: 125)
 
         PowerSankeyView(
-            powerSource: .Battery,
+            powerSource: .battery,
             isCharging: false,
             batteryPower: -18.63,
             adapterPower: 0.0,
@@ -470,18 +470,18 @@ struct NodeView: View {
         ).frame(height: 125)
 
         PowerSankeyView(
-            powerSource: .ACAdapter,
+            powerSource: .acAdapter,
             isCharging: false,
             batteryPower: 0.0,
-            adapterPower: -25.0,
+            adapterPower: 25.0,
             systemPower: 25.0
         ).frame(height: 125)
 
         PowerSankeyView(
-            powerSource: .ACAdapter,
+            powerSource: .acAdapter,
             isCharging: false,
             batteryPower: 23,
-            adapterPower: -39,
+            adapterPower: 39,
             systemPower: 16
         ).frame(height: 125)
     }

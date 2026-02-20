@@ -1,5 +1,5 @@
 enum PowerSource: Codable {
-    case Battery
-    case ACAdapter
-    case Both
+    case battery
+    case acAdapter
+    case both
 }

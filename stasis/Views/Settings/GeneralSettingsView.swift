@@ -3,31 +3,48 @@ import SwiftUI
 
 struct GeneralSettingsView: View {
     @Default(.launchAtLogin) var launchAtLogin
+    @Default(.showBatteryPercentageInStatusIcon) var showBatteryPercentageInStatusIcon
+    @Default(.disableNotifications) var disableNotifications
+    @Default(.showChargingStatusChangedNotification) var showChargingStatusChangedNotification
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("General")
-                .font(.title2)
-                .fontWeight(.semibold)
+        Form {
+            Section("Startup") {
+                Toggle("Launch at login", isOn: $launchAtLogin)
+            }
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    SettingsSection(title: "Startup") {
-                        SettingsToggleRow(
-                            label: "Launch at login",
-                            isOn: $launchAtLogin,
-                            tooltip:
-                                "Automatically start Stasis when you log in to your Mac"
-                        )
-                    }
-                    .onChange(of: launchAtLogin) { _, newValue in
-                        LaunchAtLoginService.shared.setLaunchAtLogin(newValue)
-                    }
+            Section {
+                Toggle("Show battery percentage", isOn: $showBatteryPercentageInStatusIcon)
+            } header: {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Menu Bar Icon")
+                    Text(
+                        "Display the current battery percentage next to the status icon in the menu bar."
+                    )
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                }
+            }
+
+            Section {
+                Toggle("Disable all notifications", isOn: $disableNotifications)
+                Toggle("Charging status changed", isOn: $showChargingStatusChangedNotification)
+                    .disabled(disableNotifications)
+            } header: {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Notifications")
+                    Text("Control when Stasis sends you notifications.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
-        .padding(20)
-        .frame(minWidth: 500, minHeight: 400)
+        .formStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .contentMargins(.top, 0)
+        .onChange(of: launchAtLogin) { _, newValue in
+            LaunchAtLoginService.shared.setLaunchAtLogin(newValue)
+        }
     }
 }
 

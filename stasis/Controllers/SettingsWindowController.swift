@@ -1,9 +1,15 @@
 import AppKit
 import SwiftUI
+import smc_power
 
 @MainActor
 class SettingsWindowController {
     private var window: NSWindow?
+    private let capabilities: DeviceCapabilities
+
+    init(capabilities: DeviceCapabilities) {
+        self.capabilities = capabilities
+    }
 
     func showSettings() {
         if let existingWindow = window {
@@ -12,7 +18,7 @@ class SettingsWindowController {
             return
         }
 
-        let settingsView = SettingsView()
+        let settingsView = SettingsView(capabilities: capabilities)
         let hostingController = NSHostingController(rootView: settingsView)
 
         let newWindow = NSWindow(contentViewController: hostingController)
@@ -23,7 +29,6 @@ class SettingsWindowController {
         newWindow.isReleasedWhenClosed = false
         newWindow.makeKeyAndOrderFront(nil)
 
-        // Activate the app to bring the window to front
         NSApp.activate(ignoringOtherApps: true)
 
         self.window = newWindow

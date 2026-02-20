@@ -7,7 +7,8 @@ import Observation
 @Observable
 class MenuViewModel {
     private let batteryService: BatteryService
-    private let systemService: SystemService
+    private let chargeManager: ChargeManager
+    private let bootTimestamp: Date?
 
     var batteryPercentageText: String = "0%"
     var powerSourceText: String = "Battery"
@@ -25,16 +26,23 @@ class MenuViewModel {
     var batteryPower: Double = 0
     var adapterPower: Double = 0
     var systemPower: Double = 0
-    var powerSource: PowerSource = .Battery
+    var powerSource: PowerSource = .battery
     var isCharging: Bool = false
 
+    var chargeLimitOverrideActive: Bool { chargeManager.chargeLimitOverrideActive }
+    var manageChargingEnabled: Bool { Defaults[.manageCharging] }
+    var adapterConnected: Bool = false
+
     private var metricsObservation: Task<Void, Never>?
+    private var settingsObservation: Task<Void, Never>?
     private var uptimeTask: Task<Void, Never>?
 
-    init(batteryService: BatteryService, systemService: SystemService) {
+    init(batteryService: BatteryService, chargeManager: ChargeManager) {
         self.batteryService = batteryService
-        self.systemService = systemService
+        self.chargeManager = chargeManager
+        self.bootTimestamp = SystemService.bootTimestamp()
         startObservingMetrics()
+        startObservingSettings()
     }
 
     private func startObservingMetrics() {
@@ -56,6 +64,19 @@ class MenuViewModel {
         }
     }
 
+    private func startObservingSettings() {
+        settingsObservation = Task { [weak self] in
+            for await _ in Defaults.updates([.useHardwarePercentage], initial: false) {
+                guard let self else { return }
+                self.updateFormattedValues(from: self.batteryService.metrics)
+            }
+        }
+    }
+
+    func toggleChargeLimitOverride() {
+        chargeManager.toggleChargeLimitOverride()
+    }
+
     private func updateFormattedValues(from metrics: BatteryMetrics) {
         let useHardware = Defaults[.useHardwarePercentage]
         let percentage =
@@ -65,11 +86,11 @@ class MenuViewModel {
         batteryPercentageText = "\(percentage)%"
 
         switch metrics.powerSource {
-        case .Battery:
+        case .battery:
             powerSourceText = "Battery"
-        case .ACAdapter:
+        case .acAdapter:
             powerSourceText = "Power Adapter"
-        case .Both:
+        case .both:
             powerSourceText = "Battery & Power Adapter"
         }
 
@@ -111,13 +132,14 @@ class MenuViewModel {
         systemPower = metrics.systemPower
         powerSource = metrics.powerSource
         isCharging = metrics.isCharging
+        adapterConnected = metrics.adapterConnected
 
         cycleCountText = "\(metrics.cycleCount)"
         batteryHealthText = "\(metrics.batteryHealth)%"
     }
 
     private func updateUptimeText() {
-        guard let bootTimestamp = systemService.bootTimestamp else {
+        guard let bootTimestamp else {
             uptimeText = "Unknown"
             return
         }
@@ -159,9 +181,19 @@ class MenuViewModel {
         NSApplication.shared.terminate(nil)
     }
 
+    private func formatTimeRemaining(minutes: Int) -> String {
+        if minutes < 0 {
+            return ""
+        }
+        let hours = minutes / 60
+        let mins = minutes % 60
+        return String(format: "%02d:%02d", hours, mins)
+    }
+
     deinit {
         MainActor.assumeIsolated {
             metricsObservation?.cancel()
+            settingsObservation?.cancel()
             uptimeTask?.cancel()
         }
     }

@@ -4,6 +4,7 @@ import IOKit.ps
 import IOKit.pwr_mgt
 import os.log
 
+@MainActor
 class IOKitService {
     private var runLoopSource: CFRunLoopSource?
     private var batteryService: io_service_t = 0
@@ -20,7 +21,7 @@ class IOKitService {
             self.continuation = continuation
 
             continuation.onTermination = { [weak self] _ in
-                DispatchQueue.main.async {
+                MainActor.assumeIsolated {
                     self?.stop()
                 }
             }
@@ -48,7 +49,9 @@ class IOKitService {
                 guard let context = context else { return }
                 let monitor = Unmanaged<IOKitService>.fromOpaque(context)
                     .takeUnretainedValue()
-                monitor.emitMetrics()
+                MainActor.assumeIsolated {
+                    monitor.emitMetrics()
+                }
             },
             context
         ).takeRetainedValue()
@@ -76,7 +79,7 @@ class IOKitService {
     }
 
     private func emitMetrics() {
-        logger.info("IOKit notification triggered")
+        logger.debug("IOKit notification triggered")
 
         let powerInfo = getPowerSourceInfo() as? [String: Any]
         var metrics = BatteryMetrics()
@@ -86,36 +89,19 @@ class IOKitService {
         metrics.hardwareBatteryPercentage = percentages.hardware
 
         metrics.isCharging = powerInfo?[kIOPSIsChargingKey] as? Bool ?? false
-        metrics.isFullyCharged =
-            getPropertyValue(batteryService, key: "FullyCharged") ?? false
-
         if metrics.isCharging {
             metrics.timeRemaining = getTimeToFull(powerInfo: powerInfo) ?? -1
         } else {
             metrics.timeRemaining = getTimeRemaining(powerInfo: powerInfo) ?? -1
         }
 
-        let batteryInfo = getBatteryVoltageAndCurrent(powerInfo: powerInfo)
-        metrics.batteryVoltage = batteryInfo.voltage
-        metrics.batteryCurrent = batteryInfo.current
-
         let capacities = getBatteryCapacities()
-        metrics.currentCapacity = capacities.current
-        metrics.maxCapacity = capacities.max
-        metrics.designCapacity = capacities.design
         metrics.batteryHealth =
             capacities.design > 0
             ? (capacities.max * 100) / capacities.design
             : 100
 
-        if let adapterInfo = getACAdapterInfo(powerInfo: powerInfo) {
-            metrics.adapterCurrent = adapterInfo.current
-            metrics.adapterVoltage = adapterInfo.voltage
-            metrics.adapterWatts = adapterInfo.watts
-            metrics.adapterConnected = true
-        } else {
-            metrics.adapterConnected = false
-        }
+        metrics.adapterConnected = isAdapterConnected()
 
         if let temp = getBatteryTemperature(powerInfo: powerInfo) {
             metrics.batteryTemperature = temp
@@ -125,20 +111,19 @@ class IOKitService {
             getPropertyValue(batteryService, key: "CycleCount") ?? 0
 
         if metrics.adapterConnected {
-            metrics.powerSource =
-                metrics.batteryCurrent < 0 ? .Both : .ACAdapter
+            metrics.powerSource = .acAdapter
         } else {
-            metrics.powerSource = .Battery
+            metrics.powerSource = .battery
         }
 
-        logger.info(
-            "IOKit metrics: battery=\(metrics.batteryPercentage)%, health=\(metrics.batteryHealth)%, charging=\(metrics.isCharging), voltage=\(metrics.batteryVoltage)V, current=\(metrics.batteryCurrent)A, temp=\(metrics.batteryTemperature)°C, cycles=\(metrics.cycleCount), timeRemaining=\(metrics.timeRemaining)"
+        logger.debug(
+            "IOKit metrics: battery=\(metrics.batteryPercentage)%, hardwareBattery=\(metrics.hardwareBatteryPercentage)%, health=\(metrics.batteryHealth)%, charging=\(metrics.isCharging), temp=\(metrics.batteryTemperature)°C, cycles=\(metrics.cycleCount), timeRemaining=\(metrics.timeRemaining), adapterConnected=\(metrics.adapterConnected)"
         )
 
         continuation?.yield(metrics)
     }
 
-    private func getPowerSourceInfo() -> CFDictionary? {
+    private nonisolated func getPowerSourceInfo() -> CFDictionary? {
         let snapshot = IOPSCopyPowerSourcesInfo().takeRetainedValue()
         let sources =
             IOPSCopyPowerSourcesList(snapshot).takeRetainedValue() as Array
@@ -147,7 +132,7 @@ class IOKitService {
             .takeUnretainedValue()
     }
 
-    private func getPropertyValue<T>(_ service: io_service_t, key: String) -> T? {
+    private nonisolated func getPropertyValue<T>(_ service: io_service_t, key: String) -> T? {
         guard
             let prop = IORegistryEntryCreateCFProperty(
                 service,
@@ -186,76 +171,32 @@ class IOKitService {
     }
 
     private func getTimeRemaining(powerInfo: [String: Any]?) -> Int? {
-        let timeToEmpty = powerInfo?[kIOPSTimeToEmptyKey] as? Int ?? -1
+            guard let timeToEmpty = powerInfo?[kIOPSTimeToEmptyKey] as? Int,
+                  timeToEmpty > 0,
+                  timeToEmpty != Int(kIOPSTimeRemainingUnknown) else {
+                return nil
+            }
 
-        if timeToEmpty <= 0 || timeToEmpty == Int(kIOPSTimeRemainingUnknown) {
-            return nil
+            return timeToEmpty
         }
 
-        return timeToEmpty
-    }
-
     private func getTimeToFull(powerInfo: [String: Any]?) -> Int? {
-        let timeToFull = powerInfo?[kIOPSTimeToFullChargeKey] as? Int ?? -1
-
-        if timeToFull <= 0 || timeToFull == Int(kIOPSTimeRemainingUnknown) {
+        guard let timeToFull = powerInfo?[kIOPSTimeToFullChargeKey] as? Int,
+              timeToFull > 0,
+              timeToFull != Int(kIOPSTimeRemainingUnknown) else {
             return nil
         }
 
         return timeToFull
     }
 
-    private func getACAdapterInfo(powerInfo: [String: Any]?) -> (
-        current: Double, voltage: Double, watts: Int
-    )? {
-        guard let powerInfo else { return nil }
-
-        let voltage = powerInfo[kIOPSVoltageKey] as? Int ?? 0
-        let current = powerInfo[kIOPSCurrentKey] as? Int ?? 0
-
-        if let adapterDetails: [String: Any] = getPropertyValue(
-            batteryService,
-            key: "AdapterDetails"
-        ) {
-            let adapterVoltage =
-                adapterDetails["AdapterVoltage"] as? Int ?? voltage
-            let adapterCurrent = adapterDetails["Current"] as? Int ?? current
-            let watts = adapterDetails["Watts"] as? Int ?? 0
-
-            guard adapterVoltage != 0 || watts != 0 else { return nil }
-
-            return (
-                Double(adapterCurrent) / 1000.0,
-                Double(adapterVoltage) / 1000.0,
-                watts
-            )
-        }
-
-        guard voltage != 0 else { return nil }
-
-        return (
-            Double(current) / 1000.0,
-            Double(voltage) / 1000.0,
-            (voltage * current) / 1000
-        )
-    }
-
-    private func getBatteryVoltageAndCurrent(powerInfo: [String: Any]?) -> (
-        voltage: Double, current: Double
-    ) {
-        if let powerInfo {
-            let voltage = powerInfo[kIOPSVoltageKey] as? Int ?? 0
-            let current = powerInfo[kIOPSCurrentKey] as? Int ?? 0
-
-            if voltage > 0 {
-                return (Double(voltage) / 1000.0, Double(current) / 1000.0)
+    private func isAdapterConnected() -> Bool {
+        guard let adapterDetails: [String: Any] = getPropertyValue(batteryService, key: "AdapterDetails"),
+                  let watts = adapterDetails["Watts"] as? Int else {
+                return false
             }
-        }
-
-        let voltage: Int = getPropertyValue(batteryService, key: "Voltage") ?? 0
-        let current: Int =
-            getPropertyValue(batteryService, key: "InstantAmperage") ?? 0
-        return (Double(voltage) / 1000.0, Double(current) / 1000.0)
+            
+            return watts > 0
     }
 
     private func getBatteryTemperature(powerInfo: [String: Any]?) -> Double? {
@@ -279,7 +220,7 @@ class IOKitService {
         return decikelvinToCelsius(temp)
     }
 
-    private func decikelvinToCelsius(_ decikelvin: Int) -> Double? {
+    private nonisolated func decikelvinToCelsius(_ decikelvin: Int) -> Double? {
         let celsius = (Double(decikelvin) / 10.0) - 273.15
         return (0...80).contains(celsius) ? celsius : nil
     }

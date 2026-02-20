@@ -1,19 +1,34 @@
 import Foundation
 import Observation
 import os.log
+import smc_power
 
-struct SMCPowerReading {
-    var batteryPower: Double
-    var adapterPower: Double
-    var systemPower: Double
+enum XPCError: LocalizedError {
+    case helperUnavailable
+    case commandFailed(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .helperUnavailable:
+            "XPC helper is unavailable"
+        case .commandFailed(let message):
+            "Command failed: \(message)"
+        }
+    }
 }
 
 @MainActor
 @Observable
 class BatteryService {
     var metrics = BatteryMetrics()
+    private(set) var deviceCapabilities = DeviceCapabilities(
+        chargingControl: false,
+        adapterControl: false,
+        hasMagSafe: false,
+        magsafeLEDControl: false
+    )
 
-    private let xpcManager = XPCConnectionManager(
+    private let xpcManager = SMCReaderConnection(
         serviceName: "com.srimanachanta.stasis.helper"
     )
     private let ioKitService = IOKitService()
@@ -28,15 +43,44 @@ class BatteryService {
 
     init() {
         logger.info("BatteryService initialized")
-
         xpcManager.connect()
         startIOKitMonitoring()
     }
 
+    func loadCapabilities() async {
+        let logger = self.logger
+        guard
+            let helper = xpcManager.getHelper(errorHandler: { error in
+                logger.error(
+                    "XPC error loading capabilities: \(error.localizedDescription)")
+            })
+        else {
+            logger.warning("Helper unavailable for capability probe")
+            return
+        }
+
+        let capabilities: DeviceCapabilities = await withCheckedContinuation { continuation in
+            helper.getCapabilities { chargingControl, adapterControl, hasMagSafe, magsafeLEDControl in
+                continuation.resume(
+                    returning: DeviceCapabilities(
+                        chargingControl: chargingControl,
+                        adapterControl: adapterControl,
+                        hasMagSafe: hasMagSafe,
+                        magsafeLEDControl: magsafeLEDControl
+                    )
+                )
+            }
+        }
+
+        self.deviceCapabilities = capabilities
+        logger.info(
+            "Capabilities loaded: charging=\(capabilities.chargingControl), adapter=\(capabilities.adapterControl), magSafe=\(capabilities.hasMagSafe)"
+        )
+    }
+
     private func startIOKitMonitoring() {
         logger.info("Starting IOKit monitoring in main app")
-        ioKitMonitorTask = Task { [weak self] in
-            guard let self else { return }
+        ioKitMonitorTask = Task {
             for await newMetrics in self.ioKitService.metricsStream() {
                 guard !Task.isCancelled else { break }
                 self.handleIOKitUpdate(newMetrics)
@@ -52,8 +96,7 @@ class BatteryService {
 
         logger.info("Enabling fast SMC polling")
 
-        smcPollTask = Task { [weak self] in
-            guard let self else { return }
+        smcPollTask = Task {
             await self.pollSMCOnce()
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
@@ -75,26 +118,30 @@ class BatteryService {
     }
 
     private func fetchSMCPowerData() async -> SMCPowerReading? {
+        let logger = self.logger
         guard
-            let helper = xpcManager.getHelper(errorHandler: {
-                [weak self] error in
-                Task { @MainActor in
-                    self?.logger.error(
-                        "XPC error during SMC poll: \(error.localizedDescription)"
-                    )
-                }
+            let helper = xpcManager.getHelper(errorHandler: { error in
+                logger.error(
+                    "XPC error during SMC poll: \(error.localizedDescription)"
+                )
             })
         else {
             return nil
         }
 
         return await withCheckedContinuation { continuation in
-            helper.readSMCPower { batteryPower, externalPower, systemPower in
+            helper.readBatteryMetrics {
+                batteryVoltage, batteryCurrent, batteryPower, externalVoltage, externalCurrent,
+                externalPower, systemPower in
                 continuation.resume(
                     returning: SMCPowerReading(
+                        batteryVoltage: batteryVoltage,
+                        batteryCurrent: batteryCurrent,
                         batteryPower: batteryPower,
-                        adapterPower: externalPower,
-                        systemPower: systemPower
+                        externalVoltage: externalVoltage,
+                        externalCurrent: externalCurrent,
+                        externalPower: externalPower,
+                        systemPower: systemPower,
                     )
                 )
             }
@@ -108,17 +155,29 @@ class BatteryService {
         }
 
         logger.debug(
-            "SMC read: battery=\(reading.batteryPower)W, external=\(reading.adapterPower)W, system=\(reading.systemPower)"
+            "SMC read: battery=\(reading.batteryPower)W, external=\(reading.externalPower)W, system=\(reading.systemPower)"
         )
 
         var updated = metrics
+        updated.batteryVoltage = reading.batteryVoltage
+        updated.batteryCurrent = reading.batteryCurrent
         updated.batteryPower = reading.batteryPower
-        updated.adapterPower = reading.adapterPower
+        updated.adapterVoltage = reading.externalVoltage
+        updated.adapterCurrent = reading.externalCurrent
+        updated.adapterPower = reading.externalPower
         updated.systemPower = reading.systemPower
 
         // SMC reports faster than IOKit can update. This fixes the case where the UI falsely shows power flowing from the battery to the system even though 100% of system power is from the AC Adapter
-        if updated.adapterConnected && reading.batteryPower > 0 {
-            updated.powerSource = .ACAdapter
+        if updated.adapterConnected {
+            if reading.externalPower == 0 {
+                updated.powerSource = .battery
+            } else if reading.batteryPower >= 0 {
+                updated.powerSource = .acAdapter
+            } else {
+                updated.powerSource = .both
+            }
+
+            updated.isCharging = reading.batteryPower > 0
         }
 
         if updated != metrics {
@@ -129,13 +188,71 @@ class BatteryService {
     private func handleIOKitUpdate(_ newMetrics: BatteryMetrics) {
         logger.debug("Received IOKit update")
         var updated = newMetrics
+        updated.batteryVoltage = metrics.batteryVoltage
+        updated.batteryCurrent = metrics.batteryCurrent
         updated.batteryPower = metrics.batteryPower
+        updated.adapterVoltage = metrics.adapterVoltage
+        updated.adapterCurrent = metrics.adapterCurrent
         updated.adapterPower = metrics.adapterPower
         updated.systemPower = metrics.systemPower
 
         if updated != metrics {
             metrics = updated
         }
+    }
+
+    func manageBatteryCharging(enabled: Bool) async throws {
+        let helper = try getChargingHelper()
+        try await withCheckedThrowingContinuation { continuation in
+            helper.manageBatteryCharging(enabled: enabled) { success, errorMessage in
+                if success {
+                    continuation.resume()
+                } else {
+                    continuation.resume(
+                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
+                }
+            }
+        }
+    }
+
+    func manageExternalPower(enabled: Bool) async throws {
+        let helper = try getChargingHelper()
+        try await withCheckedThrowingContinuation { continuation in
+            helper.manageExternalPower(enabled: enabled) { success, errorMessage in
+                if success {
+                    continuation.resume()
+                } else {
+                    continuation.resume(
+                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
+                }
+            }
+        }
+    }
+
+    func manageMagsafeLED(target: MagSafeLEDState) async throws {
+        let helper = try getChargingHelper()
+        try await withCheckedThrowingContinuation { continuation in
+            helper.manageMagsafeLED(target: target.rawValue) { success, errorMessage in
+                if success {
+                    continuation.resume()
+                } else {
+                    continuation.resume(
+                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
+                }
+            }
+        }
+    }
+
+    private func getChargingHelper() throws -> ChargingHelperProtocol {
+        let logger = self.logger
+        guard
+            let helper = ChargingHelperManager.shared.getHelper(errorHandler: { error in
+                logger.error("Charging helper XPC error: \(error.localizedDescription)")
+            })
+        else {
+            throw XPCError.helperUnavailable
+        }
+        return helper
     }
 
     func stop() {

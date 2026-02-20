@@ -16,54 +16,57 @@ struct BatteryIndicatorView: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
-            ZStack {
-                RoundedRectangle(cornerRadius: Layout.cornerRadius)
-                    .fill(.primary.opacity(0.25))
+        HStack(spacing: 4) {
+            if showPercentage {
+                Text("\(batteryLevel)%")
+                    .font(.system(size: 10, weight: .medium))
+                    .monospacedDigit()
+            }
 
-                RoundedRectangle(cornerRadius: Layout.cornerRadius)
-                    .stroke(lineWidth: Layout.strokeWidth)
-                    .opacity(0.4)
+            HStack(spacing: 0) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: Layout.cornerRadius)
+                        .stroke(lineWidth: Layout.strokeWidth)
+                        .opacity(0.4)
 
-                GeometryReader { geo in
-                    let fillWidth =
-                        (geo.size.width - Layout.fillInset * 2)
-                        * CGFloat(batteryLevel)
-                        / 100
-                    RoundedRectangle(
-                        cornerRadius: Layout.cornerRadius - Layout.fillInset
-                    )
-                    .fill(.primary)
-                    .frame(width: max(0, fillWidth))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(Layout.fillInset)
+                    GeometryReader { geo in
+                        let fillWidth =
+                            (geo.size.width - Layout.fillInset * 2)
+                            * CGFloat(batteryLevel)
+                            / 100
+                        RoundedRectangle(
+                            cornerRadius: Layout.cornerRadius - Layout.fillInset
+                        )
+                        .fill(.primary)
+                        .frame(width: max(0, fillWidth))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(Layout.fillInset)
+                    }
+                }
+                .frame(width: Layout.batteryWidth, height: Layout.batteryHeight)
+                .overlay {
+                    Group {
+                        if chargingMode == .charging {
+                            Image(systemName: "bolt.fill")
+                                .font(.system(size: 10, weight: .black))
+                        } else if chargingMode == .pluggedIn {
+                            Image(systemName: "powerplug.fill")
+                                .font(.system(size: 10, weight: .black))
+                                .rotationEffect(.degrees(-90))
+                        }
+                    }
+                    .foregroundStyle(.white)
+                    .shadow(color: .black, radius: 0.5)
+                    .shadow(color: .black, radius: 0.5)
+                    .shadow(color: .black, radius: 0.5)
                 }
 
-                HStack(spacing: 1) {
-                    if chargingMode == .charging {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 5, weight: .medium))
-                    } else if chargingMode == .pluggedIn {
-                        Image(systemName: "powerplug.fill")
-                            .font(.system(size: 5, weight: .medium))
-                            .rotationEffect(.degrees(-90))
-                    }
-
-                    if showPercentage {
-                        Text("\(batteryLevel)")
-                            .font(.system(size: 9, weight: .medium))
-                            .monospacedDigit()
-                    }
-                }.colorInvert()
-
+                BatteryTerminal(
+                    width: Layout.terminalWidth,
+                    height: Layout.terminalHeight,
+                    cornerRadius: 1.25
+                )
             }
-            .frame(width: Layout.batteryWidth, height: Layout.batteryHeight)
-
-            BatteryTerminal(
-                width: Layout.terminalWidth,
-                height: Layout.terminalHeight,
-                cornerRadius: 1.25
-            )
         }
         .foregroundStyle(.primary)
     }

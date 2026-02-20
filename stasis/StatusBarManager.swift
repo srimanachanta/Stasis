@@ -6,13 +6,11 @@ import SwiftUI
 class StatusBarManager {
     private let statusItem: NSStatusItem
     private let viewModel: MenuViewModel
-    private static let statusBarHeight: CGFloat = 22
-    private static let statusBarWidth: CGFloat = 30
 
     init(viewModel: MenuViewModel) {
         self.viewModel = viewModel
         statusItem = NSStatusBar.system.statusItem(
-            withLength: Self.statusBarWidth
+            withLength: NSStatusItem.variableLength
         )
         setupPersistentHostingView()
     }
@@ -27,14 +25,18 @@ class StatusBarManager {
         let rootView = StatusBarContentView(viewModel: viewModel)
         let hosting = NSHostingView(rootView: rootView)
 
-        hosting.frame = NSRect(
-            x: 0,
-            y: 0,
-            width: Self.statusBarWidth,
-            height: Self.statusBarHeight
-        )
+        button.subviews.forEach { $0.removeFromSuperview() }
+        button.title = ""
+        button.image = nil
+
+        hosting.translatesAutoresizingMaskIntoConstraints = false
         button.addSubview(hosting)
-        button.frame = hosting.frame
+        NSLayoutConstraint.activate([
+            hosting.topAnchor.constraint(equalTo: button.topAnchor, constant: 4),
+            hosting.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: -4),
+            hosting.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 7),
+            hosting.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: -7),
+        ])
     }
 }
 
@@ -48,6 +50,6 @@ struct StatusBarContentView: View {
             chargingMode: viewModel.chargingMode,
             showPercentage: showPercentage
         )
-        .padding(.horizontal, 9)
+        .fixedSize()
     }
 }

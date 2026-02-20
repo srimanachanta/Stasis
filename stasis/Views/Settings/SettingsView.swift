@@ -1,9 +1,10 @@
 import SwiftUI
+import smc_power
 
 enum SettingsTab: String, CaseIterable, Identifiable {
     case general = "General"
-    case statusIcon = "Status Icon"
     case dashboard = "Dashboard"
+    case charging = "Charging"
     case advanced = "Advanced"
 
     var id: String { rawValue }
@@ -12,10 +13,10 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .general:
             return "gearshape"
-        case .statusIcon:
-            return "menubar.rectangle"
         case .dashboard:
             return "chart.xyaxis.line"
+        case .charging:
+            return "battery.100.bolt"
         case .advanced:
             return "slider.horizontal.3"
         }
@@ -24,6 +25,12 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
 struct SettingsView: View {
     @State private var selectedTab: SettingsTab = .general
+
+    private let capabilities: DeviceCapabilities
+
+    init(capabilities: DeviceCapabilities) {
+        self.capabilities = capabilities
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -42,19 +49,27 @@ struct SettingsView: View {
                 switch selectedTab {
                 case .general:
                     GeneralSettingsView()
-                case .statusIcon:
-                    StatusIconSettingsView()
                 case .dashboard:
                     DashboardSettingsView()
+                case .charging:
+                    ChargingSettingsView(capabilities: capabilities)
                 case .advanced:
                     AdvancedSettingsView()
                 }
             }
+            .navigationTitle(selectedTab.rawValue)
         }
-        .frame(minWidth: 700, minHeight: 500)
+        .frame(minWidth: 700, minHeight: 450)
     }
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(
+        capabilities: DeviceCapabilities(
+            chargingControl: true,
+            adapterControl: true,
+            hasMagSafe: true,
+            magsafeLEDControl: true
+        )
+    )
 }
