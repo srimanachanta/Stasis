@@ -13,16 +13,24 @@ Stasis gives you real-time insight into your MacBook's power system and lets you
 
 ## Installation
 
-### Homebrew
+Because Stasis is an unsigned application, macOS requires you to explicitly authorize it before it can be opened.
 
-<!-- TODO: Fill in tap and cask name -->
+### Homebrew (Recommended)
+
+Install the app using the `--no-quarantine` flag to automatically bypass the Gatekeeper security warning:
+
 ```bash
-brew install --cask placeholder/tap/stasis
+brew install --cask --no-quarantine srimanachanta/tap/stasis
 ```
 
 ### Direct Download
-
-Download from [GitHub Releases](https://github.com/srimanachanta/Stasis/releases).
+1. Download from [GitHub Releases](https://github.com/srimanachanta/Stasis/releases).
+2. Open the .dmg and drag Stasis into your /Applications folder.
+3. Open Terminal and run this command to remove the Apple quarantine restriction:
+```bash
+xattr -cr /Applications/Stasis.app
+```
+4. Open Stasis normally from your Applications folder.
 
 ## Features
 
