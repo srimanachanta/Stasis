@@ -21,6 +21,7 @@ enum XPCError: LocalizedError {
 @Observable
 class BatteryService {
     var metrics = BatteryMetrics()
+    private(set) var controlState = BatteryControlState()
     private(set) var deviceCapabilities = DeviceCapabilities(
         chargingControl: false,
         adapterControl: false,
@@ -155,7 +156,7 @@ class BatteryService {
         }
 
         logger.debug(
-            "SMC read: battery=\(reading.batteryPower)W, external=\(reading.externalPower)W, system=\(reading.systemPower)"
+            "SMC read: battery=\(reading.batteryPower)W, external=\(reading.externalPower)W, system=\(reading.systemPower)W"
         )
 
         var updated = metrics
@@ -183,6 +184,7 @@ class BatteryService {
         if updated != metrics {
             metrics = updated
         }
+        updateControlState(from: updated)
     }
 
     private func handleIOKitUpdate(_ newMetrics: BatteryMetrics) {
@@ -198,6 +200,19 @@ class BatteryService {
 
         if updated != metrics {
             metrics = updated
+        }
+        updateControlState(from: updated)
+    }
+
+    private func updateControlState(from metrics: BatteryMetrics) {
+        let newState = BatteryControlState(
+            batteryPercentage: metrics.batteryPercentage,
+            hardwareBatteryPercentage: metrics.hardwareBatteryPercentage,
+            adapterConnected: metrics.adapterConnected,
+            batteryTemperature: metrics.batteryTemperature
+        )
+        if newState != controlState {
+            controlState = newState
         }
     }
 

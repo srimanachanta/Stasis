@@ -22,3 +22,10 @@ struct BatteryMetrics: Codable, Equatable {
     var systemPower: Double = 0
     var powerSource: PowerSource = .battery
 }
+
+struct BatteryControlState: Equatable {
+    var batteryPercentage: Int = 0
+    var hardwareBatteryPercentage: Int = 0
+    var adapterConnected: Bool = false
+    var batteryTemperature: Double = 0
+}

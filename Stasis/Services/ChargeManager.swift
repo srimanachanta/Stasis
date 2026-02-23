@@ -35,10 +35,10 @@ class ChargeManager {
         metricsObservation = Task { [weak self] in
             guard let self else { return }
             while !Task.isCancelled {
-                self.evaluate(metrics: self.batteryService.metrics)
+                self.evaluate(controlState: self.batteryService.controlState)
                 await withCheckedContinuation { continuation in
                     withObservationTracking {
-                        _ = self.batteryService.metrics
+                        _ = self.batteryService.controlState
                     } onChange: {
                         Task { @MainActor in
                             continuation.resume()
@@ -61,20 +61,20 @@ class ChargeManager {
                 initial: false
             ) {
                 guard let self else { return }
-                self.evaluate(metrics: self.batteryService.metrics)
+                self.evaluate(controlState: self.batteryService.controlState)
             }
         }
     }
 
-    private func evaluate(metrics: BatteryMetrics) {
-        if metrics.adapterConnected != lastAdapterConnected {
-            logger.info("Adapter connection changed: \(metrics.adapterConnected)")
-            lastAdapterConnected = metrics.adapterConnected
+    private func evaluate(controlState: BatteryControlState) {
+        if controlState.adapterConnected != lastAdapterConnected {
+            logger.info("Adapter connection changed: \(controlState.adapterConnected)")
+            lastAdapterConnected = controlState.adapterConnected
             clearCachedState()
         }
 
-        guard Defaults[.manageCharging], metrics.adapterConnected else {
-            if chargeLimitOverrideActive, !metrics.adapterConnected {
+        guard Defaults[.manageCharging], controlState.adapterConnected else {
+            if chargeLimitOverrideActive, !controlState.adapterConnected {
                 chargeLimitOverrideActive = false
             }
             resetToDefaults()
@@ -89,7 +89,7 @@ class ChargeManager {
         let chargeLimit = chargeLimitOverrideActive ? 100 : Defaults[.chargeLimit]
         let batteryPercentage =
             Defaults[.useHardwarePercentage]
-            ? metrics.hardwareBatteryPercentage : metrics.batteryPercentage
+            ? controlState.hardwareBatteryPercentage : controlState.batteryPercentage
 
         var desiredCharging: Bool?
         var desiredAdapter: Bool?
@@ -135,7 +135,7 @@ class ChargeManager {
         }
 
         if Defaults[.enableHeatProtectionMode]
-            && metrics.batteryTemperature > Double(Defaults[.heatProtectionLimit])
+            && controlState.batteryTemperature > Double(Defaults[.heatProtectionLimit])
         {
             desiredCharging = false
             chargingStateReason =
@@ -245,7 +245,7 @@ class ChargeManager {
 
     func toggleChargeLimitOverride() {
         chargeLimitOverrideActive.toggle()
-        evaluate(metrics: batteryService.metrics)
+        evaluate(controlState: batteryService.controlState)
     }
 
     func stop() {
