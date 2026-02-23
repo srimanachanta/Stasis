@@ -188,7 +188,7 @@ struct PowerSankeyView: View {
                             } else {
                                 NodeView(
                                     icon: "laptopcomputer",
-                                    value: abs(systemPower),
+                                    value: nil,
                                     isLeftSide: false
                                 )
                             }
