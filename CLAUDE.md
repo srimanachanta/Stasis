@@ -21,4 +21,4 @@
 * Concurrency: Prefer Swift structured concurrency (`Task`, `async`/`await`) over GCD or completion handlers.
 * UI Updates: Ensure all state changes affecting the UI are performed on the `@MainActor`.
 * UI Framework: Use SwiftUI for all interface elements.
-* This project targets macOS 15.7+ and Swift 6+. Concurrency features should be implemented to target and be optimized forthese platforms.
+* This project targets macOS 14.8+ and Swift 6+. Concurrency features should be implemented to target and be optimized for these platforms.
