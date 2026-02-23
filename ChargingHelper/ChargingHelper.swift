@@ -29,8 +29,11 @@ final class ChargingHelper: NSObject, ChargingHelperProtocol {
                 reply(false, "Charging control is not supported on this device")
                 return
             }
-            try battery.setChargingInhibited(!enabled)
-            logger.debug("SMC set charging inhibited to: \(!enabled)")
+            let currentlyInhibited = try battery.getChargingInhibited()
+            if currentlyInhibited != !enabled {
+                try battery.setChargingInhibited(!enabled)
+                logger.debug("SMC set charging inhibited to: \(!enabled)")
+            }
             reply(true, nil)
         } catch {
             logger.error("manageBatteryCharging failed: \(error.localizedDescription)")
@@ -44,8 +47,11 @@ final class ChargingHelper: NSObject, ChargingHelperProtocol {
                 reply(false, "Adapter control is not supported on this device")
                 return
             }
-            try battery.setForceDischarging(!enabled)
-            logger.debug("SMC set force discharging to: \(!enabled)")
+            let currentlyDischarging = try battery.getForceDischarging()
+            if currentlyDischarging != !enabled {
+                try battery.setForceDischarging(!enabled)
+                logger.debug("SMC set force discharging to: \(!enabled)")
+            }
             reply(true, nil)
         } catch {
             logger.error("manageExternalPower failed: \(error.localizedDescription)")
@@ -63,8 +69,11 @@ final class ChargingHelper: NSObject, ChargingHelperProtocol {
                 reply(false, "Invalid MagSafe LED state: \(target)")
                 return
             }
-            try adapter.setMagSafeLEDState(ledState)
-            logger.debug("SMC MagSafe LED set to: \(ledState.rawValue)")
+            let currentState = try adapter.getMagSafeLEDState()
+            if currentState != ledState {
+                try adapter.setMagSafeLEDState(ledState)
+                logger.debug("SMC MagSafe LED set to: \(ledState.rawValue)")
+            }
             reply(true, nil)
         } catch {
             logger.error("manageMagsafeLED failed: \(error.localizedDescription)")

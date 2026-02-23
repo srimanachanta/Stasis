@@ -13,9 +13,6 @@ class ChargeManager {
     private var metricsObservation: Task<Void, Never>?
     private var settingsObservation: Task<Void, Never>?
 
-    private var lastChargingEnabled: Bool?
-    private var lastAdapterEnabled: Bool?
-    private var lastLEDState: MagSafeLEDState?
     private var lastAdapterConnected: Bool?
     private var lastManageChargingEnabled: Bool?
     private var hasReachedChargeLimit = false
@@ -84,11 +81,6 @@ class ChargeManager {
             return
         }
 
-        // When manage charging transitions from off to on, clear cached state so
-        // that the set* guards don't skip applying the new desired state. Without
-        // this, resetToDefaults() (called by the metrics observer while management
-        // was off) populates the last* cache with reset values, and a subsequent
-        // evaluate from the settings observer would see matching values and no-op.
         if lastManageChargingEnabled != true {
             lastManageChargingEnabled = true
             clearCachedState()
@@ -170,9 +162,6 @@ class ChargeManager {
     }
 
     private func clearCachedState() {
-        lastChargingEnabled = nil
-        lastAdapterEnabled = nil
-        lastLEDState = nil
         lastNotifiedChargingState = nil
         hasReachedChargeLimit = false
     }
@@ -194,42 +183,33 @@ class ChargeManager {
     }
 
     private func setCharging(enabled: Bool) {
-        guard enabled != lastChargingEnabled else { return }
         logger.info("Setting charging: \(enabled)")
-        lastChargingEnabled = enabled
         Task {
             do {
                 try await batteryService.manageBatteryCharging(enabled: enabled)
             } catch {
-                lastChargingEnabled = nil
                 logger.error("Failed to set charging to \(enabled): \(error)")
             }
         }
     }
 
     private func setAdapter(enabled: Bool) {
-        guard enabled != lastAdapterEnabled else { return }
         logger.info("Setting adapter: \(enabled)")
-        lastAdapterEnabled = enabled
         Task {
             do {
                 try await batteryService.manageExternalPower(enabled: enabled)
             } catch {
-                lastAdapterEnabled = nil
                 logger.error("Failed to set adapter to \(enabled): \(error)")
             }
         }
     }
 
     private func setLED(state: MagSafeLEDState) {
-        guard state != lastLEDState else { return }
         logger.info("Setting MagSafe LED: \(String(describing: state))")
-        lastLEDState = state
         Task {
             do {
                 try await batteryService.manageMagsafeLED(target: state)
             } catch {
-                lastLEDState = nil
                 logger.error("Failed to set LED to \(String(describing: state)): \(error)")
             }
         }
