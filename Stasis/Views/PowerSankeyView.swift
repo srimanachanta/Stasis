@@ -21,194 +21,12 @@ struct PowerSankeyView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                switch powerSource {
-                case .acAdapter:
-                    if batteryPower > 0 {
-                        Canvas { context, size in
-                            drawSplitSankeyFlow(context: context, size: size)
-                        }
-                        VStack(spacing: Layout.powerLabelSpacing) {
-                            Text(String(format: "%.0f W", abs(batteryPower)))
-                                .font(
-                                    .system(
-                                        size: Layout.powerLabelSize,
-                                        weight: .medium
-                                    )
-                                )
-                                .foregroundStyle(.secondary)
-                            Text(String(format: "%.0f W", abs(systemPower)))
-                                .font(
-                                    .system(
-                                        size: Layout.powerLabelSize,
-                                        weight: .medium
-                                    )
-                                )
-                                .foregroundStyle(.secondary)
-                        }
-                    } else {
-                        Canvas { context, size in
-                            drawSimpleFlow(
-                                context: context,
-                                from: CGPoint(
-                                    x: Layout.nodeWidth + Layout.gap,
-                                    y: size.height * 0.5
-                                ),
-                                to: CGPoint(
-                                    x: size.width - Layout.nodeWidth
-                                        - Layout.gap,
-                                    y: size.height * 0.5
-                                ),
-                                height: size.height
-                            )
-                        }
-                        Text(String(format: "%.0f W", abs(adapterPower)))
-                            .font(
-                                .system(
-                                    size: Layout.powerLabelSize,
-                                    weight: .medium
-                                )
-                            )
-                            .foregroundStyle(.secondary)
-                    }
-
-                case .both:
-                    Canvas { context, size in
-                        drawMergeSankeyFlow(context: context, size: size)
-                    }
-                    VStack(spacing: Layout.powerLabelSpacing) {
-                        Text(String(format: "%.0f W", abs(batteryPower)))
-                            .font(
-                                .system(
-                                    size: Layout.powerLabelSize,
-                                    weight: .medium
-                                )
-                            )
-                            .foregroundStyle(.secondary)
-                        Text(String(format: "%.0f W", abs(adapterPower)))
-                            .font(
-                                .system(
-                                    size: Layout.powerLabelSize,
-                                    weight: .medium
-                                )
-                            )
-                            .foregroundStyle(.secondary)
-                    }
-
-                case .battery:
-                    Canvas { context, size in
-                        drawSimpleFlow(
-                            context: context,
-                            from: CGPoint(
-                                x: Layout.nodeWidth + Layout.gap,
-                                y: size.height * 0.5
-                            ),
-                            to: CGPoint(
-                                x: size.width - Layout.nodeWidth - Layout.gap,
-                                y: size.height * 0.5
-                            ),
-                            height: size.height
-                        )
-                    }
-                    Text(String(format: "%.0f W", systemPower))
-                        .font(
-                            .system(
-                                size: Layout.powerLabelSize,
-                                weight: .medium
-                            )
-                        )
-                        .foregroundStyle(.secondary)
-                }
+                flowsAndLabels
 
                 HStack {
-                    VStack {
-                        switch powerSource {
-                        case .acAdapter:
-                            if batteryPower > 0 {
-                                NodeView(
-                                    icon: "bolt.fill",
-                                    value: abs(adapterPower),
-                                    isLeftSide: true
-                                )
-                                .frame(height: Layout.largeNodeHeight)
-                            } else {
-                                NodeView(
-                                    icon: "powerplug.fill",
-                                    value: nil,
-                                    isLeftSide: true
-                                )
-                            }
-
-                        case .both:
-                            NodeView(
-                                icon: "battery.100",
-                                value: nil,
-                                isLeftSide: true
-                            )
-                            Spacer(minLength: Layout.spacerHeight)
-                            NodeView(
-                                icon: "powerplug.fill",
-                                value: nil,
-                                isLeftSide: true
-                            )
-
-                        case .battery:
-                            NodeView(
-                                icon: "battery.100",
-                                value: nil,
-                                isLeftSide: true
-                            )
-                        }
-                    }
-
+                    leftNodes
                     Spacer()
-
-                    VStack {
-                        switch powerSource {
-                        case .acAdapter:
-                            if batteryPower > 0 {
-                                if isCharging {
-                                    NodeView(
-                                        icon: "battery.100.bolt",
-                                        value: nil,
-                                        isLeftSide: false
-                                    )
-                                } else {
-                                    NodeView(
-                                        icon: "battery.100",
-                                        value: nil,
-                                        isLeftSide: false
-                                    )
-                                }
-                                Spacer(minLength: Layout.spacerHeight)
-                                NodeView(
-                                    icon: "laptopcomputer",
-                                    value: nil,
-                                    isLeftSide: false
-                                )
-                            } else {
-                                NodeView(
-                                    icon: "laptopcomputer",
-                                    value: nil,
-                                    isLeftSide: false
-                                )
-                            }
-
-                        case .both:
-                            NodeView(
-                                icon: "laptopcomputer",
-                                value: systemPower,
-                                isLeftSide: false
-                            )
-                            .frame(height: Layout.largeNodeHeight)
-
-                        case .battery:
-                            NodeView(
-                                icon: "laptopcomputer",
-                                value: nil,
-                                isLeftSide: false
-                            )
-                        }
-                    }
+                    rightNodes
                 }
             }
         }
@@ -217,177 +35,200 @@ struct PowerSankeyView: View {
         .padding(.vertical, 6)
     }
 
+    @ViewBuilder
+    private var flowsAndLabels: some View {
+        switch powerSource {
+        case .acAdapter:
+            if batteryPower > 0 {
+                Canvas { context, size in
+                    drawSplitSankeyFlow(context: context, size: size)
+                }
+                VStack(spacing: Layout.powerLabelSpacing) {
+                    PowerLabel(power: batteryPower)
+                    PowerLabel(power: systemPower)
+                }
+            } else {
+                Canvas { context, size in
+                    drawSimpleFlow(context: context, size: size)
+                }
+                PowerLabel(power: adapterPower)
+            }
+
+        case .both:
+            Canvas { context, size in
+                drawMergeSankeyFlow(context: context, size: size)
+            }
+            VStack(spacing: Layout.powerLabelSpacing) {
+                PowerLabel(power: batteryPower)
+                PowerLabel(power: adapterPower)
+            }
+
+        case .battery:
+            Canvas { context, size in
+                drawSimpleFlow(context: context, size: size)
+            }
+            PowerLabel(power: systemPower)
+        }
+    }
+
+    @ViewBuilder
+    private var leftNodes: some View {
+        VStack {
+            switch powerSource {
+            case .acAdapter:
+                if batteryPower > 0 {
+                    NodeView(
+                        icon: "bolt.fill",
+                        value: abs(adapterPower),
+                        isLeftSide: true
+                    )
+                    .frame(height: Layout.largeNodeHeight)
+                } else {
+                    NodeView(
+                        icon: "powerplug.fill",
+                        value: nil,
+                        isLeftSide: true
+                    )
+                }
+            case .both:
+                NodeView(icon: "battery.100", value: nil, isLeftSide: true)
+                Spacer(minLength: Layout.spacerHeight)
+                NodeView(icon: "powerplug.fill", value: nil, isLeftSide: true)
+            case .battery:
+                NodeView(icon: "battery.100", value: nil, isLeftSide: true)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var rightNodes: some View {
+        VStack {
+            switch powerSource {
+            case .acAdapter:
+                if batteryPower > 0 {
+                    NodeView(
+                        icon: isCharging ? "battery.100.bolt" : "battery.100",
+                        value: nil,
+                        isLeftSide: false
+                    )
+                    Spacer(minLength: Layout.spacerHeight)
+                    NodeView(
+                        icon: "laptopcomputer",
+                        value: nil,
+                        isLeftSide: false
+                    )
+                } else {
+                    NodeView(
+                        icon: "laptopcomputer",
+                        value: nil,
+                        isLeftSide: false
+                    )
+                }
+            case .both:
+                NodeView(
+                    icon: "laptopcomputer",
+                    value: systemPower,
+                    isLeftSide: false
+                )
+                .frame(height: Layout.largeNodeHeight)
+            case .battery:
+                NodeView(icon: "laptopcomputer", value: nil, isLeftSide: false)
+            }
+        }
+    }
+
     private func drawMergeSankeyFlow(context: GraphicsContext, size: CGSize) {
         let leftX = Layout.nodeWidth + Layout.gap
         let rightX = size.width - Layout.nodeWidth - Layout.gap
+        let smallHeight = (size.height - Layout.spacerHeight) / 2
 
-        let smallNodeHeight = (size.height - Layout.spacerHeight) / 2
-
-        let batteryY = smallNodeHeight / 2
-        let adapterY = size.height - smallNodeHeight / 2
-
-        let systemY = size.height / 2
-
-        let systemTop = systemY - Layout.largeNodeHeight / 2
-        let systemMid = systemY
-        let systemBottom = systemY + Layout.largeNodeHeight / 2
-
-        drawFlowPath(
+        drawTube(
             context: context,
-            fromX: leftX,
-            fromY: batteryY,
-            toX: rightX,
-            toYTop: systemTop,
-            toYBottom: systemMid,
-            sourceHeight: smallNodeHeight
+            topLeft: CGPoint(x: leftX, y: 0),
+            bottomLeft: CGPoint(x: leftX, y: smallHeight),
+            topRight: CGPoint(
+                x: rightX,
+                y: size.height / 2 - Layout.largeNodeHeight / 2
+            ),
+            bottomRight: CGPoint(x: rightX, y: size.height / 2)
         )
 
-        drawFlowPath(
+        drawTube(
             context: context,
-            fromX: leftX,
-            fromY: adapterY,
-            toX: rightX,
-            toYTop: systemMid,
-            toYBottom: systemBottom,
-            sourceHeight: smallNodeHeight
+            topLeft: CGPoint(x: leftX, y: size.height - smallHeight),
+            bottomLeft: CGPoint(x: leftX, y: size.height),
+            topRight: CGPoint(x: rightX, y: size.height / 2),
+            bottomRight: CGPoint(
+                x: rightX,
+                y: size.height / 2 + Layout.largeNodeHeight / 2
+            )
         )
     }
 
     private func drawSplitSankeyFlow(context: GraphicsContext, size: CGSize) {
         let leftX = Layout.nodeWidth + Layout.gap
         let rightX = size.width - Layout.nodeWidth - Layout.gap
+        let smallHeight = (size.height - Layout.spacerHeight) / 2
 
-        let smallNodeHeight = (size.height - Layout.spacerHeight) / 2
-
-        let adapterY = size.height / 2
-
-        let batteryY = smallNodeHeight / 2
-        let systemY = size.height - smallNodeHeight / 2
-
-        let adapterTop = adapterY - Layout.largeNodeHeight / 2
-        let adapterMid = adapterY
-        let adapterBottom = adapterY + Layout.largeNodeHeight / 2
-
-        drawSplitFlowPath(
+        drawTube(
             context: context,
-            fromX: leftX,
-            fromYTop: adapterTop,
-            fromYBottom: adapterMid,
-            toX: rightX,
-            toY: batteryY,
-            destHeight: smallNodeHeight
+            topLeft: CGPoint(
+                x: leftX,
+                y: size.height / 2 - Layout.largeNodeHeight / 2
+            ),
+            bottomLeft: CGPoint(x: leftX, y: size.height / 2),
+            topRight: CGPoint(x: rightX, y: 0),
+            bottomRight: CGPoint(x: rightX, y: smallHeight)
         )
 
-        drawSplitFlowPath(
+        drawTube(
             context: context,
-            fromX: leftX,
-            fromYTop: adapterMid,
-            fromYBottom: adapterBottom,
-            toX: rightX,
-            toY: systemY,
-            destHeight: smallNodeHeight
+            topLeft: CGPoint(x: leftX, y: size.height / 2),
+            bottomLeft: CGPoint(
+                x: leftX,
+                y: size.height / 2 + Layout.largeNodeHeight / 2
+            ),
+            topRight: CGPoint(x: rightX, y: size.height - smallHeight),
+            bottomRight: CGPoint(x: rightX, y: size.height)
         )
     }
 
-    private func drawFlowPath(
-        context: GraphicsContext,
-        fromX: CGFloat,
-        fromY: CGFloat,
-        toX: CGFloat,
-        toYTop: CGFloat,
-        toYBottom: CGFloat,
-        sourceHeight: CGFloat
-    ) {
-        let path = Path { p in
-            let halfHeight = sourceHeight / 2
-            let controlX = fromX + (toX - fromX) * 0.5
+    private func drawSimpleFlow(context: GraphicsContext, size: CGSize) {
+        let leftX = Layout.nodeWidth + Layout.gap
+        let rightX = size.width - Layout.nodeWidth - Layout.gap
 
-            p.move(to: CGPoint(x: fromX, y: fromY - halfHeight))
-            p.addCurve(
-                to: CGPoint(x: toX, y: toYTop),
-                control1: CGPoint(x: controlX, y: fromY - halfHeight),
-                control2: CGPoint(x: controlX, y: toYTop)
-            )
-
-            p.addLine(to: CGPoint(x: toX, y: toYBottom))
-
-            p.addCurve(
-                to: CGPoint(x: fromX, y: fromY + halfHeight),
-                control1: CGPoint(x: controlX, y: toYBottom),
-                control2: CGPoint(x: controlX, y: fromY + halfHeight)
-            )
-
-            p.closeSubpath()
-        }
-
-        context.fill(
-            path,
-            with: .color(Color.primary.opacity(Layout.flowOpacity))
+        drawTube(
+            context: context,
+            topLeft: CGPoint(x: leftX, y: 0),
+            bottomLeft: CGPoint(x: leftX, y: size.height),
+            topRight: CGPoint(x: rightX, y: 0),
+            bottomRight: CGPoint(x: rightX, y: size.height)
         )
     }
 
-    private func drawSplitFlowPath(
+    /// Draws a unified curved "tube" between four specific corners
+    private func drawTube(
         context: GraphicsContext,
-        fromX: CGFloat,
-        fromYTop: CGFloat,
-        fromYBottom: CGFloat,
-        toX: CGFloat,
-        toY: CGFloat,
-        destHeight: CGFloat
+        topLeft: CGPoint,
+        bottomLeft: CGPoint,
+        topRight: CGPoint,
+        bottomRight: CGPoint
     ) {
+        let controlX = topLeft.x + (topRight.x - topLeft.x) * 0.5
+
         let path = Path { p in
-            let halfHeight = destHeight / 2
-            let controlX = fromX + (toX - fromX) * 0.5
-
-            p.move(to: CGPoint(x: fromX, y: fromYTop))
+            p.move(to: topLeft)
             p.addCurve(
-                to: CGPoint(x: toX, y: toY - halfHeight),
-                control1: CGPoint(x: controlX, y: fromYTop),
-                control2: CGPoint(x: controlX, y: toY - halfHeight)
+                to: topRight,
+                control1: CGPoint(x: controlX, y: topLeft.y),
+                control2: CGPoint(x: controlX, y: topRight.y)
             )
-
-            p.addLine(to: CGPoint(x: toX, y: toY + halfHeight))
-
+            p.addLine(to: bottomRight)
             p.addCurve(
-                to: CGPoint(x: fromX, y: fromYBottom),
-                control1: CGPoint(x: controlX, y: toY + halfHeight),
-                control2: CGPoint(x: controlX, y: fromYBottom)
+                to: bottomLeft,
+                control1: CGPoint(x: controlX, y: bottomRight.y),
+                control2: CGPoint(x: controlX, y: bottomLeft.y)
             )
-
-            p.closeSubpath()
-        }
-
-        context.fill(
-            path,
-            with: .color(Color.primary.opacity(Layout.flowOpacity))
-        )
-    }
-
-    private func drawSimpleFlow(
-        context: GraphicsContext,
-        from: CGPoint,
-        to: CGPoint,
-        height: CGFloat
-    ) {
-        let path = Path { p in
-            let halfHeight = height / 2
-            let controlX = from.x + (to.x - from.x) * 0.5
-
-            p.move(to: CGPoint(x: from.x, y: from.y - halfHeight))
-            p.addCurve(
-                to: CGPoint(x: to.x, y: to.y - halfHeight),
-                control1: CGPoint(x: controlX, y: from.y - halfHeight),
-                control2: CGPoint(x: controlX, y: to.y - halfHeight)
-            )
-
-            p.addLine(to: CGPoint(x: to.x, y: to.y + halfHeight))
-
-            p.addCurve(
-                to: CGPoint(x: from.x, y: from.y + halfHeight),
-                control1: CGPoint(x: controlX, y: to.y + halfHeight),
-                control2: CGPoint(x: controlX, y: from.y + halfHeight)
-            )
-
             p.closeSubpath()
         }
 
@@ -398,30 +239,42 @@ struct PowerSankeyView: View {
     }
 }
 
+struct PowerLabel: View {
+    let power: Double
+    var body: some View {
+        Text(String(format: "%.0f W", abs(power)))
+            .font(.system(size: 13, weight: .medium))
+            .foregroundStyle(.secondary)
+    }
+}
+
 struct NodeView: View {
     let icon: String
     let value: Double?
     let isLeftSide: Bool
+    let cornerRadius: CGFloat = 16.0
 
     var body: some View {
         ZStack {
             UnevenRoundedRectangle(
-                topLeadingRadius: isLeftSide ? 20 : 0,
-                bottomLeadingRadius: isLeftSide ? 20 : 0,
-                bottomTrailingRadius: isLeftSide ? 0 : 20,
-                topTrailingRadius: isLeftSide ? 0 : 20
+                topLeadingRadius: isLeftSide ? cornerRadius : 0,
+                bottomLeadingRadius: isLeftSide ? cornerRadius : 0,
+                bottomTrailingRadius: isLeftSide ? 0 : cornerRadius,
+                topTrailingRadius: isLeftSide ? 0 : cornerRadius,
+                style: .continuous
             )
-            .stroke(Color.primary.opacity(0.2), lineWidth: 1)
-            .frame(width: 60)
-            .background(
+            .fill(Color.primary.opacity(0.05))
+            .overlay(
                 UnevenRoundedRectangle(
-                    topLeadingRadius: isLeftSide ? 20 : 0,
-                    bottomLeadingRadius: isLeftSide ? 20 : 0,
-                    bottomTrailingRadius: isLeftSide ? 0 : 20,
-                    topTrailingRadius: isLeftSide ? 0 : 20
+                    topLeadingRadius: isLeftSide ? cornerRadius : 0,
+                    bottomLeadingRadius: isLeftSide ? cornerRadius : 0,
+                    bottomTrailingRadius: isLeftSide ? 0 : cornerRadius,
+                    topTrailingRadius: isLeftSide ? 0 : cornerRadius,
+                    style: .continuous
                 )
-                .fill(Color.primary.opacity(0.05))
+                .strokeBorder(Color.primary.opacity(0.2), lineWidth: 1)
             )
+            .frame(width: 60)
 
             VStack(spacing: 4) {
                 Image(systemName: icon)
@@ -451,7 +304,12 @@ struct NodeView: View {
         (.acAdapter, false, 0.0, 25.0, 25.0),
         (.acAdapter, false, 23, 39, 16),
     ]
-    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+    LazyVGrid(
+        columns: [
+            GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()),
+        ],
+        spacing: 16
+    ) {
         ForEach(Array(items.enumerated()), id: \.offset) { _, item in
             PowerSankeyView(
                 powerSource: item.0,
