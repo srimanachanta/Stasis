@@ -98,13 +98,15 @@ class MenuViewModel {
         timeRemainingText = formatted.isEmpty ? "Calculating..." : formatted
 
         updateUptimeText()
-
-        if metrics.isCharging {
-            chargingMode = .charging
-            batteryModeText = "Charging"
-        } else if metrics.adapterConnected {
-            chargingMode = .pluggedIn
-            batteryModeText = "Plugged In (Not Charging)"
+        
+        if metrics.powerSource == .acAdapter {
+            if metrics.isCharging {
+                chargingMode = .charging
+                batteryModeText = "Charging"
+            } else {
+                chargingMode = .pluggedIn
+                batteryModeText = "Plugged In (Not Charging)"
+            }
         } else {
             chargingMode = .discharging
             batteryModeText = "Discharging"
