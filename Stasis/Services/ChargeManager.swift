@@ -1,5 +1,6 @@
 import Defaults
 import Foundation
+import IOKit.pwr_mgt
 import Observation
 import UserNotifications
 import os.log
@@ -19,6 +20,7 @@ class ChargeManager {
     private var lastNotifiedChargingState: Bool?
 
     private(set) var chargeLimitOverrideActive = false
+    private var sleepAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
 
     private let logger = Logger(
         subsystem: "com.srimanachanta.stasis",
@@ -54,6 +56,7 @@ class ChargeManager {
             for await _ in Defaults.updates(
                 [
                     .manageCharging, .sailingMode, .automaticDischarge,
+                    .disableSleepUntilChargeLimit,
                     .enableHeatProtectionMode, .manageMagSafeLED, .useHardwarePercentage,
                     .chargeLimit, .sailingModeLimit, .heatProtectionLimit,
                     .heatProtectionMagSafeLEDState,
@@ -159,6 +162,10 @@ class ChargeManager {
         if let desiredLED, capabilities.hasMagSafe, capabilities.magsafeLEDControl {
             setLED(state: desiredLED)
         }
+
+        let shouldPreventSleep = Defaults[.disableSleepUntilChargeLimit]
+            && desiredCharging == true
+        updateSleepAssertion(shouldPreventSleep: shouldPreventSleep)
     }
 
     private func clearCachedState() {
@@ -169,6 +176,7 @@ class ChargeManager {
     private func resetToDefaults() {
         hasReachedChargeLimit = false
         lastManageChargingEnabled = false
+        updateSleepAssertion(shouldPreventSleep: false)
         guard ChargingHelperManager.shared.isInstalled else { return }
         let capabilities = batteryService.deviceCapabilities
         if capabilities.chargingControl {
@@ -215,6 +223,28 @@ class ChargeManager {
         }
     }
 
+    private func updateSleepAssertion(shouldPreventSleep: Bool) {
+        let assertionActive = sleepAssertionID != IOPMAssertionID(kIOPMNullAssertionID)
+
+        if shouldPreventSleep && !assertionActive {
+            let result = IOPMAssertionCreateWithName(
+                kIOPMAssertPreventUserIdleSystemSleep as CFString,
+                IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                "Stasis: Charging towards charge limit" as CFString,
+                &sleepAssertionID
+            )
+            if result == kIOReturnSuccess {
+                logger.info("Sleep assertion created")
+            } else {
+                logger.error("Failed to create sleep assertion: \(result)")
+            }
+        } else if !shouldPreventSleep && assertionActive {
+            IOPMAssertionRelease(sleepAssertionID)
+            sleepAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
+            logger.info("Sleep assertion released")
+        }
+    }
+
     private func sendChargingStateNotification(charging: Bool, reason: String?) {
         guard charging != lastNotifiedChargingState else { return }
         lastNotifiedChargingState = charging
@@ -253,5 +283,6 @@ class ChargeManager {
         metricsObservation = nil
         settingsObservation?.cancel()
         settingsObservation = nil
+        updateSleepAssertion(shouldPreventSleep: false)
     }
 }

@@ -9,6 +9,7 @@ struct ChargingSettingsView: View {
     @Default(.sailingMode) var sailingMode
     @Default(.sailingModeLimit) var sailingModeLimit
     @Default(.automaticDischarge) var automaticDischarge
+    @Default(.disableSleepUntilChargeLimit) var disableSleepUntilChargeLimit
     @Default(.enableHeatProtectionMode) var enableHeatProtectionMode
     @Default(.heatProtectionLimit) var heatProtectionLimit
     @Default(.manageMagSafeLED) var manageMagSafeLED
@@ -120,6 +121,19 @@ struct ChargingSettingsView: View {
                 } footer: {
                     if !hasAdapterControl {
                         Text("Adapter control is not supported on this device.")
+                    }
+                }
+
+                Section {
+                    Toggle("Disable sleep until charge limit", isOn: $disableSleepUntilChargeLimit)
+                } header: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Sleep Prevention")
+                        Text(
+                            "Prevent your Mac from sleeping while charging towards the charge limit. Sleep is re-enabled once the limit is reached or the adapter is disconnected."
+                        )
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                     }
                 }
 
