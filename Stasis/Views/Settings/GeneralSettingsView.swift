@@ -4,6 +4,7 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Default(.launchAtLogin) var launchAtLogin
     @Default(.showBatteryPercentageInStatusIcon) var showBatteryPercentageInStatusIcon
+    @Default(.showBatteryStateInStatusIcon) var showBatteryStateInStatusIcon
     @Default(.disableNotifications) var disableNotifications
     @Default(.showChargingStatusChangedNotification) var showChargingStatusChangedNotification
 
@@ -15,6 +16,7 @@ struct GeneralSettingsView: View {
 
             Section {
                 Toggle("Show battery percentage", isOn: $showBatteryPercentageInStatusIcon)
+                Toggle("Show battery state", isOn: $showBatteryStateInStatusIcon)
             } header: {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Menu Bar Icon")

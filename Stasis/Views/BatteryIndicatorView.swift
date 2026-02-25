@@ -4,6 +4,14 @@ struct BatteryIndicatorView: View {
     let batteryLevel: Int
     let chargingMode: ChargingMode
     var showPercentage: Bool = false
+    var showState: Bool = false
+
+    private var fillColor: Color {
+        if showState && batteryLevel <= 10 {
+            return .red
+        }
+        return .primary
+    }
 
     private enum Layout {
         static let batteryHeight: CGFloat = 12
@@ -37,7 +45,7 @@ struct BatteryIndicatorView: View {
                         RoundedRectangle(
                             cornerRadius: Layout.cornerRadius - Layout.fillInset
                         )
-                        .fill(.primary)
+                        .fill(fillColor)
                         .frame(width: max(0, fillWidth))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(Layout.fillInset)

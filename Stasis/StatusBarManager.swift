@@ -43,12 +43,14 @@ class StatusBarManager {
 struct StatusBarContentView: View {
     let viewModel: MenuViewModel
     @Default(.showBatteryPercentageInStatusIcon) var showPercentage
+    @Default(.showBatteryStateInStatusIcon) var showState
 
     var body: some View {
         BatteryIndicatorView(
             batteryLevel: viewModel.displayPercentage,
             chargingMode: viewModel.chargingMode,
-            showPercentage: showPercentage
+            showPercentage: showPercentage,
+            showState: showState
         )
         .fixedSize()
     }
