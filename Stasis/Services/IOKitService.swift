@@ -6,17 +6,18 @@ import os.log
 
 @MainActor
 class IOKitService {
-    private var runLoopSource: CFRunLoopSource?
+    private var notificationPort: IONotificationPortRef?
+    private var interestNotification: io_object_t = 0
     private var batteryService: io_service_t = 0
 
-    private var continuation: AsyncStream<BatteryMetrics>.Continuation?
+    private var continuation: AsyncStream<(BatteryMetrics, AdapterMetrics)>.Continuation?
 
     private let logger = Logger(
         subsystem: "com.srimanachanta.stasis",
         category: "IOKitService"
     )
 
-    func metricsStream() -> AsyncStream<BatteryMetrics> {
+    func metricsStream() -> AsyncStream<(BatteryMetrics, AdapterMetrics)> {
         AsyncStream { continuation in
             self.continuation = continuation
 
@@ -41,35 +42,58 @@ class IOKitService {
             logger.error("Failed to get AppleSmartBattery service")
         }
 
+        guard batteryService != 0 else { return }
+
+        notificationPort = IONotificationPortCreate(kIOMainPortDefault)
+        guard let notificationPort else {
+            logger.error("Failed to create IONotificationPort")
+            return
+        }
+
+        let notificationSource = IONotificationPortGetRunLoopSource(notificationPort).takeUnretainedValue()
+        CFRunLoopAddSource(CFRunLoopGetMain(), notificationSource, .commonModes)
+
         let context = UnsafeMutableRawPointer(
             Unmanaged.passUnretained(self).toOpaque()
         )
-        runLoopSource = IOPSNotificationCreateRunLoopSource(
-            { context in
-                guard let context = context else { return }
-                let monitor = Unmanaged<IOKitService>.fromOpaque(context)
-                    .takeUnretainedValue()
-                MainActor.assumeIsolated {
-                    monitor.emitMetrics()
-                }
-            },
-            context
-        ).takeRetainedValue()
 
-        if let source = runLoopSource {
-            CFRunLoopAddSource(CFRunLoopGetMain(), source, .commonModes)
-            logger.info("IOKit notification source added to main run loop")
+        let callback: IOServiceInterestCallback = { refcon, _, _, _ in
+            guard let refcon else { return }
+            let monitor = Unmanaged<IOKitService>.fromOpaque(refcon)
+                .takeUnretainedValue()
+            MainActor.assumeIsolated {
+                monitor.emitMetrics()
+            }
+        }
+
+        let result = IOServiceAddInterestNotification(
+            notificationPort,
+            batteryService,
+            kIOGeneralInterest,
+            callback,
+            context,
+            &interestNotification
+        )
+
+        if result == KERN_SUCCESS {
+            logger.info("IORegistry interest notification registered for AppleSmartBattery")
         } else {
-            logger.error("Failed to create IOKit notification source")
+            logger.error("Failed to register interest notification: \(result)")
         }
 
         emitMetrics()
     }
 
     private func stop() {
-        if let source = runLoopSource {
+        if interestNotification != 0 {
+            IOObjectRelease(interestNotification)
+            interestNotification = 0
+        }
+        if let notificationPort {
+            let source = IONotificationPortGetRunLoopSource(notificationPort).takeUnretainedValue()
             CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .commonModes)
-            runLoopSource = nil
+            IONotificationPortDestroy(notificationPort)
+            self.notificationPort = nil
         }
         if batteryService != 0 {
             IOObjectRelease(batteryService)
@@ -82,45 +106,43 @@ class IOKitService {
         logger.debug("IOKit notification triggered")
 
         let powerInfo = getPowerSourceInfo() as? [String: Any]
-        var metrics = BatteryMetrics()
+        var batteryMetrics = BatteryMetrics()
+        var adapterMetrics = AdapterMetrics()
 
         let percentages = getBatteryPercentages(powerInfo: powerInfo)
-        metrics.batteryPercentage = percentages.displayed
-        metrics.hardwareBatteryPercentage = percentages.hardware
+        batteryMetrics.batteryPercentage = percentages.displayed
+        batteryMetrics.hardwareBatteryPercentage = percentages.hardware
 
-        metrics.isCharging = powerInfo?[kIOPSIsChargingKey] as? Bool ?? false
-        if metrics.isCharging {
-            metrics.timeRemaining = getTimeToFull(powerInfo: powerInfo) ?? -1
+        batteryMetrics.isCharging = powerInfo?[kIOPSIsChargingKey] as? Bool ?? false
+        if batteryMetrics.isCharging {
+            batteryMetrics.timeRemaining = getTimeToFull(powerInfo: powerInfo) ?? -1
         } else {
-            metrics.timeRemaining = getTimeRemaining(powerInfo: powerInfo) ?? -1
+            batteryMetrics.timeRemaining = getTimeRemaining(powerInfo: powerInfo) ?? -1
         }
 
         let capacities = getBatteryCapacities()
-        metrics.batteryHealth =
+        batteryMetrics.batteryHealth =
             capacities.design > 0
             ? (capacities.max * 100) / capacities.design
             : 100
 
-        metrics.adapterConnected = isAdapterConnected()
+        batteryMetrics.externalConnected =
+            getPropertyValue(batteryService, key: "ExternalConnected") ?? false
+
+        adapterMetrics.adapterConnected = isAdapterConnected()
 
         if let temp = getBatteryTemperature(powerInfo: powerInfo) {
-            metrics.batteryTemperature = temp
+            batteryMetrics.batteryTemperature = temp
         }
 
-        metrics.cycleCount =
+        batteryMetrics.cycleCount =
             getPropertyValue(batteryService, key: "CycleCount") ?? 0
 
-        if metrics.adapterConnected {
-            metrics.powerSource = .acAdapter
-        } else {
-            metrics.powerSource = .battery
-        }
-
         logger.debug(
-            "IOKit metrics: battery=\(metrics.batteryPercentage)%, hardwareBattery=\(metrics.hardwareBatteryPercentage)%, health=\(metrics.batteryHealth)%, charging=\(metrics.isCharging), temp=\(metrics.batteryTemperature)°C, cycles=\(metrics.cycleCount), timeRemaining=\(metrics.timeRemaining), adapterConnected=\(metrics.adapterConnected)"
+            "IOKit metrics: battery=\(batteryMetrics.batteryPercentage)%, hardwareBattery=\(batteryMetrics.hardwareBatteryPercentage)%, health=\(batteryMetrics.batteryHealth)%, charging=\(batteryMetrics.isCharging), temp=\(batteryMetrics.batteryTemperature)°C, cycles=\(batteryMetrics.cycleCount), timeRemaining=\(batteryMetrics.timeRemaining), externalConnected=\(batteryMetrics.externalConnected), adapterConnected=\(adapterMetrics.adapterConnected)"
         )
 
-        continuation?.yield(metrics)
+        continuation?.yield((batteryMetrics, adapterMetrics))
     }
 
     private nonisolated func getPowerSourceInfo() -> CFDictionary? {
@@ -171,14 +193,14 @@ class IOKitService {
     }
 
     private func getTimeRemaining(powerInfo: [String: Any]?) -> Int? {
-            guard let timeToEmpty = powerInfo?[kIOPSTimeToEmptyKey] as? Int,
-                  timeToEmpty > 0,
-                  timeToEmpty != Int(kIOPSTimeRemainingUnknown) else {
-                return nil
-            }
-
-            return timeToEmpty
+        guard let timeToEmpty = powerInfo?[kIOPSTimeToEmptyKey] as? Int,
+              timeToEmpty > 0,
+              timeToEmpty != Int(kIOPSTimeRemainingUnknown) else {
+            return nil
         }
+
+        return timeToEmpty
+    }
 
     private func getTimeToFull(powerInfo: [String: Any]?) -> Int? {
         guard let timeToFull = powerInfo?[kIOPSTimeToFullChargeKey] as? Int,
@@ -192,11 +214,11 @@ class IOKitService {
 
     private func isAdapterConnected() -> Bool {
         guard let adapterDetails: [String: Any] = getPropertyValue(batteryService, key: "AdapterDetails"),
-                  let watts = adapterDetails["Watts"] as? Int else {
-                return false
-            }
-            
-            return watts > 0
+              let watts = adapterDetails["Watts"] as? Int else {
+            return false
+        }
+
+        return watts > 0
     }
 
     private func getBatteryTemperature(powerInfo: [String: Any]?) -> Double? {

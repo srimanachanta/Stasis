@@ -48,12 +48,15 @@ class MenuViewModel {
     private func startObservingMetrics() {
         metricsObservation = Task { [weak self] in
             guard let self else { return }
-            // Process the current value immediately, then re-process on each change
             while !Task.isCancelled {
-                self.updateFormattedValues(from: self.batteryService.metrics)
+                self.updateFormattedValues(
+                    from: self.batteryService.metrics,
+                    adapter: self.batteryService.adapterMetrics
+                )
                 await withCheckedContinuation { continuation in
                     withObservationTracking {
                         _ = self.batteryService.metrics
+                        _ = self.batteryService.adapterMetrics
                     } onChange: {
                         Task { @MainActor in
                             continuation.resume()
@@ -68,7 +71,10 @@ class MenuViewModel {
         settingsObservation = Task { [weak self] in
             for await _ in Defaults.updates([.useHardwarePercentage], initial: false) {
                 guard let self else { return }
-                self.updateFormattedValues(from: self.batteryService.metrics)
+                self.updateFormattedValues(
+                    from: self.batteryService.metrics,
+                    adapter: self.batteryService.adapterMetrics
+                )
             }
         }
     }
@@ -77,7 +83,7 @@ class MenuViewModel {
         chargeManager.toggleChargeLimitOverride()
     }
 
-    private func updateFormattedValues(from metrics: BatteryMetrics) {
+    private func updateFormattedValues(from metrics: BatteryMetrics, adapter: AdapterMetrics) {
         let useHardware = Defaults[.useHardwarePercentage]
         let percentage =
             useHardware
@@ -85,7 +91,9 @@ class MenuViewModel {
         displayPercentage = percentage
         batteryPercentageText = "\(percentage)%"
 
-        switch metrics.powerSource {
+        let derivedPowerSource = derivePowerSource(battery: metrics, adapter: adapter)
+
+        switch derivedPowerSource {
         case .battery:
             powerSourceText = "Battery"
         case .acAdapter:
@@ -98,8 +106,8 @@ class MenuViewModel {
         timeRemainingText = formatted.isEmpty ? "Calculating..." : formatted
 
         updateUptimeText()
-        
-        if metrics.powerSource == .acAdapter {
+
+        if derivedPowerSource == .acAdapter {
             if metrics.isCharging {
                 chargingMode = .charging
                 batteryModeText = "Charging"
@@ -119,20 +127,32 @@ class MenuViewModel {
         let currentFormat = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(2))
 
         externalInputText =
-            "\(metrics.adapterVoltage.formatted(voltageFormat))V @ \(metrics.adapterCurrent.formatted(currentFormat))A"
+            "\(adapter.adapterVoltage.formatted(voltageFormat))V @ \(adapter.adapterCurrent.formatted(currentFormat))A"
 
         internalInputText =
             "\(metrics.batteryVoltage.formatted(voltageFormat))V @ \(metrics.batteryCurrent.formatted(currentFormat))A"
 
         batteryPower = metrics.batteryPower
-        adapterPower = metrics.adapterPower
-        systemPower = metrics.systemPower
-        powerSource = metrics.powerSource
+        adapterPower = adapter.adapterPower
+        systemPower = adapter.adapterPower - metrics.batteryPower
+        powerSource = derivedPowerSource
         isCharging = metrics.isCharging
-        adapterConnected = metrics.adapterConnected
+        adapterConnected = adapter.adapterConnected
 
         cycleCountText = "\(metrics.cycleCount)"
         batteryHealthText = "\(metrics.batteryHealth)%"
+    }
+
+    private func derivePowerSource(battery: BatteryMetrics, adapter: AdapterMetrics) -> PowerSource {
+        guard adapter.adapterConnected else { return .battery }
+
+        if adapter.adapterPower == 0 {
+            return .battery
+        } else if battery.batteryPower >= 0 {
+            return .acAdapter
+        } else {
+            return .both
+        }
     }
 
     private func updateUptimeText() {

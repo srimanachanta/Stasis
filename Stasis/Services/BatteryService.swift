@@ -21,6 +21,7 @@ enum XPCError: LocalizedError {
 @Observable
 class BatteryService {
     var metrics = BatteryMetrics()
+    var adapterMetrics = AdapterMetrics()
     private(set) var controlState = BatteryControlState()
     private(set) var deviceCapabilities = DeviceCapabilities(
         chargingControl: false,
@@ -82,9 +83,9 @@ class BatteryService {
     private func startIOKitMonitoring() {
         logger.info("Starting IOKit monitoring in main app")
         ioKitMonitorTask = Task {
-            for await newMetrics in self.ioKitService.metricsStream() {
+            for await (newBatteryMetrics, newAdapterMetrics) in self.ioKitService.metricsStream() {
                 guard !Task.isCancelled else { break }
-                self.handleIOKitUpdate(newMetrics)
+                self.handleIOKitUpdate(newBatteryMetrics, adapterUpdate: newAdapterMetrics)
             }
         }
     }
@@ -118,12 +119,12 @@ class BatteryService {
         smcPollTask = nil
     }
 
-    private func fetchSMCPowerData() async -> SMCPowerReading? {
+    private func fetchSMCBatteryData() async -> SMCBatteryReading? {
         let logger = self.logger
         guard
             let helper = xpcManager.getHelper(errorHandler: { error in
                 logger.error(
-                    "XPC error during SMC poll: \(error.localizedDescription)"
+                    "XPC error during SMC battery poll: \(error.localizedDescription)"
                 )
             })
         else {
@@ -131,18 +132,37 @@ class BatteryService {
         }
 
         return await withCheckedContinuation { continuation in
-            helper.readBatteryMetrics {
-                batteryVoltage, batteryCurrent, batteryPower, externalVoltage, externalCurrent,
-                externalPower, systemPower in
+            helper.readBatteryMetrics { batteryVoltage, batteryCurrent, batteryPower in
                 continuation.resume(
-                    returning: SMCPowerReading(
+                    returning: SMCBatteryReading(
                         batteryVoltage: batteryVoltage,
                         batteryCurrent: batteryCurrent,
-                        batteryPower: batteryPower,
-                        externalVoltage: externalVoltage,
-                        externalCurrent: externalCurrent,
-                        externalPower: externalPower,
-                        systemPower: systemPower,
+                        batteryPower: batteryPower
+                    )
+                )
+            }
+        }
+    }
+
+    private func fetchSMCAdapterData() async -> SMCAdapterReading? {
+        let logger = self.logger
+        guard
+            let helper = xpcManager.getHelper(errorHandler: { error in
+                logger.error(
+                    "XPC error during SMC adapter poll: \(error.localizedDescription)"
+                )
+            })
+        else {
+            return nil
+        }
+
+        return await withCheckedContinuation { continuation in
+            helper.readAdapterMetrics { adapterVoltage, adapterCurrent, adapterPower in
+                continuation.resume(
+                    returning: SMCAdapterReading(
+                        adapterVoltage: adapterVoltage,
+                        adapterCurrent: adapterCurrent,
+                        adapterPower: adapterPower
                     )
                 )
             }
@@ -150,65 +170,68 @@ class BatteryService {
     }
 
     private func pollSMCOnce() async {
-        guard let reading = await fetchSMCPowerData() else {
-            logger.error("No helper available for SMC polling")
+        async let batteryData = fetchSMCBatteryData()
+        async let adapterData = fetchSMCAdapterData()
+
+        guard let batteryReading = await batteryData, let adapterReading = await adapterData else {
+            logger.error("No helper available for SMC battery polling")
             return
         }
 
-        logger.debug(
-            "SMC read: battery=\(reading.batteryPower)W, external=\(reading.externalPower)W, system=\(reading.systemPower)W"
-        )
+        var updatedBattery = metrics
+        updatedBattery.batteryVoltage = batteryReading.batteryVoltage
+        updatedBattery.batteryCurrent = batteryReading.batteryCurrent
+        updatedBattery.batteryPower = batteryReading.batteryPower
 
-        var updated = metrics
-        updated.batteryVoltage = reading.batteryVoltage
-        updated.batteryCurrent = reading.batteryCurrent
-        updated.batteryPower = reading.batteryPower
-        updated.adapterVoltage = reading.externalVoltage
-        updated.adapterCurrent = reading.externalCurrent
-        updated.adapterPower = reading.externalPower
-        updated.systemPower = reading.systemPower
+        var updatedAdapter = adapterMetrics
+        updatedAdapter.adapterVoltage = adapterReading.adapterVoltage
+        updatedAdapter.adapterCurrent = adapterReading.adapterCurrent
+        updatedAdapter.adapterPower = adapterReading.adapterPower
 
-        // SMC reports faster than IOKit can update. This fixes the case where the UI falsely shows power flowing from the battery to the system even though 100% of system power is from the AC Adapter
-        if updated.adapterConnected {
-            if reading.externalPower == 0 {
-                updated.powerSource = .battery
-            } else if reading.batteryPower >= 0 {
-                updated.powerSource = .acAdapter
-            } else {
-                updated.powerSource = .both
-            }
-
-            updated.isCharging = reading.batteryPower > 0
+        // SMC reports faster than IOKit can update, so refine isCharging
+        // using the actual power flow direction.
+        if updatedAdapter.adapterConnected {
+            updatedBattery.isCharging = batteryReading.batteryPower > 0
         }
 
-        if updated != metrics {
-            metrics = updated
+        if updatedBattery != metrics {
+            metrics = updatedBattery
         }
-        updateControlState(from: updated)
+        if updatedAdapter != adapterMetrics {
+            adapterMetrics = updatedAdapter
+        }
+        updateControlState(from: updatedBattery, adapter: updatedAdapter)
     }
 
-    private func handleIOKitUpdate(_ newMetrics: BatteryMetrics) {
+    private func handleIOKitUpdate(_ newBatteryMetrics: BatteryMetrics, adapterUpdate: AdapterMetrics) {
         logger.debug("Received IOKit update")
-        var updated = newMetrics
-        updated.batteryVoltage = metrics.batteryVoltage
-        updated.batteryCurrent = metrics.batteryCurrent
-        updated.batteryPower = metrics.batteryPower
-        updated.adapterVoltage = metrics.adapterVoltage
-        updated.adapterCurrent = metrics.adapterCurrent
-        updated.adapterPower = metrics.adapterPower
-        updated.systemPower = metrics.systemPower
 
-        if updated != metrics {
-            metrics = updated
+        var updatedBattery = newBatteryMetrics
+        updatedBattery.batteryVoltage = metrics.batteryVoltage
+        updatedBattery.batteryCurrent = metrics.batteryCurrent
+        updatedBattery.batteryPower = metrics.batteryPower
+
+        if updatedBattery != metrics {
+            metrics = updatedBattery
         }
-        updateControlState(from: updated)
+
+        var updatedAdapter = adapterUpdate
+        updatedAdapter.adapterVoltage = adapterMetrics.adapterVoltage
+        updatedAdapter.adapterCurrent = adapterMetrics.adapterCurrent
+        updatedAdapter.adapterPower = adapterMetrics.adapterPower
+
+        if updatedAdapter != adapterMetrics {
+            adapterMetrics = updatedAdapter
+        }
+
+        updateControlState(from: updatedBattery, adapter: updatedAdapter)
     }
 
-    private func updateControlState(from metrics: BatteryMetrics) {
+    private func updateControlState(from metrics: BatteryMetrics, adapter: AdapterMetrics) {
         let newState = BatteryControlState(
             batteryPercentage: metrics.batteryPercentage,
             hardwareBatteryPercentage: metrics.hardwareBatteryPercentage,
-            adapterConnected: metrics.adapterConnected,
+            adapterConnected: adapter.adapterConnected,
             batteryTemperature: metrics.batteryTemperature
         )
         if newState != controlState {

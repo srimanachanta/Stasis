@@ -14,13 +14,14 @@ struct BatteryMetrics: Codable, Equatable {
     var batteryHealth: Int = 0
     var cycleCount: Int = 0
 
+    var externalConnected: Bool = false
+}
+
+struct AdapterMetrics: Equatable {
     var adapterConnected: Bool = false
     var adapterVoltage: Double = 0
     var adapterCurrent: Double = 0
     var adapterPower: Double = 0
-
-    var systemPower: Double = 0
-    var powerSource: PowerSource = .battery
 }
 
 struct BatteryControlState: Equatable {

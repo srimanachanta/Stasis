@@ -13,29 +13,36 @@ final class Helper: NSObject, HelperProtocol {
     )
 
     func readBatteryMetrics(
-        reply: @escaping @Sendable (Double, Double, Double, Double, Double, Double, Double) -> Void
+        reply: @escaping @Sendable (Double, Double, Double) -> Void
     ) {
         do {
             let batteryVoltage = try SMCBattery.getVoltage()
             let batteryCurrent = try SMCBattery.getCurrent()
-            var externalVoltage = try SMCAdapter.getVoltage()
-            var externalCurrent = try SMCAdapter.getCurrent()
-
-            if abs(externalVoltage) < 0.1 { externalVoltage = 0 }
-            if abs(externalCurrent) < 0.1 { externalCurrent = 0 }
-
             let batteryPower = batteryVoltage * batteryCurrent
-            let externalPower = externalVoltage * externalCurrent
-            let systemPower = externalPower - batteryPower
 
-            reply(
-                batteryVoltage, batteryCurrent, batteryPower,
-                externalVoltage, externalCurrent, externalPower,
-                systemPower
-            )
+            reply(batteryVoltage, batteryCurrent, batteryPower)
         } catch {
-            logger.error("SMC power read failed: \(error.localizedDescription)")
-            reply(0, 0, 0, 0, 0, 0, 0)
+            logger.error("SMC battery read failed: \(error.localizedDescription)")
+            reply(0, 0, 0)
+        }
+    }
+
+    func readAdapterMetrics(
+        reply: @escaping @Sendable (Double, Double, Double) -> Void
+    ) {
+        do {
+            var adapterVoltage = try SMCAdapter.getVoltage()
+            var adapterCurrent = try SMCAdapter.getCurrent()
+
+            if abs(adapterVoltage) < 0.1 { adapterVoltage = 0 }
+            if abs(adapterCurrent) < 0.1 { adapterCurrent = 0 }
+
+            let adapterPower = adapterVoltage * adapterCurrent
+
+            reply(adapterVoltage, adapterCurrent, adapterPower)
+        } catch {
+            logger.error("SMC adapter read failed: \(error.localizedDescription)")
+            reply(0, 0, 0)
         }
     }
 
