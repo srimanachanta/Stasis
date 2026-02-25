@@ -37,6 +37,7 @@ class BatteryService {
 
     private var ioKitMonitorTask: Task<Void, Never>?
     private var smcPollTask: Task<Void, Never>?
+    private var delayedPollTask: Task<Void, Never>?
 
     private let logger = Logger(
         subsystem: "com.srimanachanta.stasis",
@@ -105,6 +106,15 @@ class BatteryService {
                 guard !Task.isCancelled else { break }
                 await self.pollSMCOnce()
             }
+        }
+    }
+
+    func scheduleSinglePoll(delay: Duration = .seconds(3)) {
+        delayedPollTask?.cancel()
+        delayedPollTask = Task {
+            try? await Task.sleep(for: delay)
+            guard !Task.isCancelled else { return }
+            await self.pollSMCOnce()
         }
     }
 
@@ -299,6 +309,8 @@ class BatteryService {
         ioKitMonitorTask = nil
         smcPollTask?.cancel()
         smcPollTask = nil
+        delayedPollTask?.cancel()
+        delayedPollTask = nil
         xpcManager.disconnect()
     }
 }

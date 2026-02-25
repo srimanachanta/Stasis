@@ -204,6 +204,7 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageBatteryCharging(enabled: enabled)
+                batteryService.scheduleSinglePoll()
             } catch {
                 logger.error("Failed to set charging to \(enabled): \(error)")
             }
@@ -215,6 +216,7 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageExternalPower(enabled: enabled)
+                batteryService.scheduleSinglePoll()
             } catch {
                 logger.error("Failed to set adapter to \(enabled): \(error)")
             }
