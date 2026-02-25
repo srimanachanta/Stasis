@@ -229,7 +229,8 @@ struct ChargingSettingsView: View {
                                     Text("Off").tag(MagSafeLEDState.off)
                                     Text("Green").tag(MagSafeLEDState.green)
                                     Text("Orange").tag(MagSafeLEDState.orange)
-                                    Text("Blinking Orange").tag(MagSafeLEDState.blinkOrangeSlow)
+                                    Text("Blinking Orange Slow").tag(MagSafeLEDState.blinkOrangeSlow)
+                                    Text("Blinking Orange Fast").tag(MagSafeLEDState.blinkOrangeFast)
                                 }
                             }
                         }
