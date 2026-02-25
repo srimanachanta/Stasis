@@ -46,6 +46,7 @@ class MenuBuilder {
         if viewModel.manageChargingEnabled && viewModel.adapterConnected {
             menu.addItem(NSMenuItem.separator())
             menu.addItem(createMenuItem(view: ChargeLimitOverrideToggleView(viewModel: viewModel)))
+            menu.addItem(createMenuItem(view: ForceDischargeToggleView(viewModel: viewModel)))
         }
 
         menu.addItem(NSMenuItem.separator())
@@ -260,6 +261,33 @@ struct ChargeLimitOverrideToggleView: View {
             .labelsHidden()
             .toggleStyle(.switch)
             .controlSize(.mini)
+            .disabled(viewModel.forceDischargeActive)
+        }
+        .foregroundColor(.secondary)
+        .font(.callout)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 4)
+    }
+}
+
+struct ForceDischargeToggleView: View {
+    let viewModel: MenuViewModel
+
+    var body: some View {
+        HStack {
+            Text("Force Discharge")
+            Spacer(minLength: 20)
+            Toggle(
+                "Force Discharge",
+                isOn: Binding(
+                    get: { viewModel.forceDischargeActive },
+                    set: { _ in viewModel.toggleForceDischarge() }
+                )
+            )
+            .labelsHidden()
+            .toggleStyle(.switch)
+            .controlSize(.mini)
+            .disabled(viewModel.chargeLimitOverrideActive)
         }
         .foregroundColor(.secondary)
         .font(.callout)

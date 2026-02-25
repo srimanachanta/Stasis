@@ -20,6 +20,7 @@ class ChargeManager {
     private var lastNotifiedChargingState: Bool?
 
     private(set) var chargeLimitOverrideActive = false
+    private(set) var forceDischargeActive = false
     private var sleepAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
 
     private let logger = Logger(
@@ -79,6 +80,9 @@ class ChargeManager {
         guard Defaults[.manageCharging], controlState.adapterConnected else {
             if chargeLimitOverrideActive, !controlState.adapterConnected {
                 chargeLimitOverrideActive = false
+            }
+            if forceDischargeActive, !controlState.adapterConnected {
+                forceDischargeActive = false
             }
             resetToDefaults()
             return
@@ -146,6 +150,11 @@ class ChargeManager {
             if Defaults[.manageMagSafeLED] {
                 desiredLED = Defaults[.heatProtectionMagSafeLEDState]
             }
+        }
+
+        if forceDischargeActive {
+            desiredCharging = false
+            desiredAdapter = false
         }
 
         let capabilities = batteryService.deviceCapabilities
@@ -275,6 +284,11 @@ class ChargeManager {
 
     func toggleChargeLimitOverride() {
         chargeLimitOverrideActive.toggle()
+        evaluate(controlState: batteryService.controlState)
+    }
+
+    func toggleForceDischarge() {
+        forceDischargeActive.toggle()
         evaluate(controlState: batteryService.controlState)
     }
 

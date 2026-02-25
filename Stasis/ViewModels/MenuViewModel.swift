@@ -30,6 +30,7 @@ class MenuViewModel {
     var isCharging: Bool = false
 
     var chargeLimitOverrideActive: Bool { chargeManager.chargeLimitOverrideActive }
+    var forceDischargeActive: Bool { chargeManager.forceDischargeActive }
     var manageChargingEnabled: Bool { Defaults[.manageCharging] }
     var adapterConnected: Bool = false
 
@@ -81,6 +82,10 @@ class MenuViewModel {
 
     func toggleChargeLimitOverride() {
         chargeManager.toggleChargeLimitOverride()
+    }
+
+    func toggleForceDischarge() {
+        chargeManager.toggleForceDischarge()
     }
 
     private func updateFormattedValues(from metrics: BatteryMetrics, adapter: AdapterMetrics) {
