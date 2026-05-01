@@ -71,10 +71,13 @@ class ChargeManager {
     }
 
     private func evaluate(controlState: BatteryControlState) {
+        var stateWasCleared = false
+
         if controlState.adapterConnected != lastAdapterConnected {
             logger.info("Adapter connection changed: \(controlState.adapterConnected)")
             lastAdapterConnected = controlState.adapterConnected
             clearCachedState()
+            stateWasCleared = true
         }
 
         guard Defaults[.manageCharging], controlState.adapterConnected else {
@@ -91,12 +94,18 @@ class ChargeManager {
         if lastManageChargingEnabled != true {
             lastManageChargingEnabled = true
             clearCachedState()
+            stateWasCleared = true
         }
 
         let chargeLimit = chargeLimitOverrideActive ? 100 : Defaults[.chargeLimit]
         let batteryPercentage =
             Defaults[.useHardwarePercentage]
             ? controlState.hardwareBatteryPercentage : controlState.batteryPercentage
+
+        if stateWasCleared && Defaults[.sailingMode]
+            && batteryPercentage >= chargeLimit - Defaults[.sailingModeLimit] {
+            hasReachedChargeLimit = true
+        }
 
         var desiredCharging: Bool?
         var desiredAdapter: Bool?
