@@ -93,6 +93,7 @@
 
 /* Begin PBXFileReference section */
 		A66D62CE2F44067C00B996E7 /* smc_power.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = smc_power.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A67470412FA4F4EA00925FF2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A68B3E0C2F19AB4B00F115E4 /* stasis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = stasis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A68B3E1E2F19ABCB00F115E4 /* helper.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = helper.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6E6D71E2F39DD350069CF9F /* charging-helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "charging-helper"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,6 +185,7 @@
 		A68B3E032F19AB4B00F115E4 = {
 			isa = PBXGroup;
 			children = (
+				A67470412FA4F4EA00925FF2 /* README.md */,
 				A68B3E0E2F19AB4B00F115E4 /* Stasis */,
 				A68B3E1F2F19ABCB00F115E4 /* Helper */,
 				A6E6D71F2F39DD350069CF9F /* ChargingHelper */,

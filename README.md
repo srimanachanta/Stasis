@@ -4,9 +4,9 @@
 
 Stasis gives you real-time insight into your MacBook's power system and lets you control charging behavior directly, without relying on macOS's opaque "Optimized Battery Charging."
 
-> **Apple Silicon only.** Tested on M1 and M4. Other Apple Silicon chips should work but are untested.
+> **Apple Silicon only.** The heuristics and mechanics to interface with metrics and charging between both of these platforms varies a lot. Currently, the app only supports Apple Silicon MacBooks.
 >
-> Requires **macOS 14.8 – 26.3**.
+> Requires **macOS 14.8+**.
 
 ![Stasis Menu Bar](https://github.com/srimanachanta/Stasis/wiki/images/FullApp.jpg)
 
@@ -21,7 +21,7 @@ brew install --cask --no-quarantine srimanachanta/tap/stasis
 ### Direct Download
 
 1. Download from [GitHub Releases](https://github.com/srimanachanta/Stasis/releases).
-2. Open the `.dmg` and drag Stasis into `/Applications`.
+2. Open the `.zip` and drag Stasis into `/Applications`.
 3. Remove the quarantine flag:
    ```bash
    xattr -cr /Applications/Stasis.app
