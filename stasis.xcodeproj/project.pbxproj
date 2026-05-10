@@ -409,15 +409,15 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/ChargingHelper/com.dinanathdash.stasis.charging-helper.plist",
+				"$(SRCROOT)/ChargingHelper/com.srimanachanta.stasis.charging-helper.plist",
 			);
 			name = "Copy LaunchDaemon Plist";
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons/com.dinanathdash.stasis.charging-helper.plist",
+				"$(BUILT_PRODUCTS_DIR)/$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons/com.srimanachanta.stasis.charging-helper.plist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons\"\ncp \"${SRCROOT}/ChargingHelper/com.dinanathdash.stasis.charging-helper.plist\" \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/\"\n";
+			shellScript = "mkdir -p \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons\"\ncp \"${SRCROOT}/ChargingHelper/com.srimanachanta.stasis.charging-helper.plist\" \"${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -509,7 +509,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dinanathdash.stasis.smc-profiles";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-profiles";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -552,7 +552,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dinanathdash.stasis.smc-profiles";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-profiles";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -724,7 +724,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 0.2.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dinanathdash.stasis;
+				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -761,7 +761,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 0.2.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dinanathdash.stasis;
+				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -797,7 +797,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dinanathdash.stasis.helper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
@@ -838,7 +838,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.8;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dinanathdash.stasis.helper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.srimanachanta.stasis.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
@@ -867,7 +867,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.8;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dinanathdash.stasis.charging-helper";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.charging-helper";
 				PRODUCT_NAME = "charging-helper";
 				SKIP_INSTALL = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -888,7 +888,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.8;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dinanathdash.stasis.charging-helper";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.charging-helper";
 				PRODUCT_NAME = "charging-helper";
 				SKIP_INSTALL = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;

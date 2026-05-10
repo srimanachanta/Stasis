@@ -3,7 +3,7 @@ import os.log
 import smc_power
 
 let logger = Logger(
-    subsystem: "com.dinanathdash.stasis.charging-helper",
+    subsystem: "com.srimanachanta.stasis.charging-helper",
     category: "ServiceDelegate"
 )
 
@@ -50,7 +50,7 @@ class ServiceDelegate: NSObject, NSXPCListenerDelegate {
 let helper = ChargingHelper(battery: battery, adapter: adapter)
 let delegate = ServiceDelegate(helper: helper)
 let listener = NSXPCListener(
-    machServiceName: "com.dinanathdash.stasis.charging-helper"
+    machServiceName: "com.srimanachanta.stasis.charging-helper"
 )
 listener.delegate = delegate
 listener.resume()

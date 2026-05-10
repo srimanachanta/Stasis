@@ -6,7 +6,7 @@ class SMCReaderConnection {
     private var connection: NSXPCConnection?
     private let serviceName: String
     private let logger = Logger(
-        subsystem: "com.dinanathdash.stasis",
+        subsystem: "com.srimanachanta.stasis",
         category: "SMCReaderConnection"
     )
 

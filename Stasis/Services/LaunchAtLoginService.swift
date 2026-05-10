@@ -6,7 +6,7 @@ class LaunchAtLoginService {
     static let shared = LaunchAtLoginService()
 
     private let logger = Logger(
-        subsystem: "com.dinanathdash.stasis",
+        subsystem: "com.srimanachanta.stasis",
         category: "LaunchAtLoginService"
     )
 

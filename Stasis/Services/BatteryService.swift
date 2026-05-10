@@ -31,7 +31,7 @@ class BatteryService {
     )
 
     private let xpcManager = SMCReaderConnection(
-        serviceName: "com.dinanathdash.stasis.helper"
+        serviceName: "com.srimanachanta.stasis.helper"
     )
     private let ioKitService = IOKitService()
 
@@ -40,7 +40,7 @@ class BatteryService {
     private var delayedPollTask: Task<Void, Never>?
 
     private let logger = Logger(
-        subsystem: "com.dinanathdash.stasis",
+        subsystem: "com.srimanachanta.stasis",
         category: "BatteryService"
     )
 

@@ -24,7 +24,7 @@ class ChargeManager {
     private var sleepAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
 
     private let logger = Logger(
-        subsystem: "com.dinanathdash.stasis",
+        subsystem: "com.srimanachanta.stasis",
         category: "ChargeManager"
     )
 

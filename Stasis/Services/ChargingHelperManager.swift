@@ -13,13 +13,13 @@ enum ChargingHelperStatus {
 class ChargingHelperManager {
     static let shared = ChargingHelperManager()
 
-    private static let machServiceName = "com.dinanathdash.stasis.charging-helper"
-    private static let plistName = "com.dinanathdash.stasis.charging-helper.plist"
+    private static let machServiceName = "com.srimanachanta.stasis.charging-helper"
+    private static let plistName = "com.srimanachanta.stasis.charging-helper.plist"
 
     private let service: SMAppService
     private var connection: NSXPCConnection?
     private let logger = Logger(
-        subsystem: "com.dinanathdash.stasis",
+        subsystem: "com.srimanachanta.stasis",
         category: "ChargingHelperManager"
     )
 

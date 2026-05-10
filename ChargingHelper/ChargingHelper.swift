@@ -3,7 +3,7 @@ import os.log
 import smc_power
 
 private enum Constants {
-    static let subsystem = "com.dinanathdash.stasis.charging-helper"
+    static let subsystem = "com.srimanachanta.stasis.charging-helper"
 }
 
 final class ChargingHelper: NSObject, ChargingHelperProtocol {
