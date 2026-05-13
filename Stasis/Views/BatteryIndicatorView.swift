@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct BatteryIndicatorView: View {
@@ -5,7 +6,26 @@ struct BatteryIndicatorView: View {
     let chargingMode: ChargingMode
     var isLowPowerModeEnabled: Bool = false
     var showPercentage: Bool = false
+    var showPercentageInsideIconOnBattery: Bool = false
+    var showPercentageOutsideIconWhenPowered: Bool = true
     var showState: Bool = false
+
+    private var isPowered: Bool { chargingMode != .discharging }
+
+    private var shouldShowInsidePercentage: Bool {
+        showPercentage
+            && showPercentageInsideIconOnBattery
+            && chargingMode == .discharging
+    }
+
+    private var shouldShowOutsidePercentage: Bool {
+        guard showPercentage else { return false }
+        guard showPercentageInsideIconOnBattery else { return true }
+        if isPowered {
+            return showPercentageOutsideIconWhenPowered
+        }
+        return false
+    }
 
     private var fillColor: Color {
         // Critical level takes priority over Low Power Mode.
@@ -18,6 +38,18 @@ struct BatteryIndicatorView: View {
         return .primary
     }
 
+    private var insidePercentageColor: Color {
+        // Keep strong contrast against fill colors used in the battery body.
+        if showState && batteryLevel <= 10 {
+            return .white
+        }
+        return .black
+    }
+
+    private var insidePercentageOutlineColor: Color {
+        insidePercentageColor == .white ? .black : .white
+    }
+
     private enum Layout {
         static let batteryHeight: CGFloat = 12
         static let batteryWidth: CGFloat = 24
@@ -28,12 +60,16 @@ struct BatteryIndicatorView: View {
         static let fillInset: CGFloat = 1.5
     }
 
+    private var menuBarPercentageFont: Font {
+        Font(NSFont.menuBarFont(ofSize: 11))
+    }
+
     var body: some View {
         HStack(spacing: 4) {
-            if showPercentage {
+            if shouldShowOutsidePercentage {
                 Text("\(batteryLevel)%")
-                    .font(.system(size: 10, weight: .medium))
-                    .monospacedDigit()
+                    .font(menuBarPercentageFont)
+                    .fontWeight(.regular)
             }
 
             HStack(spacing: 0) {
@@ -59,19 +95,61 @@ struct BatteryIndicatorView: View {
                 .frame(width: Layout.batteryWidth, height: Layout.batteryHeight)
                 .overlay {
                     Group {
-                        if chargingMode == .charging {
+                        if shouldShowInsidePercentage {
+                            ZStack {
+                                Text("\(batteryLevel)")
+                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
+                                    .monospacedDigit()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                    .foregroundStyle(insidePercentageOutlineColor)
+                                    .offset(x: -0.5, y: 0)
+                                Text("\(batteryLevel)")
+                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
+                                    .monospacedDigit()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                    .foregroundStyle(insidePercentageOutlineColor)
+                                    .offset(x: 0.5, y: 0)
+                                Text("\(batteryLevel)")
+                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
+                                    .monospacedDigit()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                    .foregroundStyle(insidePercentageOutlineColor)
+                                    .offset(x: 0, y: -0.5)
+                                Text("\(batteryLevel)")
+                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
+                                    .monospacedDigit()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                    .foregroundStyle(insidePercentageOutlineColor)
+                                    .offset(x: 0, y: 0.5)
+                                Text("\(batteryLevel)")
+                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
+                                    .monospacedDigit()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                    .foregroundStyle(insidePercentageColor)
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else if chargingMode == .charging {
                             Image(systemName: "bolt.fill")
                                 .font(.system(size: 10, weight: .black))
+                                .foregroundStyle(.white)
+                                .shadow(color: .black, radius: 0.5)
+                                .shadow(color: .black, radius: 0.5)
+                                .shadow(color: .black, radius: 0.5)
                         } else if chargingMode == .pluggedIn {
                             Image(systemName: "powerplug.fill")
                                 .font(.system(size: 10, weight: .black))
                                 .rotationEffect(.degrees(-90))
+                                .foregroundStyle(.white)
+                                .shadow(color: .black, radius: 0.5)
+                                .shadow(color: .black, radius: 0.5)
+                                .shadow(color: .black, radius: 0.5)
                         }
                     }
-                    .foregroundStyle(.white)
-                    .shadow(color: .black, radius: 0.5)
-                    .shadow(color: .black, radius: 0.5)
-                    .shadow(color: .black, radius: 0.5)
                 }
 
                 BatteryTerminal(

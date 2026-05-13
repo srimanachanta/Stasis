@@ -4,6 +4,8 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Default(.launchAtLogin) var launchAtLogin
     @Default(.showBatteryPercentageInStatusIcon) var showBatteryPercentageInStatusIcon
+    @Default(.showBatteryPercentageInsideIconOnBattery) var showBatteryPercentageInsideIconOnBattery
+    @Default(.showBatteryPercentageOutsideIconWhenPowered) var showBatteryPercentageOutsideIconWhenPowered
     @Default(.showBatteryStateInStatusIcon) var showBatteryStateInStatusIcon
     @Default(.disableNotifications) var disableNotifications
     @Default(.showChargingStatusChangedNotification) var showChargingStatusChangedNotification
@@ -16,12 +18,25 @@ struct GeneralSettingsView: View {
 
             Section {
                 Toggle("Show battery percentage", isOn: $showBatteryPercentageInStatusIcon)
+                Toggle(
+                    "Show percentage inside icon on battery",
+                    isOn: $showBatteryPercentageInsideIconOnBattery
+                )
+                .disabled(!showBatteryPercentageInStatusIcon)
+                Toggle(
+                    "Show outside percentage when on power",
+                    isOn: $showBatteryPercentageOutsideIconWhenPowered
+                )
+                .disabled(
+                    !showBatteryPercentageInStatusIcon
+                        || !showBatteryPercentageInsideIconOnBattery
+                )
                 Toggle("Show battery state", isOn: $showBatteryStateInStatusIcon)
             } header: {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Menu Bar Icon")
                     Text(
-                        "Display the current battery percentage next to the status icon in the menu bar."
+                        "Display battery percentage next to or inside the menu bar icon."
                     )
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

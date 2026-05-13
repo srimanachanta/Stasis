@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld" : {
+
+    },
     "%lld%%" : {
 
     },
@@ -812,7 +815,11 @@
     "Discharge the battery to your charge limit when plugged in above the target level." : {
 
     },
+    "Display battery percentage next to or inside the menu bar icon." : {
+
+    },
     "Display the current battery percentage next to the status icon in the menu bar." : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1609,6 +1616,12 @@
       }
     },
     "Show battery state" : {
+
+    },
+    "Show outside percentage when on power" : {
+
+    },
+    "Show percentage inside icon on battery" : {
 
     },
     "Sleep Prevention" : {
