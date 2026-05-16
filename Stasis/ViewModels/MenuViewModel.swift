@@ -28,7 +28,7 @@ class MenuViewModel {
     var systemPower: Double = 0
     var powerSource: PowerSource = .battery
     var isCharging: Bool = false
-    var isLowPowerModeEnabled: Bool = ProcessInfo.processInfo.isLowPowerModeEnabled
+    var isLowPowerModeEnabled: Bool = false
 
     var chargeLimitOverrideActive: Bool { chargeManager.chargeLimitOverrideActive }
     var forceDischargeActive: Bool { chargeManager.forceDischargeActive }
@@ -84,12 +84,18 @@ class MenuViewModel {
     }
 
     private func startObservingPowerMode() {
+        // Seed the initial value before subscribing so "read + subscribe" live in one place.
+        isLowPowerModeEnabled = ProcessInfo.processInfo.isLowPowerModeEnabled
+
         powerModeObservation = Task { [weak self] in
-            guard let self else { return }
-            for await _ in NotificationCenter.default.notifications(
-                named: .NSProcessInfoPowerStateDidChange
-            ) {
-                self.isLowPowerModeEnabled = ProcessInfo.processInfo.isLowPowerModeEnabled
+            let notifications = NotificationCenter.default.notifications(
+                named: .NSProcessInfoPowerStateDidChange,
+                object: ProcessInfo.processInfo
+            )
+            for await _ in notifications {
+                await MainActor.run {
+                    self?.isLowPowerModeEnabled = ProcessInfo.processInfo.isLowPowerModeEnabled
+                }
             }
         }
     }
@@ -231,6 +237,7 @@ class MenuViewModel {
             metricsObservation?.cancel()
             settingsObservation?.cancel()
             uptimeTask?.cancel()
+            powerModeObservation?.cancel()
         }
     }
 }

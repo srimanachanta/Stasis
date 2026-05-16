@@ -8,6 +8,7 @@ struct BatteryIndicatorView: View {
     var showState: Bool = false
 
     private var fillColor: Color {
+        // Critical level takes priority over Low Power Mode.
         if showState && batteryLevel <= 10 {
             return .red
         }
@@ -119,6 +120,29 @@ struct BatteryTerminal: View {
                 BatteryIndicatorView(
                     batteryLevel: level,
                     chargingMode: .pluggedIn
+                )
+            }
+        }
+
+        Divider()
+
+        Text("Low Power Mode (yellow; critical red takes priority)")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+
+        // Low Power Mode enabled — yellow, except critical level stays red
+        ForEach([100, 50, 10, 5], id: \.self) { level in
+            HStack(spacing: 20) {
+                BatteryIndicatorView(
+                    batteryLevel: level,
+                    chargingMode: .discharging,
+                    isLowPowerModeEnabled: true,
+                    showState: true
+                )
+                BatteryIndicatorView(
+                    batteryLevel: level,
+                    chargingMode: .charging,
+                    isLowPowerModeEnabled: true
                 )
             }
         }
