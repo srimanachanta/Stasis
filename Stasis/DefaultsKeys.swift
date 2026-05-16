@@ -4,17 +4,21 @@ import smc_power
 
 extension MagSafeLEDState: Defaults.Serializable {}
 
+enum PercentageDisplayLocation: String, Defaults.Serializable, CaseIterable, Identifiable {
+    case hidden = "Hidden"
+    case nextToIcon = "Next to Icon"
+    case insideIcon = "Inside Icon"
+
+    var id: String { rawValue }
+}
+
 extension Defaults.Keys {
     // General
     static let launchAtLogin = Key<Bool>("launchAtLogin", default: false)
 
     // Status Icon
-    static let showBatteryPercentageInStatusIcon = Key<Bool>(
-        "showBatteryPercentageInStatusIcon", default: false)
-    static let showBatteryPercentageInsideIconOnBattery = Key<Bool>(
-        "showBatteryPercentageInsideIconOnBattery", default: false)
-    static let showBatteryPercentageOutsideIconWhenPowered = Key<Bool>(
-        "showBatteryPercentageOutsideIconWhenPowered", default: true)
+    static let batteryPercentageDisplayLocation = Key<PercentageDisplayLocation>(
+        "batteryPercentageDisplayLocation", default: .hidden)
     static let showBatteryStateInStatusIcon = Key<Bool>(
         "showBatteryStateInStatusIcon", default: true)
 

@@ -1,30 +1,20 @@
-import AppKit
 import SwiftUI
 
 struct BatteryIndicatorView: View {
     let batteryLevel: Int
     let chargingMode: ChargingMode
     var isLowPowerModeEnabled: Bool = false
-    var showPercentage: Bool = false
-    var showPercentageInsideIconOnBattery: Bool = false
-    var showPercentageOutsideIconWhenPowered: Bool = true
+    var percentageDisplayLocation: PercentageDisplayLocation = .hidden
     var showState: Bool = false
 
     private var isPowered: Bool { chargingMode != .discharging }
 
     private var shouldShowInsidePercentage: Bool {
-        showPercentage
-            && showPercentageInsideIconOnBattery
-            && chargingMode == .discharging
+        percentageDisplayLocation == .insideIcon
     }
 
     private var shouldShowOutsidePercentage: Bool {
-        guard showPercentage else { return false }
-        guard showPercentageInsideIconOnBattery else { return true }
-        if isPowered {
-            return showPercentageOutsideIconWhenPowered
-        }
-        return false
+        percentageDisplayLocation == .nextToIcon
     }
 
     private var fillColor: Color {
@@ -46,10 +36,6 @@ struct BatteryIndicatorView: View {
         return .black
     }
 
-    private var insidePercentageOutlineColor: Color {
-        insidePercentageColor == .white ? .black : .white
-    }
-
     private enum Layout {
         static let batteryHeight: CGFloat = 12
         static let batteryWidth: CGFloat = 24
@@ -61,7 +47,7 @@ struct BatteryIndicatorView: View {
     }
 
     private var menuBarPercentageFont: Font {
-        Font(NSFont.menuBarFont(ofSize: 11))
+        Font.system(size: 11)
     }
 
     var body: some View {
@@ -70,6 +56,7 @@ struct BatteryIndicatorView: View {
                 Text("\(batteryLevel)%")
                     .font(menuBarPercentageFont)
                     .fontWeight(.regular)
+                    .monospacedDigit()
             }
 
             HStack(spacing: 0) {
@@ -96,43 +83,15 @@ struct BatteryIndicatorView: View {
                 .overlay {
                     Group {
                         if shouldShowInsidePercentage {
-                            ZStack {
-                                Text("\(batteryLevel)")
-                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
-                                    .monospacedDigit()
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                    .foregroundStyle(insidePercentageOutlineColor)
-                                    .offset(x: -0.5, y: 0)
-                                Text("\(batteryLevel)")
-                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
-                                    .monospacedDigit()
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                    .foregroundStyle(insidePercentageOutlineColor)
-                                    .offset(x: 0.5, y: 0)
-                                Text("\(batteryLevel)")
-                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
-                                    .monospacedDigit()
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                    .foregroundStyle(insidePercentageOutlineColor)
-                                    .offset(x: 0, y: -0.5)
-                                Text("\(batteryLevel)")
-                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
-                                    .monospacedDigit()
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                    .foregroundStyle(insidePercentageOutlineColor)
-                                    .offset(x: 0, y: 0.5)
-                                Text("\(batteryLevel)")
-                                    .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
-                                    .monospacedDigit()
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                    .foregroundStyle(insidePercentageColor)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            Text("\(batteryLevel)")
+                                .font(.system(size: batteryLevel == 100 ? 7 : 8, weight: .black))
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                                .foregroundStyle(insidePercentageColor)
+                                .shadow(color: .black, radius: 0.5)
+                                .shadow(color: .black, radius: 0.5)
+                                .shadow(color: .black, radius: 0.5)
                         } else if chargingMode == .charging {
                             Image(systemName: "bolt.fill")
                                 .font(.system(size: 10, weight: .black))

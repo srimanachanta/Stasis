@@ -1413,6 +1413,9 @@
         }
       }
     },
+    "Percentage display location" : {
+
+    },
     "Power" : {
       "localizations" : {
         "de" : {
@@ -1588,6 +1591,7 @@
       }
     },
     "Show battery percentage" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1616,12 +1620,6 @@
       }
     },
     "Show battery state" : {
-
-    },
-    "Show outside percentage when on power" : {
-
-    },
-    "Show percentage inside icon on battery" : {
 
     },
     "Sleep Prevention" : {
