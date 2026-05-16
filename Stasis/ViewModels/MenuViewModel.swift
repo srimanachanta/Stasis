@@ -84,7 +84,6 @@ class MenuViewModel {
     }
 
     private func startObservingPowerMode() {
-        // Seed the initial value before subscribing so "read + subscribe" live in one place.
         isLowPowerModeEnabled = ProcessInfo.processInfo.isLowPowerModeEnabled
 
         powerModeObservation = Task { [weak self] in
@@ -93,9 +92,7 @@ class MenuViewModel {
                 object: ProcessInfo.processInfo
             )
             for await _ in notifications {
-                await MainActor.run {
-                    self?.isLowPowerModeEnabled = ProcessInfo.processInfo.isLowPowerModeEnabled
-                }
+                self?.isLowPowerModeEnabled = ProcessInfo.processInfo.isLowPowerModeEnabled
             }
         }
     }

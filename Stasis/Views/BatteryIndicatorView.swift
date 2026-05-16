@@ -130,7 +130,6 @@ struct BatteryTerminal: View {
             .font(.caption)
             .foregroundStyle(.secondary)
 
-        // Low Power Mode enabled — yellow, except critical level stays red
         ForEach([100, 50, 10, 5], id: \.self) { level in
             HStack(spacing: 20) {
                 BatteryIndicatorView(
