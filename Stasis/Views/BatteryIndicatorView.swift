@@ -119,7 +119,7 @@ struct BatteryIndicatorView: View {
     private var insideContent: some View {
         let blend: BlendMode = usesPassthrough ? .destinationOut : .normal
         return HStack(spacing: 1) {
-            Text("\(batteryLevel)")
+            Text(verbatim: "\(batteryLevel)")
                 .font(.system(size: 8, weight: .heavy))
                 .monospacedDigit()
             chargingGlyph
