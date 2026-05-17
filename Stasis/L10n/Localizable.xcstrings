@@ -818,35 +818,6 @@
     "Display battery percentage next to or inside the menu bar icon." : {
 
     },
-    "Display the current battery percentage next to the status icon in the menu bar." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Den aktuellen Batterieprozentsatz neben dem Statussymbol in der Menüleiste anzeigen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar el porcentaje de batería actual junto al ícono en la barra de menú."
-          }
-        },
-        "es-US" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar el porcentaje de batería actual junto al ícono en la barra de menú."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "メニューバーのステータスアイコンの横にバッテリー残量を表示します。"
-          }
-        }
-      }
-    },
     "Enable heat protection" : {
       "localizations" : {
         "de" : {
@@ -1413,9 +1384,6 @@
         }
       }
     },
-    "Percentage display location" : {
-
-    },
     "Power" : {
       "localizations" : {
         "de" : {
@@ -1586,35 +1554,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定"
-          }
-        }
-      }
-    },
-    "Show battery percentage" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Batterieprozentsatz anzeigen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar porcentaje de batería"
-          }
-        },
-        "es-US" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar porcentaje de batería"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バッテリー残量を表示"
           }
         }
       }

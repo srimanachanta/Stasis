@@ -15,7 +15,7 @@ struct GeneralSettingsView: View {
             }
 
             Section {
-                Picker("Percentage display location", selection: $batteryPercentageDisplayLocation) {
+                Picker("Show percentage", selection: $batteryPercentageDisplayLocation) {
                     Text("Hidden").tag(PercentageDisplayLocation.hidden)
                     Text("Next to icon").tag(PercentageDisplayLocation.nextToIcon)
                     Text("Inside icon").tag(PercentageDisplayLocation.insideIcon)
