@@ -5,9 +5,9 @@ import smc_power
 extension MagSafeLEDState: Defaults.Serializable {}
 
 enum PercentageDisplayLocation: String, Defaults.Serializable, CaseIterable, Identifiable {
-    case hidden = "Hidden"
-    case nextToIcon = "Next to Icon"
-    case insideIcon = "Inside Icon"
+    case hidden
+    case nextToIcon
+    case insideIcon
 
     var id: String { rawValue }
 }

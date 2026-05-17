@@ -16,9 +16,9 @@ struct GeneralSettingsView: View {
 
             Section {
                 Picker("Percentage display location", selection: $batteryPercentageDisplayLocation) {
-                    ForEach(PercentageDisplayLocation.allCases) { location in
-                        Text(LocalizedStringKey(location.rawValue)).tag(location)
-                    }
+                    Text("Hidden").tag(PercentageDisplayLocation.hidden)
+                    Text("Next to icon").tag(PercentageDisplayLocation.nextToIcon)
+                    Text("Inside icon").tag(PercentageDisplayLocation.insideIcon)
                 }
                 Toggle("Show battery state", isOn: $showBatteryStateInStatusIcon)
             } header: {
