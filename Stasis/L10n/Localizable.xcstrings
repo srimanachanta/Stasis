@@ -1017,6 +1017,12 @@
         }
       }
     },
+    "Hidden" : {
+
+    },
+    "Inside icon" : {
+
+    },
     "Launch at login" : {
       "localizations" : {
         "de" : {
@@ -1240,6 +1246,9 @@
           }
         }
       }
+    },
+    "Next to icon" : {
+
     },
     "Notifications" : {
       "localizations" : {
@@ -1556,6 +1565,9 @@
       }
     },
     "Show battery state" : {
+
+    },
+    "Show percentage" : {
 
     },
     "Sleep Prevention" : {
