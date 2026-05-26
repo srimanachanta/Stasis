@@ -2,10 +2,10 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%lld%%" : {
-
+      "shouldTranslate" : false
     },
     "%lld°C" : {
-
+      "shouldTranslate" : false
     },
     "Adapter" : {
       "localizations" : {
@@ -31,6 +31,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アダプタ"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bộ tiếp hợp"
           }
         },
         "zh-Hans" : {
@@ -67,6 +73,12 @@
             "value" : "このデバイスではアダプタの制御はサポートされていません。"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quản lý bộ tiếp hợp không được hỗ trợ trên thiết bị này."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -99,6 +111,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アダプタ電力"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thông số bộ tiếp hợp nguồn"
           }
         },
         "zh-Hans" : {
@@ -135,6 +153,12 @@
             "value" : "詳細"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nâng cao"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -144,7 +168,14 @@
       }
     },
     "Approve Stasis in System Settings → Login Items to continue." : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cho phép Stasis trong Cài đặt hệ thống → Mục đăng nhập để tiếp tục."
+          }
+        }
+      }
     },
     "Automatic discharge" : {
       "localizations" : {
@@ -172,6 +203,12 @@
             "value" : "自動放電"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tự động xả pin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -181,7 +218,14 @@
       }
     },
     "Automatically resume charging when the battery drops below the threshold relative to your charge limit." : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tự động sạc lại khi pin giảm xuống dưới ngưỡng giới hạn sạc"
+          }
+        }
+      }
     },
     "Battery" : {
       "localizations" : {
@@ -207,6 +251,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "バッテリー"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pin"
           }
         },
         "zh-Hans" : {
@@ -243,6 +293,12 @@
             "value" : "バッテリーの状態"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sức khỏe Pin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -275,6 +331,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "バッテリーモード"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chế độ Pin"
           }
         },
         "zh-Hans" : {
@@ -311,6 +373,12 @@
             "value" : "バッテリーモード"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chế độ pin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -343,6 +411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "バッテリー電力"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thông số nguồn Pin"
           }
         },
         "zh-Hans" : {
@@ -379,6 +453,12 @@
             "value" : "バッテリー測定値"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dữ liệu Pin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -413,6 +493,12 @@
             "value" : "バッテリー温度"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhiệt độ Pin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -422,10 +508,24 @@
       }
     },
     "Blinking Orange Fast" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhấp nháy cam nhanh"
+          }
+        }
+      }
     },
     "Blinking Orange Slow" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhấp nháy cam chậm"
+          }
+        }
+      }
     },
     "Charge limit" : {
       "localizations" : {
@@ -453,6 +553,12 @@
             "value" : "充電上限"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giới hạn sạc"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -462,7 +568,14 @@
       }
     },
     "Charge Limit Override" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bỏ qua giới hạn sạc"
+          }
+        }
+      }
     },
     "Charge Management" : {
       "localizations" : {
@@ -488,6 +601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "充電管理"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quản lý sạc"
           }
         },
         "zh-Hans" : {
@@ -524,6 +643,12 @@
             "value" : "このデバイスでは充電管理はサポートされていません。"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quản lý sạc không được hỗ trợ trên thiết bị này."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -556,6 +681,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "充電"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đang sạc"
           }
         },
         "zh-Hans" : {
@@ -592,6 +723,12 @@
             "value" : "このデバイスでは充電の制御はサポートされていません。"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Điều khiển sạc không được hỗ trợ trên thiết bị này."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -624,6 +761,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "充電を一時停止"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tạm dừng sạc"
           }
         },
         "zh-Hans" : {
@@ -660,6 +803,12 @@
             "value" : "充電を再開"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiếp tục sạc"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -692,6 +841,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "充電再開レベル"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiếp tục sạc khi đạt"
           }
         },
         "zh-Hans" : {
@@ -728,6 +883,12 @@
             "value" : "充電状態の変更"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trạng thái sạc đã thay đổi"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -760,6 +921,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再確認"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiểm tra lại"
           }
         },
         "zh-Hans" : {
@@ -796,6 +963,12 @@
             "value" : "Stasisが通知を送信するタイミングを制御します。"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quản lý thông báo từ Stasis"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -828,6 +1001,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "充放電回数"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Số chu kỳ sạc"
           }
         },
         "zh-Hans" : {
@@ -864,6 +1043,12 @@
             "value" : "充放電回数"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Số chu kỳ sạc"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -896,6 +1081,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ダッシュボード"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tổng quan"
           }
         },
         "zh-Hans" : {
@@ -932,6 +1123,12 @@
             "value" : "すべての通知を無効にする"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tắt tất cả thông báo"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -941,7 +1138,14 @@
       }
     },
     "Disable sleep until charge limit" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không ngủ cho đến khi đạt giới hạn sạc"
+          }
+        }
+      }
     },
     "Discharge" : {
       "localizations" : {
@@ -969,6 +1173,12 @@
             "value" : "放電"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xả pin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -978,10 +1188,24 @@
       }
     },
     "Discharge the battery to your charge limit when plugged in above the target level." : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xả pin về mức giới hạn khi cắm sạc nếu pin hiện tại cao hơn mức mục tiêu."
+          }
+        }
+      }
     },
     "Display battery percentage next to or inside the menu bar icon." : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiển thị phần trăm pin bên cạnh hoặc trong biểu tượng thanh menu."
+          }
+        }
+      }
     },
     "Enable heat protection" : {
       "localizations" : {
@@ -1009,6 +1233,12 @@
             "value" : "熱保護を有効にする"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bật bảo vệ quá nhiệt"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1018,7 +1248,14 @@
       }
     },
     "Enable sailing mode" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bật chế độ thả trôi pin"
+          }
+        }
+      }
     },
     "Failed to install charging helper" : {
       "localizations" : {
@@ -1046,6 +1283,12 @@
             "value" : "充電ヘルパーのインストールに失敗しました"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không thể cài đặt công cụ hỗ trợ sạc"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1055,7 +1298,14 @@
       }
     },
     "Force Discharge" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ép xả pin"
+          }
+        }
+      }
     },
     "General" : {
       "localizations" : {
@@ -1081,6 +1331,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一般"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chung"
           }
         },
         "zh-Hans" : {
@@ -1117,6 +1373,12 @@
             "value" : "メニューに表示されるシステムとバッテリーの状態情報。"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiển thị thông tin tổng quan về hệ thống và trạng thái pin trong menu thả xuống."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1149,6 +1411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "緑"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xanh lá"
           }
         },
         "zh-Hans" : {
@@ -1185,6 +1453,12 @@
             "value" : "状態"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tình trạng"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1219,6 +1493,12 @@
             "value" : "熱保護"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bảo vệ quá nhiệt"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1228,10 +1508,24 @@
       }
     },
     "Hidden" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ẩn"
+          }
+        }
+      }
     },
     "Inside icon" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trong biểu tượng"
+          }
+        }
+      }
     },
     "Launch at login" : {
       "localizations" : {
@@ -1257,6 +1551,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ログイン時に起動"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Khởi động cùng hệ thống"
           }
         },
         "zh-Hans" : {
@@ -1293,6 +1593,12 @@
             "value" : "熱保護中のLED"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đèn LED khi pin quá nhiệt"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1325,6 +1631,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "バッテリー寿命を延ばすために最大充電レベルを制限します。"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giới hạn mức sạc tối đa để kéo dài tuổi thọ pin."
           }
         },
         "zh-Hans" : {
@@ -1361,6 +1673,12 @@
             "value" : "MagSafe LEDの制御"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Điều khiển đèn MagSafe"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1393,6 +1711,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "このデバイスではMagSafe LEDの制御はサポートされていません。"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Điều khiển đèn MagSafe không được hỗ trợ trên thiết bị này."
           }
         },
         "zh-Hans" : {
@@ -1429,6 +1753,12 @@
             "value" : "充電を管理"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quản lý sạc"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1461,6 +1791,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MagSafe LEDを管理"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quản lý đèn MagSafe"
           }
         },
         "zh-Hans" : {
@@ -1497,6 +1833,12 @@
             "value" : "メニューバーアイコン"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biểu tượng menu"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1506,7 +1848,14 @@
       }
     },
     "Next to icon" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bên cạnh biểu tượng"
+          }
+        }
+      }
     },
     "Notifications" : {
       "localizations" : {
@@ -1532,6 +1881,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "通知"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thông báo"
           }
         },
         "zh-Hans" : {
@@ -1568,6 +1923,12 @@
             "value" : "オフ"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tắt"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1600,6 +1961,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đồng ý"
           }
         },
         "zh-Hans" : {
@@ -1636,6 +2003,12 @@
             "value" : "オレンジ"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cam"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1668,6 +2041,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "バッテリー温度がしきい値を超えた場合に充電を一時停止します。"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tạm dừng sạc khi nhiệt độ pin vượt quá ngưỡng quy định."
           }
         },
         "zh-Hans" : {
@@ -1704,6 +2083,12 @@
             "value" : "電力"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nguồn điện"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1736,6 +2121,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "電力分配図"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sơ đồ phân phối nguồn"
           }
         },
         "zh-Hans" : {
@@ -1772,6 +2163,12 @@
             "value" : "電源"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nguồn điện"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1806,6 +2203,12 @@
             "value" : "電源"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nguồn điện"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1815,7 +2218,14 @@
       }
     },
     "Prevent your Mac from sleeping while charging towards the charge limit. Sleep is re-enabled once the limit is reached or the adapter is disconnected." : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ngăn máy Mac chuyển sang chế độ ngủ khi đang sạc đến mức giới hạn. Chế độ ngủ sẽ tự động kích hoạt lại khi đạt mức giới hạn hoặc khi ngắt kết nối bộ sạc."
+          }
+        }
+      }
     },
     "Quit" : {
       "localizations" : {
@@ -1843,6 +2253,12 @@
             "value" : "終了"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thoát"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1852,7 +2268,14 @@
       }
     },
     "Sailing Mode" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chế độ thả trôi pin"
+          }
+        }
+      }
     },
     "Settings" : {
       "localizations" : {
@@ -1880,6 +2303,12 @@
             "value" : "設定"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cài đặt"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1889,10 +2318,23 @@
       }
     },
     "Show battery state" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiển thị trạng thái pin"
+          }
+        }
+      }
     },
     "Show percentage" : {
       "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiển thị phần trăm pin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1902,7 +2344,14 @@
       }
     },
     "Sleep Prevention" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ngăn chế độ ngủ"
+          }
+        }
+      }
     },
     "Startup" : {
       "localizations" : {
@@ -1928,6 +2377,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "起動"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Khởi động"
           }
         },
         "zh-Hans" : {
@@ -1964,6 +2419,12 @@
             "value" : "Stasisの設定"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cài đặt Stasis"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1996,6 +2457,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ステータス"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trạng thái"
           }
         },
         "zh-Hans" : {
@@ -2032,6 +2499,12 @@
             "value" : "温度"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhiệt độ"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2066,6 +2539,12 @@
             "value" : "温度制限"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Giới hạn nhiệt độ"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2075,7 +2554,14 @@
       }
     },
     "Threshold below limit" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ngưỡng dưới giới hạn"
+          }
+        }
+      }
     },
     "Time Remaining" : {
       "localizations" : {
@@ -2103,6 +2589,12 @@
             "value" : "残り時間"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thời gian còn lại"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2112,7 +2604,14 @@
       }
     },
     "Time until discharge" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thời gian dự kiến xả pin"
+          }
+        }
+      }
     },
     "Uptime" : {
       "localizations" : {
@@ -2140,6 +2639,12 @@
             "value" : "稼働時間"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thời gian hoạt động"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2149,10 +2654,24 @@
       }
     },
     "Use hardware percentage" : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dùng phần trăm pin từ phần cứng"
+          }
+        }
+      }
     },
     "Use the raw battery percentage instead of the macOS calibrated value." : {
-
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sử dụng phần trăm pin thực tế từ phần cứng thay vì giá trị đã được hiệu chuẩn của macOS."
+          }
+        }
+      }
     },
     "Visuals" : {
       "localizations" : {
@@ -2178,6 +2697,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "表示"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hình ảnh trực quan"
           }
         },
         "zh-Hans" : {
