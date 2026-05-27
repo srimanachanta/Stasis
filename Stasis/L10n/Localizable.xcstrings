@@ -7,6 +7,12 @@
     "%lld°C" : {
       "shouldTranslate" : false
     },
+    "About" : {
+
+    },
+    "About Stasis" : {
+
+    },
     "Adapter" : {
       "localizations" : {
         "de" : {
@@ -177,6 +183,9 @@
         }
       }
     },
+    "Auto-download to Downloads folder" : {
+
+    },
     "Automatic discharge" : {
       "localizations" : {
         "de" : {
@@ -216,6 +225,9 @@
           }
         }
       }
+    },
+    "Automatically check for updates" : {
+
     },
     "Automatically resume charging when the battery drops below the threshold relative to your charge limit." : {
       "localizations" : {
@@ -266,6 +278,9 @@
           }
         }
       }
+    },
+    "Battery and charging control for MacBook." : {
+
     },
     "Battery Health" : {
       "localizations" : {
@@ -526,6 +541,12 @@
           }
         }
       }
+    },
+    "brew upgrade --cask stasis" : {
+
+    },
+    "Built with a focus on practical battery health and charging workflows." : {
+
     },
     "Charge limit" : {
       "localizations" : {
@@ -937,6 +958,9 @@
         }
       }
     },
+    "Check for updates now" : {
+
+    },
     "Control when Stasis sends you notifications." : {
       "localizations" : {
         "de" : {
@@ -1096,6 +1120,9 @@
           }
         }
       }
+    },
+    "Developer" : {
+
     },
     "Disable all notifications" : {
       "localizations" : {
@@ -1897,6 +1924,9 @@
         }
       }
     },
+    "Notify only" : {
+
+    },
     "Off" : {
       "localizations" : {
         "de" : {
@@ -2353,6 +2383,9 @@
         }
       }
     },
+    "Srimana Achanta" : {
+
+    },
     "Startup" : {
       "localizations" : {
         "de" : {
@@ -2393,6 +2426,12 @@
         }
       }
     },
+    "Stasis" : {
+
+    },
+    "Stasis can check and download updates to your Downloads folder." : {
+
+    },
     "Stasis Settings" : {
       "localizations" : {
         "de" : {
@@ -2432,6 +2471,9 @@
           }
         }
       }
+    },
+    "Stasis was installed via Homebrew Cask. To update, run:" : {
+
     },
     "Status" : {
       "localizations" : {
@@ -2613,6 +2655,12 @@
         }
       }
     },
+    "Updates" : {
+
+    },
+    "Updates managed by Homebrew" : {
+
+    },
     "Uptime" : {
       "localizations" : {
         "de" : {
@@ -2712,6 +2760,9 @@
           }
         }
       }
+    },
+    "When updates are found" : {
+
     }
   },
   "version" : "1.1"

@@ -6,6 +6,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     case dashboard = "Dashboard"
     case charging = "Charging"
     case advanced = "Advanced"
+    case about = "About"
 
     var id: String { rawValue }
     
@@ -15,6 +16,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
             case .dashboard: return "Dashboard"
             case .charging: return "Charging"
             case .advanced: return "Advanced"
+            case .about: return "About"
             }
     }
 
@@ -23,11 +25,13 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .general:
             return "gearshape"
         case .dashboard:
-            return "chart.xyaxis.line"
+            return "square.grid.2x2"
         case .charging:
             return "battery.100.bolt"
         case .advanced:
-            return "slider.horizontal.3"
+            return "gearshape.2"
+        case .about:
+            return "info.circle"
         }
     }
 }
@@ -36,9 +40,11 @@ struct SettingsView: View {
     @State private var selectedTab: SettingsTab = .general
 
     private let capabilities: DeviceCapabilities
+    private let updaterService: UpdaterService
 
-    init(capabilities: DeviceCapabilities) {
+    init(capabilities: DeviceCapabilities, updaterService: UpdaterService) {
         self.capabilities = capabilities
+        self.updaterService = updaterService
     }
 
     var body: some View {
@@ -64,6 +70,8 @@ struct SettingsView: View {
                     ChargingSettingsView(capabilities: capabilities)
                 case .advanced:
                     AdvancedSettingsView()
+                case .about:
+                    AboutSettingsView(updaterService: updaterService)
                 }
             }
             .navigationTitle(selectedTab.title)
@@ -79,6 +87,7 @@ struct SettingsView: View {
             adapterControl: true,
             hasMagSafe: true,
             magsafeLEDControl: true
-        )
+        ),
+        updaterService: UpdaterService.shared
     )
 }

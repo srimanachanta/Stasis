@@ -12,8 +12,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var chargeManager: ChargeManager!
     private var settingsWindowController: SettingsWindowController!
     private var menu: NSMenu!
+    private let updaterService = UpdaterService.shared
     private var settingsObservation: Task<Void, Never>?
     private var adapterObservation: Task<Void, Never>?
+    private var isMenuOpen = false
+    private var needsMenuRebuild = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Exit the app immediately if the device doesn't have a battery
@@ -31,6 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             await setupServices()
             setupMenu()
             requestNotificationPermissions()
+            updaterService.startIfAvailable()
         }
     }
 
@@ -43,7 +47,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             chargeManager: chargeManager
         )
         settingsWindowController = SettingsWindowController(
-            capabilities: batteryService.deviceCapabilities)
+            capabilities: batteryService.deviceCapabilities,
+            updaterService: updaterService
+        )
         menuBuilder = MenuBuilder(
             viewModel: viewModel,
             settingsWindowController: settingsWindowController
@@ -65,7 +71,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                     .showPowerSource, .showTimeTillDischarge, .showBatteryCycleCount,
                     .showBatteryHealth, .showBatteryTemperature, .showUptime,
                     .showBatteryMode, .showInternalPower, .showExternalPower,
-                    .showPowerDistribution, .manageCharging,
+                    .showPowerDistribution,
+                    .manageCharging,
                 ],
                 initial: false
             ) {
@@ -91,7 +98,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func rebuildMenu() {
+        guard !isMenuOpen else {
+            needsMenuRebuild = true
+            return
+        }
         menuBuilder.populateMenu(menu)
+        needsMenuRebuild = false
     }
 
     private func requestNotificationPermissions() {
@@ -101,10 +113,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func menuWillOpen(_ menu: NSMenu) {
+        isMenuOpen = true
         viewModel.menuWillOpen()
     }
 
     func menuDidClose(_ menu: NSMenu) {
+        isMenuOpen = false
+        if needsMenuRebuild {
+            rebuildMenu()
+        }
         viewModel.menuDidClose()
     }
 }

@@ -59,3 +59,12 @@ extension Defaults.Keys {
     // Advanced
     static let useHardwarePercentage = Key<Bool>("useHardwarePercentage", default: false)
 }
+
+extension Defaults.Keys {
+    // Updates
+    static let automaticallyCheckForUpdates = Key<Bool>("automaticallyCheckForUpdates", default: true)
+    static let updateAutomationMode = Key<UpdaterService.UpdateAutomationMode>(
+        "updateAutomationMode",
+        default: .notify
+    )
+}
