@@ -7,3 +7,4 @@ playground.xcworkspace
 
 build/
 .claude/
+.DS_Store
