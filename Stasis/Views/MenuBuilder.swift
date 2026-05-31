@@ -144,9 +144,21 @@ class MenuBuilder {
                     view: PowerSankeyViewWrapper(viewModel: viewModel)
                 )
             )
+            if shouldShowOutputPortsTextRow {
+                items.append(
+                    createInfoItem(
+                        label: String(localized: "Output Ports"),
+                        keyPath: \.outputPortDetailsText
+                    )
+                )
+            }
         }
 
         return items
+    }
+
+    private var shouldShowOutputPortsTextRow: Bool {
+        Defaults[.showOutputPortsText]
     }
 
     private func buildHardwareSection() -> [NSMenuItem] {
@@ -233,13 +245,30 @@ struct BatteryAdditionalInfoObserverView: View {
 struct PowerSankeyViewWrapper: View {
     let viewModel: MenuViewModel
 
+    private var shouldShowOutput: Bool {
+        switch Defaults[.outputVisualizationMode] {
+        case .off:
+            return false
+        case .powerOnly:
+            return viewModel.adapterConnected
+        case .batteryOnly:
+            return !viewModel.adapterConnected
+        case .always:
+            return true
+        }
+    }
+
     var body: some View {
         PowerSankeyView(
             powerSource: viewModel.powerSource,
             isCharging: viewModel.isCharging,
             batteryPower: viewModel.batteryPower,
             adapterPower: viewModel.adapterPower,
-            systemPower: viewModel.systemPower
+            systemPower: viewModel.systemPower,
+            outputPower: shouldShowOutput ? viewModel.outputPower : 0,
+            outputPortPowers: shouldShowOutput
+                ? viewModel.outputPortPowers.map(\.powerWatts)
+                : []
         )
     }
 }

@@ -6,6 +6,15 @@ struct PowerSankeyView: View {
     let batteryPower: Double
     let adapterPower: Double
     let systemPower: Double
+    let outputPower: Double
+    let outputPortPowers: [Double]
+
+    private var twoOutputIcons: (first: String, second: String) {
+        guard outputPortPowers.count >= 2 else { return ("iphone", "display") }
+        return outputPortPowers[0] >= outputPortPowers[1]
+            ? ("iphone", "display")
+            : ("display", "iphone")
+    }
 
     private enum Layout {
         static let nodeWidth: CGFloat = 60
@@ -37,21 +46,49 @@ struct PowerSankeyView: View {
 
     @ViewBuilder
     private var flowsAndLabels: some View {
+        let hasAnyOutput = outputPower > 0
+        let hasTwoOutputs = outputPortPowers.count >= 2
         switch powerSource {
         case .acAdapter:
             if batteryPower > 0 {
                 Canvas { context, size in
-                    drawSplitSankeyFlow(context: context, size: size)
+                    if outputPower > 0 {
+                        drawTripleSplitSankeyFlow(context: context, size: size)
+                    } else {
+                        drawSplitSankeyFlow(context: context, size: size)
+                    }
                 }
-                VStack(spacing: Layout.powerLabelSpacing) {
+                VStack(spacing: outputPower > 0 ? 22 : Layout.powerLabelSpacing) {
                     PowerLabel(power: batteryPower)
                     PowerLabel(power: systemPower)
+                    if outputPower > 0 {
+                        PowerLabel(power: outputPower)
+                    }
                 }
             } else {
                 Canvas { context, size in
-                    drawSimpleFlow(context: context, size: size)
+                    if outputPortPowers.count >= 2 {
+                        drawTripleSplitSankeyFlow(context: context, size: size)
+                    } else if outputPower > 0 {
+                        drawSplitSankeyFlow(context: context, size: size)
+                    } else {
+                        drawSimpleFlow(context: context, size: size)
+                    }
                 }
-                PowerLabel(power: adapterPower)
+                if outputPortPowers.count >= 2 {
+                    VStack(spacing: 22) {
+                        PowerLabel(power: systemPower)
+                        PowerLabel(power: outputPortPowers[0])
+                        PowerLabel(power: outputPortPowers[1])
+                    }
+                } else if outputPower > 0 {
+                    VStack(spacing: Layout.powerLabelSpacing) {
+                        PowerLabel(power: systemPower)
+                        PowerLabel(power: outputPower)
+                    }
+                } else {
+                    PowerLabel(power: adapterPower)
+                }
             }
 
         case .both:
@@ -65,15 +102,35 @@ struct PowerSankeyView: View {
 
         case .battery:
             Canvas { context, size in
-                drawSimpleFlow(context: context, size: size)
+                if hasTwoOutputs {
+                    drawTripleSplitSankeyFlow(context: context, size: size)
+                } else if hasAnyOutput {
+                    drawSplitSankeyFlow(context: context, size: size)
+                } else {
+                    drawSimpleFlow(context: context, size: size)
+                }
             }
-            PowerLabel(power: systemPower)
+            if hasTwoOutputs {
+                VStack(spacing: 22) {
+                    PowerLabel(power: systemPower)
+                    PowerLabel(power: outputPortPowers[0])
+                    PowerLabel(power: outputPortPowers[1])
+                }
+            } else if hasAnyOutput {
+                VStack(spacing: Layout.powerLabelSpacing) {
+                    PowerLabel(power: systemPower)
+                    PowerLabel(power: outputPower)
+                }
+            } else {
+                PowerLabel(power: systemPower)
+            }
         }
     }
 
     @ViewBuilder
     private var leftNodes: some View {
-        VStack {
+        let hasAnyOutput = outputPower > 0
+        VStack(spacing: 0) {
             switch powerSource {
             case .acAdapter:
                 if batteryPower > 0 {
@@ -84,25 +141,41 @@ struct PowerSankeyView: View {
                     )
                     .frame(height: Layout.largeNodeHeight)
                 } else {
-                    NodeView(
-                        icon: "powerplug.fill",
-                        value: nil,
-                        isLeftSide: true
-                    )
+                    if hasAnyOutput {
+                        NodeView(
+                            icon: "powerplug.fill",
+                            value: nil,
+                            isLeftSide: true
+                        )
+                        .frame(height: Layout.largeNodeHeight)
+                    } else {
+                        NodeView(
+                            icon: "powerplug.fill",
+                            value: nil,
+                            isLeftSide: true
+                        )
+                    }
                 }
             case .both:
                 NodeView(icon: "battery.100", value: nil, isLeftSide: true)
                 Spacer(minLength: Layout.spacerHeight)
                 NodeView(icon: "powerplug.fill", value: nil, isLeftSide: true)
             case .battery:
-                NodeView(icon: "battery.100", value: nil, isLeftSide: true)
+                if hasAnyOutput {
+                    NodeView(icon: "battery.100", value: nil, isLeftSide: true)
+                        .frame(height: Layout.largeNodeHeight)
+                } else {
+                    NodeView(icon: "battery.100", value: nil, isLeftSide: true)
+                }
             }
         }
     }
 
     @ViewBuilder
     private var rightNodes: some View {
-        VStack {
+        VStack(spacing: 0) {
+            let hasTwoOutputs = outputPortPowers.count >= 2
+            let hasAnyOutput = outputPower > 0
             switch powerSource {
             case .acAdapter:
                 if batteryPower > 0 {
@@ -117,12 +190,36 @@ struct PowerSankeyView: View {
                         value: nil,
                         isLeftSide: false
                     )
+                    if outputPower > 0 {
+                        Spacer(minLength: Layout.spacerHeight)
+                        NodeView(
+                            icon: "iphone",
+                            value: nil,
+                            isLeftSide: false
+                        )
+                    }
                 } else {
                     NodeView(
                         icon: "laptopcomputer",
                         value: nil,
                         isLeftSide: false
                     )
+                    if outputPower > 0 {
+                        Spacer(minLength: Layout.spacerHeight)
+                        NodeView(
+                            icon: hasTwoOutputs ? twoOutputIcons.first : "iphone",
+                            value: nil,
+                            isLeftSide: false
+                        )
+                        if hasTwoOutputs {
+                            Spacer(minLength: Layout.spacerHeight)
+                            NodeView(
+                                icon: twoOutputIcons.second,
+                                value: nil,
+                                isLeftSide: false
+                            )
+                        }
+                    }
                 }
             case .both:
                 NodeView(
@@ -133,6 +230,16 @@ struct PowerSankeyView: View {
                 .frame(height: Layout.largeNodeHeight)
             case .battery:
                 NodeView(icon: "laptopcomputer", value: nil, isLeftSide: false)
+                if hasAnyOutput {
+                    Spacer(minLength: Layout.spacerHeight)
+                    if hasTwoOutputs {
+                        NodeView(icon: "iphone", value: nil, isLeftSide: false)
+                        Spacer(minLength: Layout.spacerHeight)
+                        NodeView(icon: "display", value: nil, isLeftSide: false)
+                    } else {
+                        NodeView(icon: "iphone", value: nil, isLeftSide: false)
+                    }
+                }
             }
         }
     }
@@ -189,6 +296,40 @@ struct PowerSankeyView: View {
                 y: size.height / 2 + Layout.largeNodeHeight / 2
             ),
             topRight: CGPoint(x: rightX, y: size.height - smallHeight),
+            bottomRight: CGPoint(x: rightX, y: size.height)
+        )
+    }
+
+    private func drawTripleSplitSankeyFlow(context: GraphicsContext, size: CGSize) {
+        let leftX = Layout.nodeWidth + Layout.gap
+        let rightX = size.width - Layout.nodeWidth - Layout.gap
+
+        let totalGap = Layout.spacerHeight * 2
+        let segmentHeight = (size.height - totalGap) / 3
+        let midY = size.height / 2
+        let leftTop = midY - Layout.largeNodeHeight / 2
+
+        drawTube(
+            context: context,
+            topLeft: CGPoint(x: leftX, y: leftTop),
+            bottomLeft: CGPoint(x: leftX, y: leftTop + Layout.largeNodeHeight / 3),
+            topRight: CGPoint(x: rightX, y: 0),
+            bottomRight: CGPoint(x: rightX, y: segmentHeight)
+        )
+
+        drawTube(
+            context: context,
+            topLeft: CGPoint(x: leftX, y: leftTop + Layout.largeNodeHeight / 3),
+            bottomLeft: CGPoint(x: leftX, y: leftTop + (2 * Layout.largeNodeHeight / 3)),
+            topRight: CGPoint(x: rightX, y: segmentHeight + Layout.spacerHeight),
+            bottomRight: CGPoint(x: rightX, y: (2 * segmentHeight) + Layout.spacerHeight)
+        )
+
+        drawTube(
+            context: context,
+            topLeft: CGPoint(x: leftX, y: leftTop + (2 * Layout.largeNodeHeight / 3)),
+            bottomLeft: CGPoint(x: leftX, y: leftTop + Layout.largeNodeHeight),
+            topRight: CGPoint(x: rightX, y: (2 * segmentHeight) + (2 * Layout.spacerHeight)),
             bottomRight: CGPoint(x: rightX, y: size.height)
         )
     }
@@ -297,12 +438,12 @@ struct NodeView: View {
 }
 
 #Preview {
-    let items: [(PowerSource, Bool, Double, Double, Double)] = [
-        (.both, false, -20.16, 36.0, 56.16),
-        (.acAdapter, true, 20.0, 30.0, 10.0),
-        (.battery, false, -18.63, 0.0, 18.63),
-        (.acAdapter, false, 0.0, 25.0, 25.0),
-        (.acAdapter, false, 23, 39, 16),
+    let items: [(PowerSource, Bool, Double, Double, Double, Double, [Double])] = [
+        (.both, false, -20.16, 36.0, 56.16, 0, []),
+        (.acAdapter, true, 20.0, 30.0, 7.0, 3.0, [3.0]),
+        (.battery, false, -18.63, 0.0, 18.63, 0, []),
+        (.acAdapter, false, 0.0, 25.0, 11.0, 14.0, [9.0, 5.0]),
+        (.acAdapter, false, 23, 39, 16, 0, []),
     ]
     LazyVGrid(
         columns: [
@@ -316,7 +457,9 @@ struct NodeView: View {
                 isCharging: item.1,
                 batteryPower: item.2,
                 adapterPower: item.3,
-                systemPower: item.4
+                systemPower: item.4,
+                outputPower: item.5,
+                outputPortPowers: item.6
             )
             .frame(height: 125)
         }

@@ -12,6 +12,8 @@ struct DashboardSettingsView: View {
     @Default(.showInternalPower) var showInternalPower
     @Default(.showExternalPower) var showExternalPower
     @Default(.showPowerDistribution) var showPowerDistribution
+    @Default(.showOutputPortsText) var showOutputPortsText
+    @Default(.outputVisualizationMode) var outputVisualizationMode
 
     var body: some View {
         Form {
@@ -44,6 +46,15 @@ struct DashboardSettingsView: View {
 
             Section("Visuals") {
                 Toggle("Power distribution diagram", isOn: $showPowerDistribution)
+                Picker("Show outgoing output", selection: $outputVisualizationMode) {
+                    Text("Off").tag(OutputVisualizationMode.off)
+                    Text("Power Only").tag(OutputVisualizationMode.powerOnly)
+                    Text("Battery Only").tag(OutputVisualizationMode.batteryOnly)
+                    Text("Always").tag(OutputVisualizationMode.always)
+                }
+                .disabled(!showPowerDistribution)
+                Toggle("Output ports text row", isOn: $showOutputPortsText)
+                    .disabled(!showPowerDistribution)
             }
         }
         .formStyle(.grouped)

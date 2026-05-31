@@ -68,4 +68,18 @@ final class Helper: NSObject, HelperProtocol {
             reply(false, false, false, false)
         }
     }
+
+    func getOutputTelemetrySMCKeyAvailability(
+        reply: @escaping @Sendable ([String]) -> Void
+    ) {
+        do {
+            let available = try SMCPowerTelemetry.availableCandidateKeys()
+            reply(available)
+        } catch {
+            logger.error(
+                "Failed to probe output telemetry SMC key availability: \(error.localizedDescription)"
+            )
+            reply([])
+        }
+    }
 }

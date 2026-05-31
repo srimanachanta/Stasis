@@ -26,6 +26,9 @@ class MenuViewModel {
     var batteryPower: Double = 0
     var adapterPower: Double = 0
     var systemPower: Double = 0
+    var outputPower: Double = 0
+    var outputPortPowers: [OutputPortPower] = []
+    var outputPortDetailsText: String = "None"
     var powerSource: PowerSource = .battery
     var isCharging: Bool = false
     var isLowPowerModeEnabled: Bool = false
@@ -38,6 +41,8 @@ class MenuViewModel {
     private var metricsObservation: Task<Void, Never>?
     private var settingsObservation: Task<Void, Never>?
     private var uptimeTask: Task<Void, Never>?
+    private var stableOutputPorts: [OutputPortPower] = []
+    private var outputPortsHoldUntil: Date = .distantPast
     private var powerModeObservation: Task<Void, Never>?
 
     init(batteryService: BatteryService, chargeManager: ChargeManager) {
@@ -162,7 +167,37 @@ class MenuViewModel {
 
         batteryPower = metrics.batteryPower
         adapterPower = adapter.adapterPower
-        systemPower = adapter.adapterPower - metrics.batteryPower
+        let totalLoadPower: Double = {
+            if adapter.adapterConnected {
+                return max(0, adapter.adapterPower - metrics.batteryPower)
+            }
+            return max(0, -metrics.batteryPower)
+        }()
+        let preferredOutputPower = max(0, metrics.outputPower)
+        let rawOutputPower = preferredOutputPower
+
+        let now = Date()
+        if metrics.outputPorts.isEmpty, now < outputPortsHoldUntil, !stableOutputPorts.isEmpty {
+            outputPortPowers = stableOutputPorts
+        } else {
+            outputPortPowers = metrics.outputPorts
+            if !outputPortPowers.isEmpty {
+                stableOutputPorts = outputPortPowers
+                outputPortsHoldUntil = now.addingTimeInterval(2.5)
+            }
+        }
+
+        let portsOutputPower = outputPortPowers.reduce(0) { $0 + $1.powerWatts }
+        outputPower = min(totalLoadPower, max(portsOutputPower, min(totalLoadPower, rawOutputPower)))
+        systemPower = max(0, totalLoadPower - outputPower)
+
+        if outputPortPowers.isEmpty {
+            outputPortDetailsText = "None"
+        } else {
+            outputPortDetailsText = outputPortPowers
+                .map { "Port \($0.portIndex): \(Int($0.powerWatts.rounded())) W" }
+                .joined(separator: " • ")
+        }
         powerSource = derivedPowerSource
         isCharging = metrics.isCharging
         adapterConnected = adapter.adapterConnected

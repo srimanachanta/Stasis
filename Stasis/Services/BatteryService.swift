@@ -48,6 +48,9 @@ class BatteryService {
         logger.info("BatteryService initialized")
         xpcManager.connect()
         startIOKitMonitoring()
+        Task { [weak self] in
+            await self?.logOutputTelemetrySMCKeyAvailability()
+        }
     }
 
     func loadCapabilities() async {
@@ -301,6 +304,36 @@ class BatteryService {
             throw XPCError.helperUnavailable
         }
         return helper
+    }
+
+    private func logOutputTelemetrySMCKeyAvailability() async {
+        let logger = self.logger
+        guard
+            let helper = xpcManager.getHelper(errorHandler: { error in
+                logger.error(
+                    "XPC error probing output telemetry SMC keys: \(error.localizedDescription)"
+                )
+            })
+        else {
+            logger.warning("Helper unavailable for output telemetry SMC key probe")
+            return
+        }
+
+        let keys = await withCheckedContinuation { continuation in
+            helper.getOutputTelemetrySMCKeyAvailability { keys in
+                continuation.resume(returning: keys)
+            }
+        }
+
+        if keys.isEmpty {
+            logger.info(
+                "Output telemetry SMC candidate keys not found (PDTR/PSTR/PMVR/AC-W)"
+            )
+        } else {
+            logger.info(
+                "Output telemetry SMC candidate keys available: \(keys.joined(separator: ", "))"
+            )
+        }
     }
 
     func stop() {
