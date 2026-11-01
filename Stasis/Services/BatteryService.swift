@@ -51,33 +51,29 @@ class BatteryService {
     }
 
     func loadCapabilities() async {
-        let logger = self.logger
         guard
-            let helper = xpcManager.getHelper(errorHandler: { error in
-                logger.error(
-                    "XPC error loading capabilities: \(error.localizedDescription)")
-            })
+            let smcCapabilities: DeviceCapabilities = await callReaderHelper(
+                "loading capabilities",
+                { helper, reply in
+                    helper.getCapabilities {
+                        chargingControl, adapterControl, hasMagSafe, magsafeLEDControl in
+                        reply(
+                            DeviceCapabilities(
+                                chargingControl: chargingControl,
+                                adapterControl: adapterControl,
+                                hasMagSafe: hasMagSafe,
+                                magsafeLEDControl: magsafeLEDControl
+                            ))
+                    }
+                })
         else {
             logger.warning("Helper unavailable for capability probe")
             return
         }
 
-        let capabilities: DeviceCapabilities = await withCheckedContinuation { continuation in
-            helper.getCapabilities { chargingControl, adapterControl, hasMagSafe, magsafeLEDControl in
-                continuation.resume(
-                    returning: DeviceCapabilities(
-                        chargingControl: chargingControl,
-                        adapterControl: adapterControl,
-                        hasMagSafe: hasMagSafe,
-                        magsafeLEDControl: magsafeLEDControl
-                    )
-                )
-            }
-        }
-
-        self.deviceCapabilities = capabilities
+        self.deviceCapabilities = smcCapabilities
         logger.info(
-            "Capabilities loaded: charging=\(capabilities.chargingControl), adapter=\(capabilities.adapterControl), magSafe=\(capabilities.hasMagSafe)"
+            "Capabilities loaded: charging=\(smcCapabilities.chargingControl), adapter=\(smcCapabilities.adapterControl), magSafe=\(smcCapabilities.hasMagSafe)"
         )
     }
 
@@ -130,51 +126,50 @@ class BatteryService {
     }
 
     private func fetchSMCBatteryData() async -> SMCBatteryReading? {
-        let logger = self.logger
-        guard
-            let helper = xpcManager.getHelper(errorHandler: { error in
-                logger.error(
-                    "XPC error during SMC battery poll: \(error.localizedDescription)"
-                )
-            })
-        else {
-            return nil
-        }
-
-        return await withCheckedContinuation { continuation in
+        await callReaderHelper("during SMC battery poll") { helper, reply in
             helper.readBatteryMetrics { batteryVoltage, batteryCurrent, batteryPower in
-                continuation.resume(
-                    returning: SMCBatteryReading(
+                reply(
+                    SMCBatteryReading(
                         batteryVoltage: batteryVoltage,
                         batteryCurrent: batteryCurrent,
                         batteryPower: batteryPower
-                    )
-                )
+                    ))
             }
         }
     }
 
     private func fetchSMCAdapterData() async -> SMCAdapterReading? {
-        let logger = self.logger
-        guard
-            let helper = xpcManager.getHelper(errorHandler: { error in
-                logger.error(
-                    "XPC error during SMC adapter poll: \(error.localizedDescription)"
-                )
-            })
-        else {
-            return nil
-        }
-
-        return await withCheckedContinuation { continuation in
+        await callReaderHelper("during SMC adapter poll") { helper, reply in
             helper.readAdapterMetrics { adapterVoltage, adapterCurrent, adapterPower in
-                continuation.resume(
-                    returning: SMCAdapterReading(
+                reply(
+                    SMCAdapterReading(
                         adapterVoltage: adapterVoltage,
                         adapterCurrent: adapterCurrent,
                         adapterPower: adapterPower
-                    )
-                )
+                    ))
+            }
+        }
+    }
+
+    private func callReaderHelper<Reading: Sendable>(
+        _ context: String,
+        _ request: (HelperProtocol, @escaping @Sendable (Reading) -> Void) -> Void
+    ) async -> Reading? {
+        let logger = self.logger
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Reading?, Never>) in
+            // XPC invokes either the reply or the error handler, never both. The error handler must
+            // resume the continuation, otherwise a crashed reader service hangs the caller.
+            guard
+                let helper = xpcManager.getHelper(errorHandler: { error in
+                    logger.error("XPC error \(context): \(error.localizedDescription)")
+                    continuation.resume(returning: nil)
+                })
+            else {
+                continuation.resume(returning: nil)
+                return
+            }
+            request(helper) { reading in
+                continuation.resume(returning: reading)
             }
         }
     }
@@ -250,37 +245,38 @@ class BatteryService {
     }
 
     func manageBatteryCharging(enabled: Bool) async throws {
-        let helper = try getChargingHelper()
-        try await withCheckedThrowingContinuation { continuation in
-            helper.manageBatteryCharging(enabled: enabled) { success, errorMessage in
-                if success {
-                    continuation.resume()
-                } else {
-                    continuation.resume(
-                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
-                }
-            }
+        try await callChargingHelper { helper, reply in
+            helper.manageBatteryCharging(enabled: enabled, reply: reply)
         }
     }
 
     func manageExternalPower(enabled: Bool) async throws {
-        let helper = try getChargingHelper()
-        try await withCheckedThrowingContinuation { continuation in
-            helper.manageExternalPower(enabled: enabled) { success, errorMessage in
-                if success {
-                    continuation.resume()
-                } else {
-                    continuation.resume(
-                        throwing: XPCError.commandFailed(errorMessage ?? "Unknown error"))
-                }
-            }
+        try await callChargingHelper { helper, reply in
+            helper.manageExternalPower(enabled: enabled, reply: reply)
         }
     }
 
     func manageMagsafeLED(target: MagSafeLEDState) async throws {
-        let helper = try getChargingHelper()
-        try await withCheckedThrowingContinuation { continuation in
-            helper.manageMagsafeLED(target: target.rawValue) { success, errorMessage in
+        try await callChargingHelper { helper, reply in
+            helper.manageMagsafeLED(target: target.rawValue, reply: reply)
+        }
+    }
+
+    private func callChargingHelper(
+        _ command: (ChargingHelperProtocol, @escaping @Sendable (Bool, String?) -> Void) -> Void
+    ) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            // XPC invokes either the reply or the error handler, never both. The error
+            // handler must resume the continuation, otherwise a missing daemon hangs the caller.
+            guard
+                let helper = ChargingHelperManager.shared.getHelper(errorHandler: { error in
+                    continuation.resume(throwing: error)
+                })
+            else {
+                continuation.resume(throwing: XPCError.helperUnavailable)
+                return
+            }
+            command(helper) { success, errorMessage in
                 if success {
                     continuation.resume()
                 } else {
@@ -289,18 +285,6 @@ class BatteryService {
                 }
             }
         }
-    }
-
-    private func getChargingHelper() throws -> ChargingHelperProtocol {
-        let logger = self.logger
-        guard
-            let helper = ChargingHelperManager.shared.getHelper(errorHandler: { error in
-                logger.error("Charging helper XPC error: \(error.localizedDescription)")
-            })
-        else {
-            throw XPCError.helperUnavailable
-        }
-        return helper
     }
 
     func stop() {
