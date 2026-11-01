@@ -270,6 +270,9 @@
         }
       }
     },
+    "Battery %lld percent" : {
+
+    },
     "Battery Health" : {
       "localizations" : {
         "de" : {
@@ -659,6 +662,9 @@
           }
         }
       }
+    },
+    "charging" : {
+
     },
     "Charging" : {
       "localizations" : {
@@ -1653,6 +1659,9 @@
         }
       }
     },
+    "low power mode" : {
+
+    },
     "macOS did not apply the charge limit (expected %@, got %@)." : {
       "localizations" : {
         "en" : {
@@ -2075,6 +2084,9 @@
           }
         }
       }
+    },
+    "plugged in" : {
+
     },
     "Power" : {
       "localizations" : {
