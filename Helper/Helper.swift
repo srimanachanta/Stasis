@@ -1,6 +1,7 @@
 import Foundation
 import os.log
 import smc_power
+import smc_types
 
 private enum Constants {
     static let helperSubsystem = "com.srimanachanta.stasis.helper"
@@ -51,9 +52,11 @@ final class Helper: NSObject, HelperProtocol {
         do {
             let battery = try SMCBattery.probe()
             let adapter = try SMCAdapter.probe()
-            let capabilities = DeviceCapabilities.from(
-                battery: battery.capabilities,
-                adapter: adapter.capabilities
+            let capabilities = DeviceCapabilities(
+                chargingControl: battery.capabilities.inhibitChargeControl,
+                adapterControl: battery.capabilities.forceDischargeControl,
+                hasMagSafe: adapter.capabilities.magSafeControl,
+                magsafeLEDControl: adapter.capabilities.magSafeControl
             )
             logger.info(
                 "Probed capabilities (charging=\(capabilities.chargingControl), adapter=\(capabilities.adapterControl), magSafe=\(capabilities.hasMagSafe))"

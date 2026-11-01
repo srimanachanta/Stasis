@@ -12,8 +12,12 @@
 		A66D62DD2F44069900B996E7 /* smc_power.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; };
 		A66D62E22F44076F00B996E7 /* SMCKit in Frameworks */ = {isa = PBXBuildFile; productRef = A66D62E12F44076F00B996E7 /* SMCKit */; };
 		A68B3E292F19ABCB00F115E4 /* helper.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = A68B3E1E2F19ABCB00F115E4 /* helper.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		A6AE19892F480D41003B09FA /* smc_power.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; };
 		A6AE198A2F480D41003B09FA /* smc_power.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6C7000A2F50000000C0FFEE /* smc_types.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6C700002F50000000C0FFEE /* smc_types.framework */; };
+		A6C7000B2F50000000C0FFEE /* smc_types.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6C700002F50000000C0FFEE /* smc_types.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A6C7000C2F50000000C0FFEE /* smc_types.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6C700002F50000000C0FFEE /* smc_types.framework */; };
+		A6C7000D2F50000000C0FFEE /* smc_types.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6C700002F50000000C0FFEE /* smc_types.framework */; };
+		A6C7000E2F50000000C0FFEE /* smc_types.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6C700002F50000000C0FFEE /* smc_types.framework */; };
 		A6E6D7322F3A00000069CF9F /* charging-helper in Embed Charging Helper */ = {isa = PBXBuildFile; fileRef = A6E6D71E2F39DD350069CF9F /* charging-helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -46,6 +50,34 @@
 			remoteGlobalIDString = A66D62CD2F44067C00B996E7;
 			remoteInfo = "smc-power";
 		};
+		A6C7000F2F50000000C0FFEE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A6C700022F50000000C0FFEE;
+			remoteInfo = "smc-types";
+		};
+		A6C700112F50000000C0FFEE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A6C700022F50000000C0FFEE;
+			remoteInfo = "smc-types";
+		};
+		A6C700132F50000000C0FFEE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A6C700022F50000000C0FFEE;
+			remoteInfo = "smc-types";
+		};
+		A6C700152F50000000C0FFEE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A6C700022F50000000C0FFEE;
+			remoteInfo = "smc-types";
+		};
 		A6E6D7302F3A00000069CF9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
@@ -74,6 +106,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				A6AE198A2F480D41003B09FA /* smc_power.framework in Embed Frameworks */,
+				A6C7000B2F50000000C0FFEE /* smc_types.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,23 +129,24 @@
 		A67470412FA4F4EA00925FF2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A68B3E0C2F19AB4B00F115E4 /* stasis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = stasis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A68B3E1E2F19ABCB00F115E4 /* helper.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = helper.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6C700002F50000000C0FFEE /* smc_types.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = smc_types.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6E6D71E2F39DD350069CF9F /* charging-helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "charging-helper"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A6AE1A382F484C94003B09FA /* Exceptions for "Helper" folder in "helper" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
-		};
 		A6AE1A372F484C94003B09FA /* Exceptions for "Helper" folder in "stasis" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				HelperProtocol.swift,
 			);
 			target = A68B3E0B2F19AB4B00F115E4 /* stasis */;
+		};
+		A6AE1A382F484C94003B09FA /* Exceptions for "Helper" folder in "helper" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
 		};
 		A6E6D7352F3A00000069CF9F /* Exceptions for "ChargingHelper" folder in "stasis" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -137,10 +171,15 @@
 		A68B3E1F2F19ABCB00F115E4 /* Helper */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A6AE1A382F484C94003B09FA /* Exceptions for "Helper" folder in "helper" target */,
 				A6AE1A372F484C94003B09FA /* Exceptions for "Helper" folder in "stasis" target */,
+				A6AE1A382F484C94003B09FA /* Exceptions for "Helper" folder in "helper" target */,
 			);
 			path = Helper;
+			sourceTree = "<group>";
+		};
+		A6C700012F50000000C0FFEE /* SMCTypes */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SMCTypes;
 			sourceTree = "<group>";
 		};
 		A6E6D71F2F39DD350069CF9F /* ChargingHelper */ = {
@@ -158,6 +197,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6C7000C2F50000000C0FFEE /* smc_types.framework in Frameworks */,
 				A66D62E22F44076F00B996E7 /* SMCKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -166,7 +206,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A6AE19892F480D41003B09FA /* smc_power.framework in Frameworks */,
+				A6C7000A2F50000000C0FFEE /* smc_types.framework in Frameworks */,
 				A6638F812F1C0FD60047FA8E /* Defaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -176,6 +216,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A66D62DD2F44069900B996E7 /* smc_power.framework in Frameworks */,
+				A6C7000D2F50000000C0FFEE /* smc_types.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6C700052F50000000C0FFEE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A66D62D92F44069300B996E7 /* smc_power.framework in Frameworks */,
+				A6C7000E2F50000000C0FFEE /* smc_types.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +247,7 @@
 				A68B3E1F2F19ABCB00F115E4 /* Helper */,
 				A6E6D71F2F39DD350069CF9F /* ChargingHelper */,
 				A66D62CF2F44067C00B996E7 /* SMCPower */,
+				A6C700012F50000000C0FFEE /* SMCTypes */,
 				A68B3E532F1A942600F115E4 /* Frameworks */,
 				A68B3E0D2F19AB4B00F115E4 /* Products */,
 			);
@@ -210,6 +260,7 @@
 				A68B3E1E2F19ABCB00F115E4 /* helper.xpc */,
 				A6E6D71E2F39DD350069CF9F /* charging-helper */,
 				A66D62CE2F44067C00B996E7 /* smc_power.framework */,
+				A6C700002F50000000C0FFEE /* smc_types.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -231,6 +282,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A6C700032F50000000C0FFEE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -246,6 +304,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A6C700122F50000000C0FFEE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A66D62CF2F44067C00B996E7 /* SMCPower */,
@@ -276,6 +335,7 @@
 				A68B3E282F19ABCB00F115E4 /* PBXTargetDependency */,
 				A6E6D7312F3A00000069CF9F /* PBXTargetDependency */,
 				A6AE198C2F480D41003B09FA /* PBXTargetDependency */,
+				A6C700102F50000000C0FFEE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A68B3E0E2F19AB4B00F115E4 /* Stasis */,
@@ -300,6 +360,7 @@
 			);
 			dependencies = (
 				A66D62E02F44069900B996E7 /* PBXTargetDependency */,
+				A6C700142F50000000C0FFEE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A68B3E1F2F19ABCB00F115E4 /* Helper */,
@@ -310,6 +371,29 @@
 			productName = helper;
 			productReference = A68B3E1E2F19ABCB00F115E4 /* helper.xpc */;
 			productType = "com.apple.product-type.xpc-service";
+		};
+		A6C700022F50000000C0FFEE /* smc-types */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6C700072F50000000C0FFEE /* Build configuration list for PBXNativeTarget "smc-types" */;
+			buildPhases = (
+				A6C700032F50000000C0FFEE /* Headers */,
+				A6C700042F50000000C0FFEE /* Sources */,
+				A6C700052F50000000C0FFEE /* Frameworks */,
+				A6C700062F50000000C0FFEE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A6C700012F50000000C0FFEE /* SMCTypes */,
+			);
+			name = "smc-types";
+			packageProductDependencies = (
+			);
+			productName = "smc-types";
+			productReference = A6C700002F50000000C0FFEE /* smc_types.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 		A6E6D71D2F39DD350069CF9F /* charging-helper */ = {
 			isa = PBXNativeTarget;
@@ -322,6 +406,7 @@
 			);
 			dependencies = (
 				A66D62DC2F44069300B996E7 /* PBXTargetDependency */,
+				A6C700162F50000000C0FFEE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A6E6D71F2F39DD350069CF9F /* ChargingHelper */,
@@ -351,6 +436,9 @@
 					};
 					A68B3E1D2F19ABCB00F115E4 = {
 						CreatedOnToolsVersion = 26.2;
+					};
+					A6C700022F50000000C0FFEE = {
+						CreatedOnToolsVersion = 27.2;
 					};
 					A6E6D71D2F39DD350069CF9F = {
 						CreatedOnToolsVersion = 26.2;
@@ -385,6 +473,7 @@
 				A68B3E1D2F19ABCB00F115E4 /* helper */,
 				A6E6D71D2F39DD350069CF9F /* charging-helper */,
 				A66D62CD2F44067C00B996E7 /* smc-power */,
+				A6C700022F50000000C0FFEE /* smc-types */,
 			);
 		};
 /* End PBXProject section */
@@ -405,6 +494,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A68B3E1C2F19ABCB00F115E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6C700062F50000000C0FFEE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -454,6 +550,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A6C700042F50000000C0FFEE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A6E6D71A2F39DD350069CF9F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -483,6 +586,26 @@
 			isa = PBXTargetDependency;
 			target = A66D62CD2F44067C00B996E7 /* smc-power */;
 			targetProxy = A6AE198B2F480D41003B09FA /* PBXContainerItemProxy */;
+		};
+		A6C700102F50000000C0FFEE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A6C700022F50000000C0FFEE /* smc-types */;
+			targetProxy = A6C7000F2F50000000C0FFEE /* PBXContainerItemProxy */;
+		};
+		A6C700122F50000000C0FFEE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A6C700022F50000000C0FFEE /* smc-types */;
+			targetProxy = A6C700112F50000000C0FFEE /* PBXContainerItemProxy */;
+		};
+		A6C700142F50000000C0FFEE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A6C700022F50000000C0FFEE /* smc-types */;
+			targetProxy = A6C700132F50000000C0FFEE /* PBXContainerItemProxy */;
+		};
+		A6C700162F50000000C0FFEE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A6C700022F50000000C0FFEE /* smc-types */;
+			targetProxy = A6C700152F50000000C0FFEE /* PBXContainerItemProxy */;
 		};
 		A6E6D7312F3A00000069CF9F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -846,6 +969,82 @@
 			};
 			name = Release;
 		};
+		A6C700082F50000000C0FFEE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-types";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		A6C700092F50000000C0FFEE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 447GJ83BJ5;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-types";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		A6E6D7232F39DD350069CF9F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -921,6 +1120,15 @@
 			buildConfigurations = (
 				A68B3E2C2F19ABCB00F115E4 /* Debug */,
 				A68B3E2D2F19ABCB00F115E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A6C700072F50000000C0FFEE /* Build configuration list for PBXNativeTarget "smc-types" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6C700082F50000000C0FFEE /* Debug */,
+				A6C700092F50000000C0FFEE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

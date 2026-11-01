@@ -1,7 +1,7 @@
 import Defaults
 import SwiftUI
 import os.log
-import smc_power
+import smc_types
 
 struct ChargingSettingsView: View {
     @Default(.manageCharging) var manageCharging

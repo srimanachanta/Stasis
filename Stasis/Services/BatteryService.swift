@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 import os.log
-import smc_power
+import smc_types
 
 enum XPCError: LocalizedError {
     case helperUnavailable

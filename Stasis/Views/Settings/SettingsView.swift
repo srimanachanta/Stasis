@@ -1,5 +1,5 @@
 import SwiftUI
-import smc_power
+import smc_types
 
 enum SettingsTab: String, CaseIterable, Identifiable {
     case general = "General"

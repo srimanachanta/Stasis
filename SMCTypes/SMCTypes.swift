@@ -1,5 +1,14 @@
 import Foundation
 
+public enum MagSafeLEDState: UInt8, Codable, Sendable {
+    case reset = 0
+    case off = 1
+    case green = 3
+    case orange = 4
+    case blinkOrangeSlow = 6
+    case blinkOrangeFast = 7
+}
+
 public struct SMCBatteryReading: Sendable {
     public let batteryVoltage: Double
     public let batteryCurrent: Double
@@ -60,17 +69,5 @@ public struct DeviceCapabilities: Sendable {
         self.hasMagSafe = hasMagSafe
         self.magsafeLEDControl = magsafeLEDControl
         self.nativeChargeLimits = nativeChargeLimits
-    }
-
-    public static func from(
-        battery: BatteryCapabilities,
-        adapter: AdapterCapabilities
-    ) -> DeviceCapabilities {
-        DeviceCapabilities(
-            chargingControl: battery.inhibitChargeControl,
-            adapterControl: battery.forceDischargeControl,
-            hasMagSafe: adapter.magSafeControl,
-            magsafeLEDControl: adapter.magSafeControl
-        )
     }
 }

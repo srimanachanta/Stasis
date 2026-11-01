@@ -4,7 +4,7 @@ import IOKit.pwr_mgt
 import Observation
 import UserNotifications
 import os.log
-import smc_power
+import smc_types
 
 private enum ChargeCommand {
     case charging
