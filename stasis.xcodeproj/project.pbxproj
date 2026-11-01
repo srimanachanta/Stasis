@@ -23,14 +23,14 @@
 			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A66D62CD2F44067C00B996E7;
-			remoteInfo = "smc-profiles";
+			remoteInfo = "smc-power";
 		};
 		A66D62DF2F44069900B996E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A68B3E042F19AB4B00F115E4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A66D62CD2F44067C00B996E7;
-			remoteInfo = "smc-profiles";
+			remoteInfo = "smc-power";
 		};
 		A68B3E272F19ABCB00F115E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -246,7 +246,7 @@
 			packageProductDependencies = (
 				A66D62E12F44076F00B996E7 /* SMCKit */,
 			);
-			productName = "smc-profiles";
+			productName = "smc-power";
 			productReference = A66D62CE2F44067C00B996E7 /* smc_power.framework */;
 			productType = "com.apple.product-type.framework";
 		};
@@ -506,7 +506,7 @@
 				);
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-profiles";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-power";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -515,7 +515,7 @@
 				SWIFT_INSTALL_MODULE = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -544,7 +544,7 @@
 				);
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-profiles";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.srimanachanta.stasis.smc-power";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -553,7 +553,7 @@
 				SWIFT_INSTALL_MODULE = YES;
 				SWIFT_INSTALL_OBJC_HEADER = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
