@@ -54,7 +54,7 @@ cd Stasis
 open stasis.xcodeproj
 ```
 
-Requires macOS 15.7+ and Xcode with Swift 6+ support. Dependencies resolve automatically via Swift Package Manager.
+Requires Xcode 26 or later. Dependencies resolve automatically via Swift Package Manager.
 
 ## Contributing
 
