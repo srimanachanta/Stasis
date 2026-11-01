@@ -14,7 +14,7 @@
 		A68B3E292F19ABCB00F115E4 /* helper.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = A68B3E1E2F19ABCB00F115E4 /* helper.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A6AE19892F480D41003B09FA /* smc_power.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; };
 		A6AE198A2F480D41003B09FA /* smc_power.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A66D62CE2F44067C00B996E7 /* smc_power.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A6E6D7322F3A00000069CF9F /* charging-helper in Copy Helper Tools */ = {isa = PBXBuildFile; fileRef = A6E6D71E2F39DD350069CF9F /* charging-helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		A6E6D7322F3A00000069CF9F /* charging-helper in Embed Charging Helper */ = {isa = PBXBuildFile; fileRef = A6E6D71E2F39DD350069CF9F /* charging-helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,15 +78,15 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A6E6D7332F3A00000069CF9F /* Copy Helper Tools */ = {
+		A6E6D7332F3A00000069CF9F /* Embed Charging Helper */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Library/LaunchDaemons";
 			dstSubfolderSpec = 16;
 			files = (
-				A6E6D7322F3A00000069CF9F /* charging-helper in Copy Helper Tools */,
+				A6E6D7322F3A00000069CF9F /* charging-helper in Embed Charging Helper */,
 			);
-			name = "Copy Helper Tools";
+			name = "Embed Charging Helper";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -266,7 +266,7 @@
 				A68B3E092F19AB4B00F115E4 /* Frameworks */,
 				A68B3E0A2F19AB4B00F115E4 /* Resources */,
 				A68B3E2E2F19ABCB00F115E4 /* Embed XPC Services */,
-				A6E6D7332F3A00000069CF9F /* Copy Helper Tools */,
+				A6E6D7332F3A00000069CF9F /* Embed Charging Helper */,
 				A6E6D7342F3A00000069CF9F /* Copy LaunchDaemon Plist */,
 				A6AE198D2F480D41003B09FA /* Embed Frameworks */,
 			);
