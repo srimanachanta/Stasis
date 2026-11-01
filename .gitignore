@@ -1,4 +1,6 @@
+.DS_Store
 xcuserdata/
+*.xcuserstate
 
 *.hmap
 
@@ -6,4 +8,5 @@ timeline.xctimeline
 playground.xcworkspace
 
 build/
+DerivedData/
 .claude/
