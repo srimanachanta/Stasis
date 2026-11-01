@@ -74,6 +74,18 @@ struct ChargingSettingsView: View {
                     }
                 }
 
+                if manageCharging && helperManager.helperStatus == .notInstalled {
+                    LabeledContent {
+                        Button("Reinstall") {
+                            reinstallHelper()
+                        }
+                    } label: {
+                        Text("The charging helper is not installed. Charge management is paused until it is reinstalled.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 if manageCharging {
                     LabeledContent {
                         HStack(spacing: 8) {
@@ -252,6 +264,9 @@ struct ChargingSettingsView: View {
         .animation(.default, value: enableHeatProtectionMode)
         .animation(.default, value: manageMagSafeLED)
         .animation(.default, value: helperManager.helperStatus)
+        .onAppear {
+            helperManager.refreshStatus()
+        }
         .alert(
             "Failed to install charging helper",
             isPresented: Binding(
@@ -280,6 +295,15 @@ struct ChargingSettingsView: View {
             }
         } catch {
             logger.error("Failed to \(enabled ? "install" : "uninstall") charging helper: \(error)")
+            installError = error.localizedDescription
+        }
+    }
+
+    private func reinstallHelper() {
+        do {
+            try helperManager.install()
+        } catch {
+            logger.error("Failed to reinstall charging helper: \(error)")
             installError = error.localizedDescription
         }
     }

@@ -32,6 +32,7 @@ class MenuViewModel {
 
     var chargeLimitOverrideActive: Bool { chargeManager.chargeLimitOverrideActive }
     var forceDischargeActive: Bool { chargeManager.forceDischargeActive }
+    var chargeManagementIssue: String? { chargeManager.chargeManagementIssue }
     var manageChargingEnabled: Bool { Defaults[.manageCharging] }
     var adapterConnected: Bool = false
 

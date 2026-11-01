@@ -80,6 +80,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 await withCheckedContinuation { continuation in
                     withObservationTracking {
                         _ = self.viewModel.adapterConnected
+                        _ = self.viewModel.chargeManagementIssue
                     } onChange: {
                         Task { @MainActor in
                             continuation.resume()

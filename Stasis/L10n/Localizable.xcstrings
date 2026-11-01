@@ -177,6 +177,9 @@
         }
       }
     },
+    "Approve Stasis in System Settings → Login Items." : {
+
+    },
     "Automatic discharge" : {
       "localizations" : {
         "de" : {
@@ -736,6 +739,9 @@
           }
         }
       }
+    },
+    "Charging helper is not installed. Reinstall it in Settings." : {
+
     },
     "Charging Paused" : {
       "localizations" : {
@@ -2267,6 +2273,9 @@
         }
       }
     },
+    "Reinstall" : {
+
+    },
     "Sailing Mode" : {
       "localizations" : {
         "vi" : {
@@ -2552,6 +2561,9 @@
           }
         }
       }
+    },
+    "The charging helper is not installed. Charge management is paused until it is reinstalled." : {
+
     },
     "Threshold below limit" : {
       "localizations" : {

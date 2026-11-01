@@ -36,6 +36,20 @@ struct BatteryAdditionalInfo: View {
     }
 }
 
+struct ChargeManagementIssue: View {
+    let message: String
+
+    var body: some View {
+        Label(message, systemImage: "exclamationmark.triangle.fill")
+            .symbolRenderingMode(.multicolor)
+            .foregroundStyle(.secondary)
+            .font(.callout)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 4)
+    }
+}
+
 #Preview("Menu Items") {
     VStack(spacing: 0) {
         BatteryMainInfo(label: "Battery", value: "85%")

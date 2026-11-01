@@ -6,6 +6,12 @@ import UserNotifications
 import os.log
 import smc_power
 
+private enum ChargeCommand {
+    case charging
+    case adapter
+    case magSafeLED
+}
+
 @MainActor
 @Observable
 class ChargeManager {
@@ -21,12 +27,25 @@ class ChargeManager {
 
     private(set) var chargeLimitOverrideActive = false
     private(set) var forceDischargeActive = false
+    private var commandErrors: [ChargeCommand: String] = [:]
     private var sleepAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
 
     private let logger = Logger(
         subsystem: "com.srimanachanta.stasis",
         category: "ChargeManager"
     )
+
+    var chargeManagementIssue: String? {
+        guard Defaults[.manageCharging] else { return nil }
+        switch ChargingHelperManager.shared.helperStatus {
+        case .notInstalled:
+            return String(localized: "Charging helper is not installed. Reinstall it in Settings.")
+        case .requiresApproval:
+            return String(localized: "Approve Stasis in System Settings \u{2192} Login Items.")
+        case .installed:
+            return commandErrors.values.sorted().first
+        }
+    }
 
     init(batteryService: BatteryService) {
         self.batteryService = batteryService
@@ -42,6 +61,7 @@ class ChargeManager {
                 await withCheckedContinuation { continuation in
                     withObservationTracking {
                         _ = self.batteryService.controlState
+                        _ = ChargingHelperManager.shared.helperStatus
                     } onChange: {
                         Task { @MainActor in
                             continuation.resume()
@@ -88,6 +108,11 @@ class ChargeManager {
                 forceDischargeActive = false
             }
             resetToDefaults()
+            return
+        }
+
+        guard ChargingHelperManager.shared.helperStatus == .installed else {
+            updateSleepAssertion(shouldPreventSleep: false)
             return
         }
 
@@ -197,6 +222,7 @@ class ChargeManager {
     }
 
     private func resetToDefaults() {
+        commandErrors.removeAll()
         hasReachedChargeLimit = false
         lastManageChargingEnabled = false
         updateSleepAssertion(shouldPreventSleep: false)
@@ -218,9 +244,11 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageBatteryCharging(enabled: enabled)
+                commandSucceeded(.charging)
                 batteryService.scheduleSinglePoll()
             } catch {
                 logger.error("Failed to set charging to \(enabled): \(error)")
+                commandFailed(.charging, error: error)
             }
         }
     }
@@ -230,9 +258,11 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageExternalPower(enabled: enabled)
+                commandSucceeded(.adapter)
                 batteryService.scheduleSinglePoll()
             } catch {
                 logger.error("Failed to set adapter to \(enabled): \(error)")
+                commandFailed(.adapter, error: error)
             }
         }
     }
@@ -242,10 +272,22 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageMagsafeLED(target: state)
+                commandSucceeded(.magSafeLED)
             } catch {
                 logger.error("Failed to set LED to \(String(describing: state)): \(error)")
+                commandFailed(.magSafeLED, error: error)
             }
         }
+    }
+
+    private func commandSucceeded(_ command: ChargeCommand) {
+        commandErrors[command] = nil
+    }
+
+    private func commandFailed(_ command: ChargeCommand, error: Error) {
+        commandErrors[command] = error.localizedDescription
+        // The daemon may have been removed from Login Items while the app was running.
+        ChargingHelperManager.shared.refreshStatus()
     }
 
     private func updateSleepAssertion(shouldPreventSleep: Bool) {
