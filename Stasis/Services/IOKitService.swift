@@ -168,16 +168,24 @@ class IOKitService {
         return prop.takeRetainedValue() as? T
     }
 
+    // macOS 27 removed the top-level raw capacity keys; the same values remain in BatteryData.
+    private func getCapacity(_ key: String, batteryDataKey: String) -> Int? {
+        if let value: Int = getPropertyValue(batteryService, key: key) {
+            return value
+        }
+        let batteryData: [String: Any]? = getPropertyValue(batteryService, key: "BatteryData")
+        return batteryData?[batteryDataKey] as? Int
+    }
+
     private func getBatteryPercentages(powerInfo: [String: Any]?) -> (
         displayed: Int, hardware: Int
     ) {
         let displayedPercent = powerInfo?[kIOPSCurrentCapacityKey] as? Int ?? 0
 
-        let rawCurrentCapacity: Int =
-            getPropertyValue(batteryService, key: "AppleRawCurrentCapacity")
-            ?? 0
-        let rawMaxCapacity: Int =
-            getPropertyValue(batteryService, key: "AppleRawMaxCapacity") ?? 0
+        let rawCurrentCapacity =
+            getCapacity("AppleRawCurrentCapacity", batteryDataKey: "RemainingCapacity") ?? 0
+        let rawMaxCapacity =
+            getCapacity("AppleRawMaxCapacity", batteryDataKey: "FullChargeCapacity") ?? 0
 
         let hardwarePercent: Int
         if rawMaxCapacity > 0 {
@@ -248,13 +256,12 @@ class IOKitService {
     }
 
     private func getBatteryCapacities() -> (current: Int, max: Int, design: Int) {
-        let currentCapacity: Int =
-            getPropertyValue(batteryService, key: "AppleRawCurrentCapacity")
-            ?? 0
-        let maxCapacity: Int =
-            getPropertyValue(batteryService, key: "AppleRawMaxCapacity") ?? 0
-        let designCapacity: Int =
-            getPropertyValue(batteryService, key: "DesignCapacity") ?? 0
+        let currentCapacity =
+            getCapacity("AppleRawCurrentCapacity", batteryDataKey: "RemainingCapacity") ?? 0
+        let maxCapacity =
+            getCapacity("AppleRawMaxCapacity", batteryDataKey: "FullChargeCapacity") ?? 0
+        let designCapacity =
+            getCapacity("DesignCapacity", batteryDataKey: "DesignCapacity") ?? 0
 
         return (currentCapacity, maxCapacity, designCapacity)
     }

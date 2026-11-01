@@ -4,7 +4,14 @@ import IOKit.pwr_mgt
 import Observation
 import UserNotifications
 import os.log
-import smc_power
+import smc_types
+
+private enum ChargeCommand {
+    case charging
+    case adapter
+    case magSafeLED
+    case nativeChargeLimit
+}
 
 @MainActor
 @Observable
@@ -21,6 +28,12 @@ class ChargeManager {
 
     private(set) var chargeLimitOverrideActive = false
     private(set) var forceDischargeActive = false
+    private var commandErrors: [ChargeCommand: String] = [:]
+    private var appliedNativeChargeLimit: Int?
+    private var nativeChargeLimitDisableError: String?
+    private var manageChargingObservation: Task<Void, Never>?
+    private var nativeChargeLimitObservation: Task<Void, Never>?
+    private var startupTask: Task<Void, Never>?
     private var sleepAssertionID: IOPMAssertionID = IOPMAssertionID(kIOPMNullAssertionID)
 
     private let logger = Logger(
@@ -28,10 +41,41 @@ class ChargeManager {
         category: "ChargeManager"
     )
 
+    var chargeManagementIssue: String? {
+        guard Defaults[.manageCharging] else { return nativeChargeLimitDisableError }
+        switch ChargingHelperManager.shared.helperStatus {
+        case .notInstalled:
+            return String(localized: "Charging helper is not installed. Reinstall it in Settings.")
+        case .requiresApproval:
+            return String(localized: "Approve Stasis in System Settings \u{2192} Login Items.")
+        case .installed:
+            return commandErrors.values.sorted().first
+        }
+    }
+
     init(batteryService: BatteryService) {
         self.batteryService = batteryService
-        startObservingMetrics()
-        startObservingSettings()
+        clampChargeLimitToNativeRange()
+        // Adopt the macOS limit before the first evaluation so a change made in System Settings
+        // while Stasis was closed is not overwritten by the stored value.
+        startupTask = Task { [weak self] in
+            await self?.syncFromNativeChargeLimit()
+            guard let self, !Task.isCancelled else { return }
+            self.startObservingMetrics()
+            self.startObservingSettings()
+            self.startObservingManageCharging()
+            self.startObservingNativeChargeLimit()
+        }
+    }
+
+    private func clampChargeLimitToNativeRange() {
+        let capabilities = batteryService.deviceCapabilities
+        guard capabilities.usesNativeChargeLimit,
+            let minimum = capabilities.nativeChargeLimits.first,
+            Defaults[.chargeLimit] < minimum
+        else { return }
+        logger.info("Raising charge limit to the macOS minimum of \(minimum)%")
+        Defaults[.chargeLimit] = minimum
     }
 
     private func startObservingMetrics() {
@@ -42,6 +86,7 @@ class ChargeManager {
                 await withCheckedContinuation { continuation in
                     withObservationTracking {
                         _ = self.batteryService.controlState
+                        _ = ChargingHelperManager.shared.helperStatus
                     } onChange: {
                         Task { @MainActor in
                             continuation.resume()
@@ -70,6 +115,55 @@ class ChargeManager {
         }
     }
 
+    private func startObservingManageCharging() {
+        manageChargingObservation = Task { [weak self] in
+            for await enabled in Defaults.updates(.manageCharging, initial: false) {
+                guard let self else { return }
+                self.nativeChargeLimitDisableError = nil
+                if !enabled && self.batteryService.deviceCapabilities.usesNativeChargeLimit {
+                    self.disableNativeChargeLimit()
+                }
+            }
+        }
+    }
+
+    private func startObservingNativeChargeLimit() {
+        guard batteryService.deviceCapabilities.usesNativeChargeLimit,
+            let changes = batteryService.nativeChargeLimitChanges()
+        else { return }
+        nativeChargeLimitObservation = Task { [weak self] in
+            for await _ in changes {
+                guard let self else { return }
+                await self.syncFromNativeChargeLimit()
+            }
+        }
+    }
+
+    private func syncFromNativeChargeLimit() async {
+        guard batteryService.deviceCapabilities.usesNativeChargeLimit, Defaults[.manageCharging]
+        else { return }
+
+        let current: Int?
+        do {
+            current = try await batteryService.currentNativeChargeLimit()
+        } catch {
+            logger.error("Failed to read native charge limit: \(error)")
+            return
+        }
+
+        // A disabled macOS limit charges to full, which Stasis represents as 100%.
+        let observedLimit = current ?? 100
+        // Our own writes also post the change notification; only adopt changes made elsewhere.
+        guard observedLimit != appliedNativeChargeLimit else { return }
+
+        logger.info("macOS charge limit changed to \(observedLimit)%, adopting it")
+        appliedNativeChargeLimit = observedLimit
+        chargeLimitOverrideActive = false
+        if Defaults[.chargeLimit] != observedLimit {
+            Defaults[.chargeLimit] = observedLimit
+        }
+    }
+
     private func evaluate(controlState: BatteryControlState) {
         var stateWasCleared = false
 
@@ -91,6 +185,11 @@ class ChargeManager {
             return
         }
 
+        guard ChargingHelperManager.shared.helperStatus == .installed else {
+            updateSleepAssertion(shouldPreventSleep: false)
+            return
+        }
+
         if lastManageChargingEnabled != true {
             lastManageChargingEnabled = true
             clearCachedState()
@@ -101,6 +200,16 @@ class ChargeManager {
         let batteryPercentage =
             Defaults[.useHardwarePercentage]
             ? controlState.hardwareBatteryPercentage : controlState.batteryPercentage
+        let capabilities = batteryService.deviceCapabilities
+
+        if capabilities.usesNativeChargeLimit {
+            evaluateNativeChargeLimit(
+                chargeLimit: chargeLimit,
+                batteryPercentage: batteryPercentage,
+                capabilities: capabilities
+            )
+            return
+        }
 
         if stateWasCleared && Defaults[.sailingMode]
             && batteryPercentage >= chargeLimit - Defaults[.sailingModeLimit] {
@@ -171,8 +280,6 @@ class ChargeManager {
             desiredAdapter = false
         }
 
-        let capabilities = batteryService.deviceCapabilities
-
         if let desiredCharging, capabilities.chargingControl {
             setCharging(enabled: desiredCharging)
             sendChargingStateNotification(
@@ -191,12 +298,43 @@ class ChargeManager {
         updateSleepAssertion(shouldPreventSleep: shouldPreventSleep)
     }
 
+    private func evaluateNativeChargeLimit(
+        chargeLimit: Int,
+        batteryPercentage: Int,
+        capabilities: DeviceCapabilities
+    ) {
+        let nativeLimit =
+            capabilities.nativeChargeLimits.first { $0 >= chargeLimit }
+            ?? capabilities.nativeChargeLimits.last ?? chargeLimit
+        if nativeLimit != appliedNativeChargeLimit {
+            setNativeChargeLimit(nativeLimit)
+        }
+
+        let charging = !forceDischargeActive && batteryPercentage < nativeLimit
+        let reason =
+            charging
+            ? "Battery is below the charge limit of \(nativeLimit)%"
+            : "Battery has reached the charge limit of \(nativeLimit)%"
+        sendChargingStateNotification(charging: charging, reason: reason)
+
+        if capabilities.adapterControl {
+            setAdapter(enabled: !forceDischargeActive)
+        }
+        if Defaults[.manageMagSafeLED], capabilities.hasMagSafe, capabilities.magsafeLEDControl {
+            setLED(state: charging ? .orange : .green)
+        }
+
+        updateSleepAssertion(
+            shouldPreventSleep: Defaults[.disableSleepUntilChargeLimit] && charging)
+    }
+
     private func clearCachedState() {
         lastNotifiedChargingState = nil
         hasReachedChargeLimit = false
     }
 
     private func resetToDefaults() {
+        commandErrors.removeAll()
         hasReachedChargeLimit = false
         lastManageChargingEnabled = false
         updateSleepAssertion(shouldPreventSleep: false)
@@ -218,9 +356,11 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageBatteryCharging(enabled: enabled)
+                commandSucceeded(.charging)
                 batteryService.scheduleSinglePoll()
             } catch {
                 logger.error("Failed to set charging to \(enabled): \(error)")
+                commandFailed(.charging, error: error)
             }
         }
     }
@@ -230,9 +370,11 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageExternalPower(enabled: enabled)
+                commandSucceeded(.adapter)
                 batteryService.scheduleSinglePoll()
             } catch {
                 logger.error("Failed to set adapter to \(enabled): \(error)")
+                commandFailed(.adapter, error: error)
             }
         }
     }
@@ -242,10 +384,53 @@ class ChargeManager {
         Task {
             do {
                 try await batteryService.manageMagsafeLED(target: state)
+                commandSucceeded(.magSafeLED)
             } catch {
                 logger.error("Failed to set LED to \(String(describing: state)): \(error)")
+                commandFailed(.magSafeLED, error: error)
             }
         }
+    }
+
+    private func setNativeChargeLimit(_ limit: Int) {
+        logger.info("Setting native charge limit: \(limit)%")
+        // Set before the call completes so evaluations that run in the meantime don't resend it.
+        appliedNativeChargeLimit = limit
+        Task {
+            do {
+                try await batteryService.setNativeChargeLimit(limit)
+                commandSucceeded(.nativeChargeLimit)
+            } catch {
+                logger.error("Failed to set native charge limit to \(limit)%: \(error)")
+                if appliedNativeChargeLimit == limit {
+                    appliedNativeChargeLimit = nil
+                }
+                commandFailed(.nativeChargeLimit, error: error)
+            }
+        }
+    }
+
+    private func disableNativeChargeLimit() {
+        logger.info("Disabling native charge limit")
+        appliedNativeChargeLimit = nil
+        Task {
+            do {
+                try await batteryService.disableNativeChargeLimit()
+            } catch {
+                logger.error("Failed to disable native charge limit: \(error)")
+                nativeChargeLimitDisableError = error.localizedDescription
+            }
+        }
+    }
+
+    private func commandSucceeded(_ command: ChargeCommand) {
+        commandErrors[command] = nil
+    }
+
+    private func commandFailed(_ command: ChargeCommand, error: Error) {
+        commandErrors[command] = error.localizedDescription
+        // The daemon may have been removed from Login Items while the app was running.
+        ChargingHelperManager.shared.refreshStatus()
     }
 
     private func updateSleepAssertion(shouldPreventSleep: Bool) {
@@ -309,10 +494,16 @@ class ChargeManager {
     }
 
     func stop() {
+        startupTask?.cancel()
+        startupTask = nil
+        nativeChargeLimitObservation?.cancel()
+        nativeChargeLimitObservation = nil
         metricsObservation?.cancel()
         metricsObservation = nil
         settingsObservation?.cancel()
         settingsObservation = nil
+        manageChargingObservation?.cancel()
+        manageChargingObservation = nil
         updateSleepAssertion(shouldPreventSleep: false)
     }
 }

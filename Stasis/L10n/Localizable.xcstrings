@@ -177,6 +177,9 @@
         }
       }
     },
+    "Approve Stasis in System Settings → Login Items." : {
+
+    },
     "Automatic discharge" : {
       "localizations" : {
         "de" : {
@@ -266,6 +269,9 @@
           }
         }
       }
+    },
+    "Battery %lld percent" : {
+
     },
     "Battery Health" : {
       "localizations" : {
@@ -657,6 +663,9 @@
         }
       }
     },
+    "charging" : {
+
+    },
     "Charging" : {
       "localizations" : {
         "de" : {
@@ -736,6 +745,9 @@
           }
         }
       }
+    },
+    "Charging helper is not installed. Reinstall it in Settings." : {
+
     },
     "Charging Paused" : {
       "localizations" : {
@@ -1647,6 +1659,22 @@
         }
       }
     },
+    "low power mode" : {
+
+    },
+    "macOS did not apply the charge limit (expected %@, got %@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "macOS did not apply the charge limit (expected %1$@, got %2$@)."
+          }
+        }
+      }
+    },
+    "macOS does not support a charge limit of %lld%%." : {
+
+    },
     "MagSafe LED Control" : {
       "localizations" : {
         "de" : {
@@ -2057,6 +2085,9 @@
         }
       }
     },
+    "plugged in" : {
+
+    },
     "Power" : {
       "localizations" : {
         "de" : {
@@ -2266,6 +2297,9 @@
           }
         }
       }
+    },
+    "Reinstall" : {
+
     },
     "Sailing Mode" : {
       "localizations" : {
@@ -2553,6 +2587,12 @@
         }
       }
     },
+    "The charging helper is not installed. Charge management is paused until it is reinstalled." : {
+
+    },
+    "The macOS charge limit is unavailable on this Mac." : {
+
+    },
     "Threshold below limit" : {
       "localizations" : {
         "vi" : {
@@ -2612,6 +2652,9 @@
           }
         }
       }
+    },
+    "Unavailable on this version of macOS." : {
+
     },
     "Uptime" : {
       "localizations" : {

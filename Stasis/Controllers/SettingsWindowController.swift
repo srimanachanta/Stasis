@@ -1,6 +1,6 @@
 import AppKit
 import SwiftUI
-import smc_power
+import smc_types
 
 @MainActor
 final class SettingsWindowController: NSObject, NSWindowDelegate {

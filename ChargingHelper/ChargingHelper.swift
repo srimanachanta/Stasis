@@ -1,6 +1,7 @@
 import Foundation
 import os.log
 import smc_power
+import smc_types
 
 private enum Constants {
     static let subsystem = "com.srimanachanta.stasis.charging-helper"

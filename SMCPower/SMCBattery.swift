@@ -60,6 +60,10 @@ public struct SMCBattery: Sendable {
         Double(try SMCKit.shared.read("B0AC") as Int16) / 1000.0
     }
 
+    public static func getTemperature() throws -> Double {
+        Double(try SMCKit.shared.read("TB0T") as Float)
+    }
+
     public func getChargingInhibited() throws -> Bool {
         guard capabilities.inhibitChargeControl else { throw SMCBatteryError.unsupportedCapability }
 

@@ -32,6 +32,7 @@ class MenuViewModel {
 
     var chargeLimitOverrideActive: Bool { chargeManager.chargeLimitOverrideActive }
     var forceDischargeActive: Bool { chargeManager.forceDischargeActive }
+    var chargeManagementIssue: String? { chargeManager.chargeManagementIssue }
     var manageChargingEnabled: Bool { Defaults[.manageCharging] }
     var adapterConnected: Bool = false
 
@@ -127,7 +128,7 @@ class MenuViewModel {
         let formatted = formatTimeRemaining(minutes: metrics.timeRemaining)
         if !formatted.isEmpty {
             timeRemainingText = formatted
-        } else if derivedPowerSource == .acAdapter && !metrics.isCharging {
+        } else if metrics.externalConnected && !metrics.isCharging {
             timeRemainingText = "Not Charging"
         } else {
             timeRemainingText = "Calculating..."
@@ -135,7 +136,10 @@ class MenuViewModel {
 
         updateUptimeText()
 
-        if derivedPowerSource == .acAdapter {
+        // SMC power readings are only refreshed while the menu is open, so deriving the mode from them leaves
+        // the status icon stale. IOKit's external power state updates on every power event, the same signal
+        // the system battery icon uses.
+        if metrics.externalConnected {
             if metrics.isCharging {
                 chargingMode = .charging
                 batteryModeText = "Charging"

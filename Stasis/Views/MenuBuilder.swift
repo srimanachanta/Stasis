@@ -43,6 +43,15 @@ class MenuBuilder {
             }
         }
 
+        if let issue = viewModel.chargeManagementIssue {
+            menu.addItem(NSMenuItem.separator())
+            // Fix the width so fittingSize measures the wrapped height of long error messages.
+            menu.addItem(createMenuItem(
+                view: ChargeManagementIssue(message: issue)
+                    .frame(width: Self.menuWidth, alignment: .leading)
+            ))
+        }
+
         if viewModel.manageChargingEnabled && viewModel.adapterConnected {
             menu.addItem(NSMenuItem.separator())
             menu.addItem(createMenuItem(view: ChargeLimitOverrideToggleView(viewModel: viewModel)))
