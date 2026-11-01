@@ -236,6 +236,11 @@ class BatteryService {
         if updatedBattery.batteryTemperature == 0 {
             updatedBattery.batteryTemperature = metrics.batteryTemperature
         }
+        // While fast polling, SMC power flow is the fresher charging signal. Letting the lagging IOKit value
+        // through would flip the state back and forth between polls.
+        if smcPollTask != nil, adapterUpdate.adapterConnected, adapterMetrics.adapterConnected {
+            updatedBattery.isCharging = metrics.isCharging
+        }
 
         if updatedBattery != metrics {
             metrics = updatedBattery
