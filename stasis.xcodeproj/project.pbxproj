@@ -100,6 +100,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A6AE1A382F484C94003B09FA /* Exceptions for "Helper" folder in "helper" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A68B3E1D2F19ABCB00F115E4 /* helper */;
+		};
 		A6AE1A372F484C94003B09FA /* Exceptions for "Helper" folder in "stasis" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -130,6 +137,7 @@
 		A68B3E1F2F19ABCB00F115E4 /* Helper */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				A6AE1A382F484C94003B09FA /* Exceptions for "Helper" folder in "helper" target */,
 				A6AE1A372F484C94003B09FA /* Exceptions for "Helper" folder in "stasis" target */,
 			);
 			path = Helper;
@@ -778,7 +786,7 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = helper/Info.plist;
+				INFOPLIST_FILE = Helper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = helper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks";
@@ -816,7 +824,7 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = helper/Info.plist;
+				INFOPLIST_FILE = Helper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = helper;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../../../Frameworks";
