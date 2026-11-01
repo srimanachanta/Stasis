@@ -34,6 +34,7 @@ class BatteryService {
         serviceName: "com.srimanachanta.stasis.helper"
     )
     private let ioKitService = IOKitService()
+    private var nativeChargeLimit: NativeChargeLimit?
 
     private var ioKitMonitorTask: Task<Void, Never>?
     private var smcPollTask: Task<Void, Never>?
@@ -71,9 +72,20 @@ class BatteryService {
             return
         }
 
-        self.deviceCapabilities = smcCapabilities
+        // PowerUI makes synchronous XPC calls during setup, keep them off the main actor.
+        let nativeChargeLimit = await Task.detached { NativeChargeLimit() }.value
+        self.nativeChargeLimit = nativeChargeLimit
+
+        let capabilities = DeviceCapabilities(
+            chargingControl: smcCapabilities.chargingControl,
+            adapterControl: smcCapabilities.adapterControl,
+            hasMagSafe: smcCapabilities.hasMagSafe,
+            magsafeLEDControl: smcCapabilities.magsafeLEDControl,
+            nativeChargeLimits: nativeChargeLimit?.availableLimits ?? []
+        )
+        self.deviceCapabilities = capabilities
         logger.info(
-            "Capabilities loaded: charging=\(smcCapabilities.chargingControl), adapter=\(smcCapabilities.adapterControl), magSafe=\(smcCapabilities.hasMagSafe)"
+            "Capabilities loaded: charging=\(capabilities.chargingControl), adapter=\(capabilities.adapterControl), magSafe=\(capabilities.hasMagSafe), nativeLimits=\(capabilities.nativeChargeLimits)"
         )
     }
 
@@ -269,6 +281,16 @@ class BatteryService {
         try await callChargingHelper { helper, reply in
             helper.manageMagsafeLED(target: target.rawValue, reply: reply)
         }
+    }
+
+    func setNativeChargeLimit(_ limit: Int) async throws {
+        guard let nativeChargeLimit else { throw NativeChargeLimitError.unavailable }
+        try await nativeChargeLimit.apply(limit: limit)
+    }
+
+    func disableNativeChargeLimit() async throws {
+        guard let nativeChargeLimit else { throw NativeChargeLimitError.unavailable }
+        try await nativeChargeLimit.disable()
     }
 
     private func callChargingHelper(

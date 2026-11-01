@@ -40,17 +40,26 @@ public struct DeviceCapabilities: Sendable {
     public let adapterControl: Bool
     public let hasMagSafe: Bool
     public let magsafeLEDControl: Bool
+    public let nativeChargeLimits: [Int]
+
+    /// macOS 27 firmware gates the SMC charge-inhibit keys, leaving the macOS Charge Limit as the
+    /// only way to limit charging.
+    public var usesNativeChargeLimit: Bool {
+        !chargingControl && !nativeChargeLimits.isEmpty
+    }
 
     public init(
         chargingControl: Bool,
         adapterControl: Bool,
         hasMagSafe: Bool,
-        magsafeLEDControl: Bool
+        magsafeLEDControl: Bool,
+        nativeChargeLimits: [Int] = []
     ) {
         self.chargingControl = chargingControl
         self.adapterControl = adapterControl
         self.hasMagSafe = hasMagSafe
         self.magsafeLEDControl = magsafeLEDControl
+        self.nativeChargeLimits = nativeChargeLimits
     }
 
     public static func from(

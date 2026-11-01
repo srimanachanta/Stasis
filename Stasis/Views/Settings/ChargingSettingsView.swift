@@ -40,9 +40,23 @@ struct ChargingSettingsView: View {
         capabilities.hasMagSafe
     }
 
-    private var hasAnyControl: Bool {
-        hasChargingControl || hasAdapterControl
+    private var usesNativeChargeLimit: Bool {
+        capabilities.usesNativeChargeLimit
     }
+
+    private var hasAnyControl: Bool {
+        hasChargingControl || hasAdapterControl || usesNativeChargeLimit
+    }
+
+    private var chargeLimitRange: ClosedRange<Double> {
+        guard usesNativeChargeLimit,
+            let minimum = capabilities.nativeChargeLimits.first,
+            let maximum = capabilities.nativeChargeLimits.last
+        else { return 50...100 }
+        return Double(minimum)...Double(maximum)
+    }
+
+    private let unavailableOnThisVersion: LocalizedStringKey = "Unavailable on this version of macOS."
 
     private var sailingResumePercentage: Int {
         chargeLimit - sailingModeLimit
@@ -93,7 +107,7 @@ struct ChargingSettingsView: View {
                                 value: Binding(
                                     get: { Double(chargeLimit) },
                                     set: { chargeLimit = Int($0) }
-                                ), in: 50...100, step: 5
+                                ), in: chargeLimitRange, step: 5
                             )
                             Text("\(chargeLimit)%")
                                 .monospacedDigit()
@@ -119,8 +133,11 @@ struct ChargingSettingsView: View {
 
             if manageCharging {
                 Section {
-                    Toggle("Automatic discharge", isOn: $automaticDischarge)
-                        .disabled(!hasAdapterControl)
+                    Toggle(
+                        "Automatic discharge",
+                        isOn: usesNativeChargeLimit ? .constant(false) : $automaticDischarge
+                    )
+                    .disabled(!hasAdapterControl || usesNativeChargeLimit)
                 } header: {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Discharge")
@@ -131,7 +148,9 @@ struct ChargingSettingsView: View {
                         .foregroundStyle(.secondary)
                     }
                 } footer: {
-                    if !hasAdapterControl {
+                    if usesNativeChargeLimit {
+                        Text(unavailableOnThisVersion)
+                    } else if !hasAdapterControl {
                         Text("Adapter control is not supported on this device.")
                     }
                 }
@@ -150,10 +169,13 @@ struct ChargingSettingsView: View {
                 }
 
                 Section {
-                    Toggle("Enable sailing mode", isOn: $sailingMode)
-                        .disabled(!hasChargingControl)
+                    Toggle(
+                        "Enable sailing mode",
+                        isOn: hasChargingControl ? $sailingMode : .constant(false)
+                    )
+                    .disabled(!hasChargingControl)
 
-                    if sailingMode {
+                    if sailingMode && hasChargingControl {
                         LabeledContent {
                             HStack(spacing: 8) {
                                 Slider(
@@ -187,16 +209,21 @@ struct ChargingSettingsView: View {
                         .foregroundStyle(.secondary)
                     }
                 } footer: {
-                    if !hasChargingControl {
+                    if usesNativeChargeLimit {
+                        Text(unavailableOnThisVersion)
+                    } else if !hasChargingControl {
                         Text("Charging control is not supported on this device.")
                     }
                 }
 
                 Section {
-                    Toggle("Enable heat protection", isOn: $enableHeatProtectionMode)
-                        .disabled(!hasChargingControl)
+                    Toggle(
+                        "Enable heat protection",
+                        isOn: hasChargingControl ? $enableHeatProtectionMode : .constant(false)
+                    )
+                    .disabled(!hasChargingControl)
 
-                    if enableHeatProtectionMode {
+                    if enableHeatProtectionMode && hasChargingControl {
                         LabeledContent {
                             HStack(spacing: 8) {
                                 Slider(
@@ -222,7 +249,9 @@ struct ChargingSettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 } footer: {
-                    if !hasChargingControl {
+                    if usesNativeChargeLimit {
+                        Text(unavailableOnThisVersion)
+                    } else if !hasChargingControl {
                         Text("Charging control is not supported on this device.")
                     }
                 }
@@ -233,7 +262,7 @@ struct ChargingSettingsView: View {
                             .disabled(!capabilities.magsafeLEDControl)
 
                         if manageMagSafeLED {
-                            if enableHeatProtectionMode {
+                            if enableHeatProtectionMode && hasChargingControl {
                                 Picker(
                                     "LED during heat protection",
                                     selection: $heatProtectionMagSafeLEDState
