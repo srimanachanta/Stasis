@@ -293,6 +293,15 @@ class BatteryService {
         try await nativeChargeLimit.disable()
     }
 
+    func currentNativeChargeLimit() async throws -> Int? {
+        guard let nativeChargeLimit else { throw NativeChargeLimitError.unavailable }
+        return try await nativeChargeLimit.currentLimit()
+    }
+
+    func nativeChargeLimitChanges() -> AsyncStream<Void>? {
+        nativeChargeLimit?.changes()
+    }
+
     private func callChargingHelper(
         _ command: (ChargingHelperProtocol, @escaping @Sendable (Bool, String?) -> Void) -> Void
     ) async throws {

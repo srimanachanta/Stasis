@@ -1,5 +1,6 @@
 import Foundation
 import ObjectiveC
+import notify
 
 enum NativeChargeLimitError: LocalizedError {
     case unavailable
@@ -39,6 +40,7 @@ enum NativeChargeLimitError: LocalizedError {
 actor NativeChargeLimit {
     private static let frameworkPath = "/System/Library/PrivateFrameworks/PowerUI.framework"
     private static let clientClassName = "PowerUISmartChargeClient"
+    private static let statusChangedNotification = "com.apple.powerui.mclstatuschanged"
     private static let requiredSelectors = [
         "initWithClientName:", "isMCLSupported", "availableChargeLimitsWithError:",
         "getMCLLimitWithError:", "isMCLCurrentlyEnabled:", "setMCLLimit:error:", "disableMCL:",
@@ -89,8 +91,27 @@ actor NativeChargeLimit {
         }
     }
 
+    /// Yields whenever the limit changes, including changes made in System Settings.
+    nonisolated func changes() -> AsyncStream<Void> {
+        AsyncStream { continuation in
+            var token: Int32 = 0
+            let status = notify_register_dispatch(
+                Self.statusChangedNotification, &token, DispatchQueue.global()
+            ) { _ in
+                continuation.yield()
+            }
+            guard status == NOTIFY_STATUS_OK else {
+                continuation.finish()
+                return
+            }
+            continuation.onTermination = { [token] _ in
+                notify_cancel(token)
+            }
+        }
+    }
+
     /// Returns `nil` when the limit is disabled.
-    private func currentLimit() throws -> Int? {
+    func currentLimit() throws -> Int? {
         var error: NSError?
         let enabled = client.isChargeLimitEnabled(error: &error)
         if let error { throw error }
