@@ -58,7 +58,11 @@ class ChargingHelperManager {
     func uninstall() throws {
         logger.info("Unregistering charging helper daemon")
         disconnect()
-        try service.unregister()
+        // BTM can drop the record (e.g. across OS upgrades) while the stored
+        // preference still says installed; unregister() then throws "record not found".
+        if service.status != .notRegistered && service.status != .notFound {
+            try service.unregister()
+        }
         helperStatus = .notInstalled
     }
 
