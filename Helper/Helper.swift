@@ -13,17 +13,18 @@ final class Helper: NSObject, HelperProtocol {
     )
 
     func readBatteryMetrics(
-        reply: @escaping @Sendable (Double, Double, Double) -> Void
+        reply: @escaping @Sendable (Double, Double, Double, Double) -> Void
     ) {
+        let batteryTemperature = (try? SMCBattery.getTemperature()) ?? .nan
         do {
             let batteryVoltage = try SMCBattery.getVoltage()
             let batteryCurrent = try SMCBattery.getCurrent()
             let batteryPower = batteryVoltage * batteryCurrent
 
-            reply(batteryVoltage, batteryCurrent, batteryPower)
+            reply(batteryVoltage, batteryCurrent, batteryPower, batteryTemperature)
         } catch {
             logger.error("SMC battery read failed: \(error.localizedDescription)")
-            reply(0, 0, 0)
+            reply(0, 0, 0, batteryTemperature)
         }
     }
 

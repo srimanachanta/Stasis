@@ -127,12 +127,14 @@ class BatteryService {
 
     private func fetchSMCBatteryData() async -> SMCBatteryReading? {
         await callReaderHelper("during SMC battery poll") { helper, reply in
-            helper.readBatteryMetrics { batteryVoltage, batteryCurrent, batteryPower in
+            helper.readBatteryMetrics {
+                batteryVoltage, batteryCurrent, batteryPower, batteryTemperature in
                 reply(
                     SMCBatteryReading(
                         batteryVoltage: batteryVoltage,
                         batteryCurrent: batteryCurrent,
-                        batteryPower: batteryPower
+                        batteryPower: batteryPower,
+                        batteryTemperature: batteryTemperature.isNaN ? nil : batteryTemperature
                     ))
             }
         }
@@ -187,6 +189,9 @@ class BatteryService {
         updatedBattery.batteryVoltage = batteryReading.batteryVoltage
         updatedBattery.batteryCurrent = batteryReading.batteryCurrent
         updatedBattery.batteryPower = batteryReading.batteryPower
+        if let batteryTemperature = batteryReading.batteryTemperature {
+            updatedBattery.batteryTemperature = batteryTemperature
+        }
 
         var updatedAdapter = adapterMetrics
         updatedAdapter.adapterVoltage = adapterReading.adapterVoltage
@@ -215,6 +220,10 @@ class BatteryService {
         updatedBattery.batteryVoltage = metrics.batteryVoltage
         updatedBattery.batteryCurrent = metrics.batteryCurrent
         updatedBattery.batteryPower = metrics.batteryPower
+        // macOS 27 no longer reports temperature through IOKit (0 means missing); keep the SMC reading.
+        if updatedBattery.batteryTemperature == 0 {
+            updatedBattery.batteryTemperature = metrics.batteryTemperature
+        }
 
         if updatedBattery != metrics {
             metrics = updatedBattery

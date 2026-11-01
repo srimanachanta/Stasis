@@ -4,15 +4,18 @@ public struct SMCBatteryReading: Sendable {
     public let batteryVoltage: Double
     public let batteryCurrent: Double
     public let batteryPower: Double
+    public let batteryTemperature: Double?
 
     public init(
         batteryVoltage: Double,
         batteryCurrent: Double,
-        batteryPower: Double
+        batteryPower: Double,
+        batteryTemperature: Double?
     ) {
         self.batteryVoltage = batteryVoltage
         self.batteryCurrent = batteryCurrent
         self.batteryPower = batteryPower
+        self.batteryTemperature = batteryTemperature
     }
 }
 
