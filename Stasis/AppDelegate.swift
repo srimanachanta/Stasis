@@ -34,6 +34,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        guard let chargeManager, chargeManager.needsChargeLimitRestore else {
+            return .terminateNow
+        }
+        Task {
+            await chargeManager.restoreChargeLimitAfterOverride()
+            sender.reply(toApplicationShouldTerminate: true)
+        }
+        // PowerUI calls have no timeout, and a stuck agent must not block quitting or shutdown.
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            sender.reply(toApplicationShouldTerminate: true)
+        }
+        return .terminateLater
+    }
+
     private func setupServices() async {
         batteryService = BatteryService()
         await batteryService.loadCapabilities()
