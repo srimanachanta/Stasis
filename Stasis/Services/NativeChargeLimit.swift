@@ -85,9 +85,8 @@ actor NativeChargeLimit {
     func disable() throws {
         try client.disableChargeLimit()
 
-        let current = try currentLimit()
-        guard current == nil else {
-            throw NativeChargeLimitError.verificationFailed(expected: nil, actual: current)
+        guard try !isEnabled() else {
+            throw NativeChargeLimitError.verificationFailed(expected: nil, actual: try currentLimit())
         }
     }
 
@@ -110,15 +109,20 @@ actor NativeChargeLimit {
         }
     }
 
-    /// Returns `nil` when the limit is disabled.
-    func currentLimit() throws -> Int? {
-        var error: NSError?
-        let enabled = client.isChargeLimitEnabled(error: &error)
-        if let error { throw error }
-        guard enabled != 0 else { return nil }
+    func currentLimit() throws -> Int {
+        // macOS represents a 100% limit as disabled, even right after setting it to 100.
+        guard try isEnabled() else { return 100 }
 
+        var error: NSError?
         let limit = client.chargeLimit(error: &error)
         if let error { throw error }
         return Int(limit)
+    }
+
+    private func isEnabled() throws -> Bool {
+        var error: NSError?
+        let enabled = client.isChargeLimitEnabled(error: &error)
+        if let error { throw error }
+        return enabled != 0
     }
 }

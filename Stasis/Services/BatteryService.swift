@@ -298,7 +298,7 @@ class BatteryService {
         try await nativeChargeLimit.disable()
     }
 
-    func currentNativeChargeLimit() async throws -> Int? {
+    func currentNativeChargeLimit() async throws -> Int {
         guard let nativeChargeLimit else { throw NativeChargeLimitError.unavailable }
         return try await nativeChargeLimit.currentLimit()
     }

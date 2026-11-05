@@ -30,6 +30,7 @@ class ChargeManager {
     private(set) var forceDischargeActive = false
     private var commandErrors: [ChargeCommand: String] = [:]
     private var appliedNativeChargeLimit: Int?
+    private var nativeChargeLimitWritesInFlight = 0
     private var nativeChargeLimitDisableError: String?
     private var manageChargingObservation: Task<Void, Never>?
     private var nativeChargeLimitObservation: Task<Void, Never>?
@@ -143,16 +144,22 @@ class ChargeManager {
         guard batteryService.deviceCapabilities.usesNativeChargeLimit, Defaults[.manageCharging]
         else { return }
 
-        let current: Int?
+        let observedLimit: Int
         do {
-            current = try await batteryService.currentNativeChargeLimit()
+            observedLimit = try await batteryService.currentNativeChargeLimit()
         } catch {
             logger.error("Failed to read native charge limit: \(error)")
             return
         }
 
-        // A disabled macOS limit charges to full, which Stasis represents as 100%.
-        let observedLimit = current ?? 100
+        // Adopting mid-write or during a failing write would replace the user's limit with a value
+        // Stasis itself is still trying to change.
+        guard nativeChargeLimitWritesInFlight == 0, commandErrors[.nativeChargeLimit] == nil else {
+            return
+        }
+        // An override left active by a previous launch is not a limit the user chose. The next
+        // evaluation restores the stored limit.
+        if appliedNativeChargeLimit == nil && Defaults[.chargeLimitOverrideApplied] { return }
         // Our own writes also post the change notification; only adopt changes made elsewhere.
         guard observedLimit != appliedNativeChargeLimit else { return }
 
@@ -303,9 +310,7 @@ class ChargeManager {
         batteryPercentage: Int,
         capabilities: DeviceCapabilities
     ) {
-        let nativeLimit =
-            capabilities.nativeChargeLimits.first { $0 >= chargeLimit }
-            ?? capabilities.nativeChargeLimits.last ?? chargeLimit
+        let nativeLimit = supportedNativeLimit(for: chargeLimit, capabilities: capabilities)
         if nativeLimit != appliedNativeChargeLimit {
             setNativeChargeLimit(nativeLimit)
         }
@@ -326,6 +331,11 @@ class ChargeManager {
 
         updateSleepAssertion(
             shouldPreventSleep: Defaults[.disableSleepUntilChargeLimit] && charging)
+    }
+
+    private func supportedNativeLimit(for chargeLimit: Int, capabilities: DeviceCapabilities) -> Int {
+        capabilities.nativeChargeLimits.first { $0 >= chargeLimit }
+            ?? capabilities.nativeChargeLimits.last ?? chargeLimit
     }
 
     private func clearCachedState() {
@@ -396,10 +406,20 @@ class ChargeManager {
         logger.info("Setting native charge limit: \(limit)%")
         // Set before the call completes so evaluations that run in the meantime don't resend it.
         appliedNativeChargeLimit = limit
+        nativeChargeLimitWritesInFlight += 1
+        let isOverride = chargeLimitOverrideActive
+        // Stored before the write so quitting during an override can't lose the user's limit.
+        if isOverride {
+            Defaults[.chargeLimitOverrideApplied] = true
+        }
         Task {
+            defer { nativeChargeLimitWritesInFlight -= 1 }
             do {
                 try await batteryService.setNativeChargeLimit(limit)
                 commandSucceeded(.nativeChargeLimit)
+                if !isOverride {
+                    Defaults[.chargeLimitOverrideApplied] = false
+                }
             } catch {
                 logger.error("Failed to set native charge limit to \(limit)%: \(error)")
                 if appliedNativeChargeLimit == limit {
@@ -413,6 +433,7 @@ class ChargeManager {
     private func disableNativeChargeLimit() {
         logger.info("Disabling native charge limit")
         appliedNativeChargeLimit = nil
+        Defaults[.chargeLimitOverrideApplied] = false
         Task {
             do {
                 try await batteryService.disableNativeChargeLimit()
@@ -491,6 +512,25 @@ class ChargeManager {
     func toggleForceDischarge() {
         forceDischargeActive.toggle()
         evaluate(controlState: batteryService.controlState)
+    }
+
+    var needsChargeLimitRestore: Bool {
+        batteryService.deviceCapabilities.usesNativeChargeLimit && Defaults[.manageCharging]
+            && Defaults[.chargeLimitOverrideApplied]
+    }
+
+    func restoreChargeLimitAfterOverride() async {
+        // Stop first so an evaluation during the restore can't write the override limit again.
+        stop()
+        let limit = supportedNativeLimit(
+            for: Defaults[.chargeLimit], capabilities: batteryService.deviceCapabilities)
+        do {
+            try await batteryService.setNativeChargeLimit(limit)
+            Defaults[.chargeLimitOverrideApplied] = false
+        } catch {
+            // chargeLimitOverrideApplied stays set, so the next launch restores the limit.
+            logger.error("Failed to restore native charge limit to \(limit)%: \(error)")
+        }
     }
 
     func stop() {
