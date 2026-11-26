@@ -5,6 +5,8 @@ import Observation
 import UserNotifications
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+    private static weak var shared: AppDelegate?
+
     private var statusBarManager: StatusBarManager!
     private var batteryService: BatteryService!
     private var viewModel: MenuViewModel!
@@ -12,8 +14,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var chargeManager: ChargeManager!
     private var settingsWindowController: SettingsWindowController!
     private var menu: NSMenu!
+    private var setupTask: Task<Void, Never>?
     private var settingsObservation: Task<Void, Never>?
     private var adapterObservation: Task<Void, Never>?
+
+    static func resolvedChargeManager() async -> ChargeManager? {
+        guard let shared else { return nil }
+        await shared.setupTask?.value
+        return shared.chargeManager
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Exit the app immediately if the device doesn't have a battery
@@ -27,7 +36,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         IOObjectRelease(batteryIOService)
 
-        Task {
+        Self.shared = self
+
+        setupTask = Task {
             await setupServices()
             setupMenu()
             requestNotificationPermissions()

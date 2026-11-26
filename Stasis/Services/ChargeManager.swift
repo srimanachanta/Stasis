@@ -6,6 +6,39 @@ import UserNotifications
 import os.log
 import smc_types
 
+enum ChargeControlError: LocalizedError {
+    case chargeManagementDisabled
+    case helperUnavailable(String)
+    case adapterDisconnected
+    case unsupportedOnDevice
+    case forceDischargeUnsupported
+    case chargeLimitOutOfRange(minimum: Int, maximum: Int)
+    case unsupportedNativeChargeLimit(Int, supported: [Int])
+
+    var errorDescription: String? {
+        switch self {
+        case .chargeManagementDisabled:
+            return String(localized: "Charge management is disabled in Stasis settings.")
+        case .helperUnavailable(let message):
+            return message
+        case .adapterDisconnected:
+            return String(localized: "Connect a power adapter to change charging behavior.")
+        case .unsupportedOnDevice:
+            return String(localized: "Charge management is not supported on this device.")
+        case .forceDischargeUnsupported:
+            return String(localized: "Force discharge is unavailable on this version of macOS.")
+        case .chargeLimitOutOfRange(let minimum, let maximum):
+            return String(localized: "Charge limit must be between \(minimum)% and \(maximum)%.")
+        case .unsupportedNativeChargeLimit(let limit, let supported):
+            let formatted = supported.map { "\($0)%" }.joined(separator: ", ")
+            return String(
+                localized:
+                    "macOS does not support a charge limit of \(limit)%. Supported values: \(formatted)."
+            )
+        }
+    }
+}
+
 private enum ChargeCommand {
     case charging
     case adapter
@@ -403,6 +436,12 @@ class ChargeManager {
     }
 
     private func setNativeChargeLimit(_ limit: Int) {
+        Task {
+            try? await applyNativeChargeLimit(limit)
+        }
+    }
+
+    private func applyNativeChargeLimit(_ limit: Int) async throws {
         logger.info("Setting native charge limit: \(limit)%")
         // Set before the call completes so evaluations that run in the meantime don't resend it.
         appliedNativeChargeLimit = limit
@@ -412,21 +451,20 @@ class ChargeManager {
         if isOverride {
             Defaults[.chargeLimitOverrideApplied] = true
         }
-        Task {
-            defer { nativeChargeLimitWritesInFlight -= 1 }
-            do {
-                try await batteryService.setNativeChargeLimit(limit)
-                commandSucceeded(.nativeChargeLimit)
-                if !isOverride {
-                    Defaults[.chargeLimitOverrideApplied] = false
-                }
-            } catch {
-                logger.error("Failed to set native charge limit to \(limit)%: \(error)")
-                if appliedNativeChargeLimit == limit {
-                    appliedNativeChargeLimit = nil
-                }
-                commandFailed(.nativeChargeLimit, error: error)
+        defer { nativeChargeLimitWritesInFlight -= 1 }
+        do {
+            try await batteryService.setNativeChargeLimit(limit)
+            commandSucceeded(.nativeChargeLimit)
+            if !isOverride {
+                Defaults[.chargeLimitOverrideApplied] = false
             }
+        } catch {
+            logger.error("Failed to set native charge limit to \(limit)%: \(error)")
+            if appliedNativeChargeLimit == limit {
+                appliedNativeChargeLimit = nil
+            }
+            commandFailed(.nativeChargeLimit, error: error)
+            throw error
         }
     }
 
@@ -512,6 +550,96 @@ class ChargeManager {
     func toggleForceDischarge() {
         forceDischargeActive.toggle()
         evaluate(controlState: batteryService.controlState)
+    }
+
+    func waitForStartup() async {
+        await startupTask?.value
+    }
+
+    func setChargeLimit(_ limit: Int) async throws {
+        await startupTask?.value
+        try validateChargeManagementReady()
+
+        let capabilities = batteryService.deviceCapabilities
+        if capabilities.usesNativeChargeLimit {
+            guard capabilities.nativeChargeLimits.contains(limit) else {
+                throw ChargeControlError.unsupportedNativeChargeLimit(
+                    limit, supported: capabilities.nativeChargeLimits)
+            }
+            chargeLimitOverrideActive = false
+            Defaults[.chargeLimit] = limit
+            if batteryService.controlState.adapterConnected {
+                try await applyNativeChargeLimit(limit)
+            }
+            evaluate(controlState: batteryService.controlState)
+            return
+        }
+
+        guard capabilities.chargingControl else {
+            throw ChargeControlError.unsupportedOnDevice
+        }
+        guard (50...100).contains(limit) else {
+            throw ChargeControlError.chargeLimitOutOfRange(minimum: 50, maximum: 100)
+        }
+
+        chargeLimitOverrideActive = false
+        Defaults[.chargeLimit] = limit
+        evaluate(controlState: batteryService.controlState)
+    }
+
+    func setChargeLimitOverride(enabled: Bool) async throws {
+        await startupTask?.value
+        try validateChargeManagementReady()
+
+        if enabled && !batteryService.controlState.adapterConnected {
+            throw ChargeControlError.adapterDisconnected
+        }
+
+        if enabled {
+            forceDischargeActive = false
+        }
+        chargeLimitOverrideActive = enabled
+
+        let capabilities = batteryService.deviceCapabilities
+        if capabilities.usesNativeChargeLimit && batteryService.controlState.adapterConnected {
+            let targetLimit =
+                enabled
+                ? 100
+                : supportedNativeLimit(for: Defaults[.chargeLimit], capabilities: capabilities)
+            try await applyNativeChargeLimit(targetLimit)
+        }
+        evaluate(controlState: batteryService.controlState)
+    }
+
+    func setForceDischarge(enabled: Bool) async throws {
+        await startupTask?.value
+        try validateChargeManagementReady()
+
+        let capabilities = batteryService.deviceCapabilities
+        guard capabilities.adapterControl, !capabilities.usesNativeChargeLimit else {
+            throw ChargeControlError.forceDischargeUnsupported
+        }
+        if enabled && !batteryService.controlState.adapterConnected {
+            throw ChargeControlError.adapterDisconnected
+        }
+
+        if enabled {
+            chargeLimitOverrideActive = false
+        }
+        forceDischargeActive = enabled
+        evaluate(controlState: batteryService.controlState)
+    }
+
+    private func validateChargeManagementReady() throws {
+        guard Defaults[.manageCharging] else {
+            throw ChargeControlError.chargeManagementDisabled
+        }
+        guard ChargingHelperManager.shared.helperStatus == .installed else {
+            throw ChargeControlError.helperUnavailable(
+                chargeManagementIssue
+                    ?? String(localized: "Charging helper is not installed. Reinstall it in Settings.")
+            )
+        }
     }
 
     var needsChargeLimitRestore: Bool {
