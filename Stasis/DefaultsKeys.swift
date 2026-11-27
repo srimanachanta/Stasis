@@ -21,6 +21,8 @@ extension Defaults.Keys {
         "batteryPercentageDisplayLocation", default: .nextToIcon)
     static let showBatteryStateInStatusIcon = Key<Bool>(
         "showBatteryStateInStatusIcon", default: true)
+    static let showWattageInStatusIcon = Key<Bool>(
+        "showWattageInStatusIcon", default: false)
 
     // Notifications
     static let disableNotifications = Key<Bool>("disableNotifications", default: false)

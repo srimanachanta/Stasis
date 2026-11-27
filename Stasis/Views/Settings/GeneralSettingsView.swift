@@ -5,6 +5,7 @@ struct GeneralSettingsView: View {
     @Default(.launchAtLogin) var launchAtLogin
     @Default(.batteryPercentageDisplayLocation) var batteryPercentageDisplayLocation
     @Default(.showBatteryStateInStatusIcon) var showBatteryStateInStatusIcon
+    @Default(.showWattageInStatusIcon) var showWattageInStatusIcon
     @Default(.disableNotifications) var disableNotifications
     @Default(.showChargingStatusChangedNotification) var showChargingStatusChangedNotification
 
@@ -21,11 +22,12 @@ struct GeneralSettingsView: View {
                     Text("Inside icon").tag(PercentageDisplayLocation.insideIcon)
                 }
                 Toggle("Show battery state", isOn: $showBatteryStateInStatusIcon)
+                Toggle("Show wattage", isOn: $showWattageInStatusIcon)
             } header: {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Menu Bar Icon")
                     Text(
-                        "Display battery percentage next to or inside the menu bar icon."
+                        "Customize battery percentage, state, and wattage in the menu bar icon."
                     )
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

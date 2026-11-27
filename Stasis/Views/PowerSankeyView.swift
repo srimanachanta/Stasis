@@ -242,8 +242,9 @@ struct PowerSankeyView: View {
 struct PowerLabel: View {
     let power: Double
     var body: some View {
-        Text(String(format: "%.0f W", abs(power)))
+        Text(String(format: "%.1f W", abs(power)))
             .font(.system(size: 13, weight: .medium))
+            .monospacedDigit()
             .foregroundStyle(.secondary)
     }
 }
@@ -281,8 +282,9 @@ struct NodeView: View {
                     .font(.system(size: 16))
                     .foregroundStyle(.secondary)
                 if let value {
-                    Text(String(format: "%.0f W", value))
+                    Text(String(format: "%.1f W", value))
                         .font(.system(size: 11, weight: .medium))
+                        .monospacedDigit()
                         .foregroundStyle(.secondary)
                 }
             }

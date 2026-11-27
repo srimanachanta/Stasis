@@ -45,6 +45,7 @@ class MenuViewModel {
         self.batteryService = batteryService
         self.chargeManager = chargeManager
         self.bootTimestamp = SystemService.bootTimestamp()
+        batteryService.setBackgroundPolling(enabled: Defaults[.showWattageInStatusIcon])
         startObservingMetrics()
         startObservingSettings()
         startObservingPowerMode()
@@ -74,8 +75,14 @@ class MenuViewModel {
 
     private func startObservingSettings() {
         settingsObservation = Task { [weak self] in
-            for await _ in Defaults.updates([.useHardwarePercentage], initial: false) {
+            for await _ in Defaults.updates(
+                [.useHardwarePercentage, .showWattageInStatusIcon],
+                initial: false
+            ) {
                 guard let self else { return }
+                self.batteryService.setBackgroundPolling(
+                    enabled: Defaults[.showWattageInStatusIcon]
+                )
                 self.updateFormattedValues(
                     from: self.batteryService.metrics,
                     adapter: self.batteryService.adapterMetrics
