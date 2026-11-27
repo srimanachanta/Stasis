@@ -7,6 +7,7 @@ final class StatusBarManager {
     private let statusItem: NSStatusItem
     private let viewModel: MenuViewModel
     private var displayedState: BatteryIconState?
+    private var displayedTitle: String?
     private var viewModelObservation: Task<Void, Never>?
     private var settingsObservation: Task<Void, Never>?
 
@@ -47,7 +48,11 @@ final class StatusBarManager {
 
         settingsObservation = Task { [weak self] in
             for await _ in Defaults.updates(
-                [.batteryPercentageDisplayLocation, .showBatteryStateInStatusIcon],
+                [
+                    .batteryPercentageDisplayLocation,
+                    .showBatteryStateInStatusIcon,
+                    .showWattageInStatusIcon,
+                ],
                 initial: false
             ) {
                 self?.render()
@@ -65,23 +70,48 @@ final class StatusBarManager {
         )
     }
 
+    private func currentTitle(for state: BatteryIconState) -> String {
+        var components: [String] = []
+        if Defaults[.showWattageInStatusIcon] {
+            let systemWatts = max(0, viewModel.systemPower)
+            if viewModel.isCharging && viewModel.adapterPower > 0 {
+                let adapterWatts = max(0, viewModel.adapterPower)
+                components.append(
+                    "\(formatWatts(adapterWatts)) / \(formatWatts(systemWatts))"
+                )
+            } else {
+                components.append(formatWatts(systemWatts))
+            }
+        }
+        if state.percentageDisplayLocation == .nextToIcon {
+            components.append("\(state.level)%")
+        }
+        return components.joined(separator: " ")
+    }
+
+    private func formatWatts(_ watts: Double) -> String {
+        String(format: "%.1fW", watts)
+    }
+
     // Assigning the button's image and title, rather than hosting a custom view inside it, is what makes
     // AppKit redraw the item immediately, including its copies on other displays, and keeps the native
     // highlight, tinting, and accessibility behavior.
     private func render() {
         let state = currentState
-        guard state != displayedState, let button = statusItem.button else { return }
-        displayedState = state
+        let title = currentTitle(for: state)
+        guard let button = statusItem.button else { return }
 
-        button.image = BatteryIcon.image(for: state)
-        if state.percentageDisplayLocation == .nextToIcon {
-            button.title = "\(state.level)%"
-            button.imagePosition = .imageTrailing
-        } else {
-            button.title = ""
-            button.imagePosition = .imageOnly
+        if state != displayedState {
+            displayedState = state
+            button.image = BatteryIcon.image(for: state)
+            button.setAccessibilityLabel(state.accessibilityDescription)
         }
-        button.setAccessibilityLabel(state.accessibilityDescription)
+
+        if title != displayedTitle {
+            displayedTitle = title
+            button.title = title
+            button.imagePosition = title.isEmpty ? .imageOnly : .imageTrailing
+        }
     }
 
     deinit {

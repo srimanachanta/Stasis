@@ -38,6 +38,7 @@ class BatteryService {
 
     private var ioKitMonitorTask: Task<Void, Never>?
     private var smcPollTask: Task<Void, Never>?
+    private var backgroundPollTask: Task<Void, Never>?
     private var delayedPollTask: Task<Void, Never>?
 
     private let logger = Logger(
@@ -135,6 +136,28 @@ class BatteryService {
         logger.info("Disabling fast SMC polling")
         smcPollTask?.cancel()
         smcPollTask = nil
+    }
+
+    func setBackgroundPolling(enabled: Bool, interval: Duration = .seconds(3)) {
+        guard enabled else {
+            backgroundPollTask?.cancel()
+            backgroundPollTask = nil
+            return
+        }
+        guard backgroundPollTask == nil else { return }
+
+        backgroundPollTask = Task {
+            if self.smcPollTask == nil {
+                await self.pollSMCOnce()
+            }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: interval)
+                guard !Task.isCancelled else { break }
+                if self.smcPollTask == nil {
+                    await self.pollSMCOnce()
+                }
+            }
+        }
     }
 
     private func fetchSMCBatteryData() async -> SMCBatteryReading? {
@@ -338,6 +361,8 @@ class BatteryService {
         ioKitMonitorTask = nil
         smcPollTask?.cancel()
         smcPollTask = nil
+        backgroundPollTask?.cancel()
+        backgroundPollTask = nil
         delayedPollTask?.cancel()
         delayedPollTask = nil
         xpcManager.disconnect()
